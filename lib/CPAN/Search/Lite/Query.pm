@@ -13,6 +13,7 @@ use constant KB => 1024;
 
 our ($dbh, $lang);
 our $max_results = 200;
+our $VERSION = 0.59;
 
 my %mode2obj;
 $mode2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -21,7 +22,7 @@ $mode2obj{$_} = __PACKAGE__ . '::' . $_
 sub new {
     my ($class, %args) = @_;
     foreach (qw(db user passwd)) {
-        die "Please supply a '$_' argument" unless $args{$_};
+        die "Please supply a '$_' argument" unless defined $args{$_};
     }
     $dbh = DBI->connect("DBI:mysql:$args{db}", $args{user}, $args{passwd},
                         {RaiseError => 1, AutoCommit => 0})

@@ -83,10 +83,13 @@ sub extract {
         }
         my ($archive, @files);
         my $download = $self->download($cpanid, $filename);
-        print "Extracting files within $download ...\n";
 
         my $fulldist = catfile $CPAN, $download;
-
+        unless (-f $fulldist) {
+            print qq{"$fulldist" not present - skipping ...\n};
+            next;
+        }
+        print "Extracting files within $download ...\n";
         (my $yaml = $fulldist) =~ s/$ext/.meta/;
         if (-f $yaml) {
             eval {$props->{$dist} = LoadFile($yaml);};

@@ -13,10 +13,10 @@ href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Rege
 syntaktische Korrektheit</a>
 Ihrer Anfrage.
 <p>
-Wenn Sie denken, da&azlig; dies ein Bug ist, 
+Wenn Sie denken, da&szlig; dies ein Bug ist, 
 k&ouml;nnen Sie helfen ihn aufzusp&uuml;ren, indem Sie 
 <A HREF="mailto:[% maintainer_email %]">
 [% maintainer %]</A> 
 eine eMail schicken, in welcher Sie erkl&auml;ren wonach Sie suchten, 
-als der Fehler auftrat.
-Danke!
+als der Fehler auftrat. Danke!
+

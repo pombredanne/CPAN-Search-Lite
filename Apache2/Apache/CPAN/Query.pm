@@ -64,6 +64,7 @@ our @APACHE_MODULE_COMMANDS = (
                                },
 );
 
+our $VERSION = 0.59;
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
 
@@ -72,11 +73,12 @@ sub new {
     my $lang = lang_wanted($r);
     my $req = Apache::Request->new($r);
     $cfg ||= Apache::Module->get_config(__PACKAGE__, 
-                                         $r->server,
-                                         $r->per_dir_config) || { };
+                                       $r->server,
+                                       $r->per_dir_config) || { };
 
     $dl ||= $cfg->{dl} || 'http://www.cpan.org';
     $max_results ||= $cfg->{max_results} || 200;
+    my $passwd = $cfg->{passwd} || '';
     my $lang_dir = catdir $cfg->{tt2}, $lang;
     my $tt2_rel_dir = (-d $lang_dir) ? $lang : '';
 
@@ -92,7 +94,7 @@ sub new {
                                 };
     $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
                                               user => $cfg->{user},
-                                              passwd => $cfg->{passwd},
+                                              passwd => $passwd,
                                               max_results => $max_results);
     $CPAN::Search::Lite::Query::lang = $lang;
     my $mode = $req->param('mode');
@@ -152,11 +154,15 @@ sub search : method {
     
     unless (ref($results) eq 'ARRAY') {
         my $name;
-        if ($mode and $mode_info->{$mode}->{name} and $name = $results->{$mode_info->{$mode}->{name}}) {
+        if ($mode and $mode_info->{$mode}->{name} 
+            and $name = $results->{$mode_info->{$mode}->{name}}) {
             if ($name =~ /^(\w)(\w)/) {
                 my ($a, $b) = (uc($1), uc($2));
                 $extra_info{letter} = $a;
                 $extra_info{cpan_letter} = "$a/$a$b";
+            }
+            if ($mode eq 'dist' and $name =~ /^([^-]+)-/) {
+                $extra_info{subletter} = $1;
             }
         }
     }
@@ -211,6 +217,9 @@ sub cpanid : method {
                 $extra_info{cpan_letter} = "$a/$a$b";
             }
             if ($mode eq 'dist' and $name =~ /^([^-]+)-/) {
+                $extra_info{subletter} = $1;
+            }
+            if ($mode eq 'module' and $name =~ /^([^:]+)::/) {
                 $extra_info{subletter} = $1;
             }
         }
@@ -771,7 +780,8 @@ the user to connect to the database as [required]
 
 =item C<CSL_passwd password>
 
-the password to use for this user [required]
+the password to use for this user [optional if no password
+is required for the user specified in C<CSL_user>.]
 
 =item C<CSL_tt2 /path/to/tt2>
 
@@ -825,7 +835,7 @@ module names and abstracts, and CPAN ids and full names.
 
 =item * cpanid
 
- <LocationMatch "/~[A-Za-z-]+">
+ <LocationMatch "/~[A-Za-z0-9-]+">
    SetHandler perl-script
    PerlResponseHandler Apache::CPAN::Query->cpanid
  </LocationMatch>

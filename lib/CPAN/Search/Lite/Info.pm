@@ -82,8 +82,8 @@ sub dists_and_mods {
                     $dists->{$dist}->{description} = $desc;
                 }
             }
-            if (my $chapterid = $info->{chapterid}) {
-                $mods->{$module}->{chapterid} = $chapterid + 0;
+            if (my $chapterid = $info->{chapterid} + 0) {
+                $mods->{$module}->{chapterid} = $chapterid;
                 (my $sub_chapter = $module) =~ s!^([^:]+).*!$1!;
                 $dists->{$dist}->{chapterid}->{$chapterid}->{$sub_chapter}++;
             } 
@@ -200,7 +200,8 @@ sub mailrc {
             $fullname = '';
             $email = lc($userid) . '@cpan.org';
         }
-       $auths->{$userid} = {fullname => $fullname, email => $email};
+       $auths->{$userid} = {fullname => trim($fullname),
+                            email => trim($email)};
     }
     $self->{auths} = $auths;
 }
@@ -217,6 +218,15 @@ sub zcat {
         if $gzerrno != Z_STREAM_END;
     $gz->gzclose();
     return $lines;
+}
+
+sub trim {
+    my $string = shift;
+    return '' unless $string;
+    $string =~ s/^\s+//;
+    $string =~ s/\s+$//;
+    $string =~ s/\s+/ /g;
+    return $string;
 }
 
 1;
@@ -303,8 +313,6 @@ hash reference with keys of
 =item C<dist> - the distribution name containing the module
 
 =item C<version> - the version
-
-=item C<cpanid> - the CPAN author id
 
 =item C<description> - a description, if available
 

@@ -28,7 +28,7 @@ sub new {
   my ($class, %args) = @_;
   
   foreach (qw(db user passwd) ) {
-    die "Must supply a '$_' argument" unless $args{$_};
+    die "Must supply a '$_' argument" unless defined $args{$_};
   }
     
   $setup = $args{setup};

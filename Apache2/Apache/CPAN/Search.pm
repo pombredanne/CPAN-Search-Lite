@@ -20,6 +20,49 @@ use Apache::URI;
 use Apache::Module ();
 use Apache::Log ();
 
+our @APACHE_MODULE_COMMANDS = (
+                               {name      => 'CSL_db',
+                                errmsg    => 'database name',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_user',
+                                errmsg    => 'user to log in as',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_passwd',
+                                errmsg    => 'password for user',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_tt2',
+                                errmsg    => 'location of tt2 pages',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_dl',
+                                errmsg    => 'default download location',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_max_results',
+                                errmsg    => 'maximum number of results',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_html_root',
+                                errmsg    => 'root directory of html files',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+                               {name      => 'CSL_html_uri',
+                                errmsg    => 'root uri of html files',
+                                args_how  => Apache::TAKE1,
+                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                               },
+);
+
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
 
@@ -27,11 +70,12 @@ sub new {
     my ($class, $r) = @_;
     my $lang = lang_wanted($r);
     my $req = Apache::Request->new($r);
-    $cfg ||= Apache::Module->get_config(__PACKAGE__, 
-                                         $r->server,
-                                         $r->per_dir_config) || { };
-    $dl ||= $cfg->{dl} || 'http://www.cpan.org';
+    $cfg = Apache::Module->get_config(__PACKAGE__,
+                                      $r->server,
+                                      $r->per_dir_config) || { };
+    $dl = $cfg->{dl} || 'http://www.cpan.org';
     $max_results ||= $cfg->{max_results} || 200;
+    my $passwd = $cfg->{passwd} || '';
 
     my $lang_dir = catdir $cfg->{tt2}, $lang;
     my $tt2_dir = (-d $lang_dir) ? $lang_dir : $cfg->{tt2};
@@ -49,7 +93,7 @@ sub new {
 
     $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
                                               user => $cfg->{user},
-                                              passwd => $cfg->{passwd},
+                                              passwd => $passwd,
                                               max_results => $max_results);
 );
     $CPAN::Search::Lite::Query::lang = $lang;
@@ -310,6 +354,7 @@ sub CSL_user {
 
 sub CSL_passwd {
   my ($cfg, $parms, $passwd) = @_;
+  $passwd = '' unless $passwd =~ /\w/;
   $cfg->{ passwd } = $passwd;
 }
 
@@ -326,6 +371,16 @@ sub CSL_dl {
 sub CSL_max_results {
   my ($cfg, $parms, $max_results) = @_;
   $cfg->{ max_results } = $max_results;
+}
+
+sub CSL_html_root {
+  my ($cfg, $parms, $html_root) = @_;
+  $cfg->{ html_root } = $html_root;
+}
+
+sub CSL_html_uri {
+  my ($cfg, $parms, $html_uri) = @_;
+  $cfg->{ html_uri } = $html_uri;
 }
 
 1;
@@ -362,7 +417,8 @@ the user to connect to the database as [required]
 
 =item C<CSL_passwd password>
 
-the password to use for this user [required]
+the password to use for this user [optional if no password
+is required for the user specified in C<CSL_user>.]
 
 =item C<CSL_tt2 /path/to/tt2>
 

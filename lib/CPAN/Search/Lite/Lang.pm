@@ -3,8 +3,10 @@ use strict;
 use warnings;
 
 use base qw(Exporter);
-our (@EXPORT_OK, %na, %bytes, $chaps_desc, %langs, $pages, $dslip, $months);
-@EXPORT_OK = qw(%na $chaps_desc %bytes %langs $pages $dslip $months);
+our (@EXPORT_OK, %na, %bytes, $chaps_desc, %langs, $pages,
+     $dslip, $months);
+@EXPORT_OK = qw(%na $chaps_desc %bytes %langs $pages
+                $dslip $months);
 
 %na = (
        de => 'nicht spezifiziert',

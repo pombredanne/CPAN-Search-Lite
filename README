@@ -4,7 +4,11 @@ the full set of features (eg, multiple package versions) available
 on search.cpan.org. If a local CPAN mirror is available, 
 the pod (and converted html) documentation will be extracted
 from the packages, as well as possible README/INSTALL/Changes/META.yml
-files.
+files. See http://mirrors.cpan.org/ for details on how you can
+mirror CPAN, or alternatively, the CPAN-Mini distribution
+under http://www.cpan.org/authors/id/R/RJ/RJBS/ for a way
+to set up a minimal CPAN mirror consisting of only the latest
+distributions.
 
 As well as various Perl modules which are checked for when
 installing, MySQL is required; version 4 is needed for some

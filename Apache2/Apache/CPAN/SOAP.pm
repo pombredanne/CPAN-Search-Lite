@@ -9,22 +9,22 @@ use Apache::Module ();
 use Apache::RequestRec ();
 
 our @APACHE_MODULE_COMMANDS = (
-                               {name      => 'CSL_db',
+                               {name      => 'CSL_soap_db',
                                 errmsg    => 'database name',
                                 args_how  => Apache::TAKE1,
                                 req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
                                },
-                               {name      => 'CSL_user',
+                               {name      => 'CSL_soap_user',
                                 errmsg    => 'user to log in as',
                                 args_how  => Apache::TAKE1,
                                 req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
                                },
-                               {name      => 'CSL_passwd',
+                               {name      => 'CSL_soap_passwd',
                                 errmsg    => 'password for user',
                                 args_how  => Apache::TAKE1,
                                 req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
                                },
-                               {name      => 'CSL_max_results',
+                               {name      => 'CSL_soap_max_results',
                                 errmsg    => 'maximum number of results',
                                 args_how  => Apache::TAKE1,
                                 req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
@@ -38,14 +38,15 @@ sub query  {
   return unless ($args{mode} and $args{name});
   $r ||= Apache->request;
 
-  $cfg ||= Apache::Module->get_config(__PACKAGE__, 
+  $cfg ||= Apache::Module->get_config(__PACKAGE__,
                                      $r->server,
                                      $r->per_dir_config) || { };
   
   $max_results ||= $cfg->{max_results} || 200;
+  my $passwd = $cfg->{passwd} || '';
   $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
                                             user => $cfg->{user},
-                                            passwd => $cfg->{passwd},
+                                            passwd => $passwd,
                                             max_results => $max_results);
   
   $query->query(mode => $args{mode}, name => $args{name},
@@ -58,22 +59,23 @@ sub query  {
   return $results;
 }
 
-sub CSL_db {
+sub CSL_soap_db {
   my ($cfg, $parms, $db) = @_;
   $cfg->{ db } = $db;
 }
 
-sub CSL_user {
+sub CSL_soap_user {
   my ($cfg, $parms, $user) = @_;
+  $user = '' unless $user =~ /\w/;
   $cfg->{ user } = $user;
 }
 
-sub CSL_passwd {
+sub CSL_soap_passwd {
   my ($cfg, $parms, $passwd) = @_;
   $cfg->{ passwd } = $passwd;
 }
 
-sub CSL_max_results {
+sub CSL_soap_max_results {
   my ($cfg, $parms, $max_results) = @_;
   $cfg->{ max_results } = $max_results;
 }
@@ -94,9 +96,9 @@ The necessary Apache2 directives are
 
  PerlLoadModule Apache::CPAN::SOAP
 
- CSL_db database_name
- CSL_user user_name
- CSL_passwd password_for_above_user
+ CSL_soap_db database_name
+ CSL_soap_user user_name
+ CSL_soap_passwd password_for_above_user
 
  <Location /soap>
    SetHandler perl-script
@@ -106,9 +108,11 @@ The necessary Apache2 directives are
 
 where the C<Apache2::SOAP> module, included in this distribution,
 is a mod_perl 2 aware version of C<Apache::SOAP> of the
-C<SOAP::Lite> distribution. See the C<csl_soap> script in
-this distribution for an example of it's use.
- 
+C<SOAP::Lite> distribution. See the C<CSL_soap> script in
+this distribution for an example of it's use. C<CSL_soap_passwd>
+is optional if no password is required for the user
+specified in C<CSL_soap_user>.
+
 =head1 SEE ALSO
 
 L<Apache::CPAN::Search>, L<Apache::CPAN::Query>,

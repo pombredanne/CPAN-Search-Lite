@@ -12,7 +12,7 @@
 <img src="[% cpanimg %]" alt="CPAN" /></a></td>
 <td align=center>
 [% buttons = [
- {text => "$pages.buttons.Home", link => "$home/chapter"}
+ {text => "$pages.buttons.Home", link => "$main"}
  {text => "$pages.buttons.Documentation", link => 'http://theoryx5.uwinnipeg.ca/cgi-bin/docperl'}
  {text => "$pages.buttons.Recent", link => "$home/recent"}
  {text => "$pages.buttons.Mirror", link => "$home/mirror"}

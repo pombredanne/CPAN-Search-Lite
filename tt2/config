@@ -23,7 +23,7 @@
    dslip = "$home/htdocs/dslip.html"
    ppm = "$home/htdocs/ppm.html"
    extra_files = { readme => {name => 'README', link => 'README.html'},
-                   meta => {name => 'META', link => 'META.yaml'},
+                   meta => {name => 'META', link => 'META.html'},
                    changes => {name => 'Changes', link => 'Changes.html'},
                    install => {name => 'INSTALL', link => 'INSTALL.html'},
                 }

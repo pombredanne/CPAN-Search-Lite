@@ -1,12 +1,12 @@
 [% PROCESS mirror_list %]
 <div class=path><b>CPAN Mirrors</b></div>
-Mit dieser Form k&ouml;nnen Sie einstellen, 
+Mit dieser Formular k&ouml;nnen Sie einstellen, 
 von welchem Mirror Sie Ihre Downloads beziehen wollen. 
 Dieses Feature ben&ouml;tigt Cookies. 
 Ihre aktuelle Einstellung ist
 [% host = mirror || download %]
 <a href="[% host %]">
-[% host %]</a>. Die Deafaultlink 
+[% host %]</a>. Der Deafaultlink 
 <a href="[% download %]">[% download %]</a>
 versucht automatisch, Sie auf einen &ouml;rtlich nahegelegenen 
 CPAN Mirror weiterzuleiten. <p />
@@ -28,7 +28,7 @@ CPAN Mirror weiterzuleiten. <p />
 [% END -%]
 [% END -%]
 </select><p />
-<b>or</b><p /><b>2. Privater Mirror</b> (z.B. http://my.site/CPAN/)<br />
+<b>oder</b><p /><b>2. Privater Mirror</b> (z.B. http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
 <br /><p />
 <input type=submit value=Submit>

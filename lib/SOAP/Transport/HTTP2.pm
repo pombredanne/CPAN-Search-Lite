@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: HTTP2.pm,v 1.2 2004/04/09 04:33:42 rkobes Exp $
+# $Id: HTTP2.pm,v 1.3 2004/09/19 19:24:53 rkobes Exp $
 #
 # ======================================================================
 
@@ -64,6 +64,8 @@ BEGIN {
   if (MP2) {
     require Apache::RequestRec;
     require Apache::RequestIO;
+    require APR::Table;
+    require Apache::RequestUtil;
     require Apache::Const;
     Apache::Const->import(-compile => 'OK');
   }
