@@ -1,0 +1,316 @@
+<html><meta http-equiv="content-type" content="text/html; charset=UTF-8"><base href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html">
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- removed -->
+  <meta http-equiv="Content-Type" content="text/html ; CHARSET=UTF-8"><head>
+  <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
+  <title>FAQ De Recherche de CPAN</title>
+  </head>
+
+  <body>
+<br><div class=t5> Questions Fr&eacute;quemment Pos&eacute;es</div>
+<ol>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#01">Que cet emplacement court-il dessus ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#01"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02">Pourquoi le "module est-il X" manquant ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03">Pourquoi le "module X" manquant, pourtant il appara&icirc;t 
+est-il sur search.cpan.org ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04">Pourquoi la documentation est-elle pour le "module X" 
+manquant ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05">Pourquoi est-ce que certaines, ou toutes les, choses 
+n&eacute;cessaires de paquet sont absentes ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06">Quelle est la syntaxe pour des questions ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07">Comment est-ce que j'emploie les respositories de page par
+minute qui apparaissent ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08">Y a-t-il de autres moteurs de recherche pour CPAN ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09">Quelles conventions sont employ&eacute;es qui peuvent &ecirc;tre 
+employ&eacute;es pour des liens externes ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10">J'ai trouv&eacute; un probl&egrave;me. Qui est-ce que j'entre
+en contact avec ?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11">Le code source pour le fonctionnement est-il cet 
+emplacement disponible ?</a>
+</li>
+</ol>
+<hr>
+<dl class=faq>
+<dt>
+<a class="t5" name="01"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11"></a><a class="t5" name="01">Que cet emplacement court-il dessus ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="01"></a>La machine de base est <a href="http://www.linux.org/"></a>une bo&icirc;te</a> <a href="http://www.linux.org/">de linux</a>. Le logiciel utilis&eacute; inclut <a href="http://www.mysql.com/">le mysql</a>, 
+<a href="http://www.apache.org/">l'Apache</a> et
+<a href="http://perl.apache.org/">le 
+mod_perl</a>, 
+<a href="http://www.template-toolkit.org/">le 
+Calibre-template-Toolkit</a>, et, naturellement, <a href="http://www.perl.com/">le Perl</a>. Le multiplexeur utilis&eacute;
+les miroirs voisins pour r&eacute;orienter t&eacute;l&eacute;chargements (si tout va 
+bien) CPAN est bas&eacute; sur 
+<a href="http://www.maxmind.com/">GeoIP</a>. 
+Le raccordement de r&eacute;seau est fourni par <a href="http://www.uwinnipeg.ca/">
+l'universit&eacute; de Winnipeg</a>.
+</p></dd>
+<dt>
+<a class="t5" name="02"></a><a class="t5" name="02">Pourquoi le "module est-il X" manquant ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="02"></a>Supposant qu'il a &eacute;t&eacute; class&eacute; avec succ&egrave;s sur
+<a href="http://www.cpan.org/">CPAN</a>, et que le temps suffisant s'est 
+&eacute;coul&eacute; de sorte que le miroir local l'ait pris, ceci peut &ecirc;tre d&ucirc; 
+&agrave; la distribution suivant une structure non conventionnelle. En
+particulier, on le suppose ici que la distribution d&eacute;balle dans un 
+sous-r&eacute;pertoire d&eacute;riv&eacute; du nom de la distribution, et que le nom de 
+distribution et une corde valide de version sont extractibles &agrave; 
+l'aide du module <a href="http://cpan.uwinnipeg.ca/%7egbarr/CPAN-DistnameInfo">de CPAN-DistnameInfo
+<a href="http://cpan.uwinnipeg.ca/%7egbarr/CPAN-DistnameInfo">
+</a></a>de 
+Graham</a> Barr.
+</p></dd>
+<dt>
+<a class="t5" name="03"></a><a class="t5" name="03">Pourquoi le "module X" manquant, pourtant il appara&icirc;t 
+est-il sur search.cpan.org ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="03"></a>L'indexation utilis&eacute;e est bas&eacute;e sur les index de CPAN, 
+qui est plus restrictive que quel <a href="http://search.cpan.org/">
+search.cpan.org</a> emploie. Ainsi, si un module n'appara&icirc;t pas 
+ici, les chances sont lui &eacute;galement seront absentes des outils 
+comme <code>CPAN/CPANPLUS</code>. Ceci peut &ecirc;tre d&ucirc; &agrave; un certain nombre de 
+raisons - ce peut &ecirc;tre une version de d&eacute;veloppement (indiqu&eacute;e en 
+tant que tels avec un soulignage dans le nombre de version de la 
+distribution), ou il ne peut &ecirc;tre enregistr&eacute; avec 
+<a href="http://pause.perl.org/">la PAUSE</a>, ou &ecirc;tre peut-&ecirc;tre 
+enregistr&eacute; mais sous une identification diff&eacute;rente de CPAN. 
+Notez &eacute;galement que seulement les versions les plus r&eacute;centes 
+des distributions sont maintenues dans la base de donn&eacute;es, qui exclut
+ainsi des modules existant seulement dans des versions plus anciennes 
+des distributions d'appara&icirc;tre.
+</p></dd>
+<dt>
+<a class="t5" name="04"></a><a class="t5" name="04">Pourquoi la documentation est-elle pour le "module X" 
+manquant ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="04"></a>Ceci peut &ecirc;tre d&ucirc; aux probl&egrave;mes extrayant la cosse 
+et/ou la convertissant en HTML. Une autre possibilit&eacute; est 
+qu'elle ne se conforme pas &agrave; la convention suppos&eacute;e pour <code>NAME</code>
+la section de la cosse que le nom du module est indiqu&eacute;.
+En conclusion, il se peut qu'il soit pr&eacute;sent, mais pas dans un 
+endroit standard - vous pouvez v&eacute;rifier, par exemple,
+<a href="http://cpan.uwinnipeg.ca/htdocs/libnet/">
+http://cpan.uwinnipeg.ca/htdocs/libnet/</a>
+pour une liste de tout documente associ&eacute; avec une 
+distribution donn&eacute;e.
+</p></dd>
+<dt>
+<a class="t5" name="05"></a><a class="t5" name="05">Pourquoi est-ce que certaines, ou toutes les, choses 
+n&eacute;cessaires de paquet sont absentes ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="05"></a>L'information pour les choses n&eacute;cessaires est extraite &agrave;
+partir d'un dossier
+<code>META.yml</code> dans une distribution. Non 
+toutes les distributions ont ce dossier, car il est produit en faisant
+une distribution seulement avec la version relativement r&eacute;cente de 
+l'un ou l'autre <code>ExtUtils::MakeMaker</code> ou <code>Module::Build</code>.
+</p></dd>
+<dt>
+<a class="t5" name="06"></a><a class="t5" name="06">Quelle est la syntaxe pour des questions ?</a>
+</dt>
+<dd>
+<ul>
+<li><a class="t5" name="06"></a>Une question de base comme pour <code>foo bar</code> la recherche 
+de volont&eacute;, selon le type de recherche indiqu&eacute;, par des noms et des 
+abr&eacute;g&eacute;s sur de module, des noms et des abr&eacute;g&eacute;s sur de 
+distribution, ou des identifications de CPAN et des noms et pr&eacute;noms, 
+et des r&eacute;sultats de retour assortissant <i>toutes 
+les</i> limites de question indiqu&eacute;es. Dans la 
+recherche par des r&eacute;sum&eacute;s, seulement la recherche nomme plus 
+longtemps que deux lettres seront employ&eacute;es.
+</li><li>
+Si vous souhaitez exclure une limite de recherche des 
+r&eacute;sultats, ajoutez cette limite avec un signe moindre (par 
+exemple <code>foo -bar</code>).
+</li><li>
+Des recherches peuvent &eacute;galement &ecirc;tre faites en 
+utilisant
+<a
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+des expressions r&eacute;guli&egrave;res</a> - ceux-ci sont identifi&eacute;s par l'aspect d'un ou plusieurs 
+des caract&egrave;res <code>^, $, *, +, ?, |</code>
+dans la limite de question.
+</li></ul>
+</dd>
+<dt>
+<a class="t5" name="07"></a><a class="t5" name="07">Comment est-ce que j'emploie les respositories de Win32 
+page par minute ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="07"></a>Consultez la documentation qui vient avec 
+<a href="http://www.activestate.com/">ActivePerl</a>
+pour des notices d'emploi 
+g&eacute;n&eacute;rales la page par minute. Les paquets de page par minute 
+qui apparaissent ici peuvent &ecirc;tre install&eacute;s avec l'utilit&eacute; de page 
+par minute. Pour les paquets d'ActivePerl, vous devriez juste 
+pouvoir installer le paquet comme <code>install Package-Name</code> de dans la coquille de 
+page par minute ; pour les autres paquets, vous pouvez devoir 
+ajouter l'endroit indiqu&eacute; &agrave; votre liste de d&eacute;p&ocirc;ts :
+</p>
+<ul>
+<li><b></b><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.6 de 
+crazyinsomniac</i></li>
+<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.8 de 
+crazyinsomniac</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.6 
+d'uwinnipeg</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.8 
+d'uwinnipeg</i></li>
+</ul>
+<p>
+Assurez-vous que vous utilisez un d&eacute;p&ocirc;t 
+appropri&eacute; pour votre version de Perl (5.6 d&eacute;p&ocirc;ts pour ActivePerl 
+construit 6xx, et 5.8 d&eacute;p&ocirc;ts pour ActivePerl construit 8xx). 
+Notez en outre que le nom du paquet qui appara&icirc;t ici, bas&eacute; sur
+le nom de distribution de CPAN, est celui &agrave; employer en installant un
+paquet ; ceci souvent, mais pas toujours, correspond au nom du 
+module principal dans le paquet.
+</p><p>
+Si vous maintenez un d&eacute;p&ocirc;t de page par minute et le 
+souhaitez inclus dans la base de donn&eacute;es ici, actuellement <i></i>un dossier</i> r&eacute;capitulatif <i>de 
+summary.ppm </i>des paquets disponibles de page par minute sur le 
+d&eacute;p&ocirc;t est exig&eacute;. Comment produire de ceci est d&eacute;crit dans un
+manuscrit disponible dans 
+<i></i>la distribution</i> <i>de page par minute </i>sur
+<a href="http://www.cpan.org/authors/id/M/MU/MURRAY/">CPAN</a>. Apr&egrave;s avoir produit de 
+ceci, entrez en contact avec svp
+<a href="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</a>
+avec des d&eacute;tails de votre d&eacute;p&ocirc;t.
+</p></dd>
+<dt>
+<a class="t5" name="08"></a><a class="t5" name="08">Y a-t-il de autres moteurs de recherche pour CPAN ?</a>
+</dt>
+<dd>
+<a class="t5" name="08"></a>Oui.
+<ul>
+<li><a href="http://search.cpan.org/"></a><a href="http://search.cpan.org/">search.cpan.org</a>.</li>
+<li><a href="http://www.perldoc.com/"></a><a href="http://www.perldoc.com/">www.perldoc.com</a>.</li>
+<li><a href="http://wait.cpan.org/"></a><a href="http://wait.cpan.org/">wait.cpan.org</a>.</li>
+</ul>
+</dd>
+<dt>
+<a class="t5" name="09"></a><a class="t5" name="09">Quelles conventions sont employ&eacute;es qui peuvent &ecirc;tre 
+employ&eacute;es pour des liens externes ?</a>
+</dt>
+<dd>
+<ul>
+<li><a class="t5" name="09"></a>Un lien tel que <a href="http://cpan.uwinnipeg.ca/%7egbarr">
+http://cpan.uwinnipeg.ca/~gbarr</a> &eacute;voquera l'information sur l'auteur de CPAN avec 
+l'identification <code>GBARR</code>.
+</li><li>Pour l'information sur une distribution ou un module 
+particuli&egrave;re, employez un lien tel que
+<a href="http://cpan.uwinnipeg.ca/dist/libnet">
+http://cpan.uwinnipeg.ca/dist/libnet</a> (pour des distributions) ou <a href="http://cpan.uwinnipeg.ca/module/Net::FTP">
+http://cpan.uwinnipeg.ca/module/Net::FTP</a> (pour des modules). Pour des distributions, <a href="http://cpan.uwinnipeg.ca/%7egbarr/libnet">
+http://cpan.uwinnipeg.ca/~gbarr/libnet</a> peut &eacute;galement &ecirc;tre employ&eacute;, si vous connaissez l'auteur
+de CPAN.
+</li><li>
+Pour les listes alphab&eacute;tiques des distributions ou des 
+modules, employez
+<a href="http://cpan.uwinnipeg.ca/dist/A/">
+http://cpan.uwinnipeg.ca/dist/A/</a>
+ou <a href="http://cpan.uwinnipeg.ca/module/A/">
+http://cpan.uwinnipeg.ca/module/A/</a>
+pour tous les distributions ou modules commen&ccedil;ant par une 
+certaine lettre. Employez
+<a href="http://cpan.uwinnipeg.ca/dist/Apache/">
+http://cpan.uwinnipeg.ca/dist/Apache/</a>
+ou <a href="http://cpan.uwinnipeg.ca/module/Apache/">
+http://cpan.uwinnipeg.ca/module/Apache/</a>
+pour &eacute;num&eacute;rer, respectivement, distributions 
+s'assortissant <code>Apache-*</code>
+ou l'assortiment de 
+modules <code>Apache::*</code>. Notez l'estafilade vers l'avant de 
+remorquage dans ces liens.
+</li><li>Pour lier &agrave; une liste de cat&eacute;gorie, on peut employer
+<a href="http://cpan.uwinnipeg.ca/chapter">
+http://cpan.uwinnipeg.ca/chapter</a> pour les titres principaux de chapitre, 
+<a
+href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI">
+http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI</a>
+pour un chapitre sp&eacute;cifique, et 
+<a
+href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI/Apache">
+http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI/Apache</a>
+pour un subchapter.
+</li><li>
+Des liens aux documents pour les modules particuliers 
+peuvent &ecirc;tre faits comme
+<a href="http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html">
+http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a>
+pour trouver la documentation pour <code>Net::FTP</code> dans
+<code>libnet</code> la distribution. 
+Alternativement, on peut employer <a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
+http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>. (ceci fonctionne &eacute;galement pour la documentation 
+de Perl de noyau - par exemple,
+<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
+http://cpan.uwinnipeg.ca/perldoc/perlfaq</a>
+&eacute;voquera <i></i>la documentation</i> <i>de perlfaq</i>). Notez que ces liens de 
+documentation peuvent ne pas fonctionner pour tous les modules, pour 
+une vari&eacute;t&eacute; de raisons, de faire la plupart du temps avec les 
+conventions assum&eacute;es dans les index de CPAN et la forme de la 
+documentation de cosse trouv&eacute;e dans la distribution.
+</li></ul>
+</dd>
+<dt>
+<a class="t5" name="10"></a><a class="t5" name="10">J'ai trouv&eacute; un probl&egrave;me. Qui est-ce que j'entre
+en contact avec ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="10"></a>Svp email 
+<a href="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</a>
+si vous rencontrez des probl&egrave;mes, y compris la 
+documentation cass&eacute;e lie et erreurs dans la
+traduction. Veuillez inclure les d&eacute;tails (et les
+liens) de ce que vous faisiez quand le probl&egrave;me s'est produit.
+<dt>
+<a class="t5" name="11"></a><a class="t5" name="11">Le code source pour le fonctionnement est-il cet 
+emplacement disponible ?</a>
+</dt>
+<dd><p>
+<a class="t5" name="11"></a>Oui. Voyez <i></i>le projet</i> <i>de CPAN-Search-Lite </i>sur
+<a href="http://sourceforge.net/projects/cpan-search/">
+SourceForge</a>. Une liste 
+d'exp&eacute;dition est disponible l&agrave; pour poser des questions sur &eacute;tablir
+des choses, discutant des bogues, et pour proposer des 
+perfectionnements et des dispositifs. Notez que ce projet n'est 
+pas pr&eacute;vu "concurrencent" (stup&eacute;fier)
+<a href="http://search.cpan.org/">search.cpan.org</a>, qui contient un 
+certain nombre de dispositifs non actuels ici (les d&eacute;gagements 
+pr&eacute;c&eacute;dents des distributions, <code>grep</code> et <code>diff</code>
+les 
+possibilit&eacute;s, etc.). Une direction que ce code particulier peut
+prendre est vers des services autres que l'encha&icirc;nement standard ceux
+(par exemple, outils savon-bas&eacute;s).
+</p></dd>
+</dl>
+<hr />
+</body>
+</html>

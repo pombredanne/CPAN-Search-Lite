@@ -46,3 +46,22 @@ In the htdocs/ directory there are some files: faq.html, for some
 faqs, dslip.html, for some information on the dslip entry in the
 information for packages, style.css, a css style file, and ppm.html,
 for some information on using ppm on Win32.
+
+Support is available for different languages (based on the
+preference set in the browser). Translations of some terms
+occurs within CPAN::Search::Lite::Lang, while the remainder
+occurs within the tt2 pages. The structure of these pages is
+  tt2/config
+  tt2/header
+  tt2/footer
+  tt2/mirror_list
+which are files common to all languages (translation occurs
+via data structures passed in through CPAN::Search::Lite::Lang),
+while the langage specific pages are under
+  tt2/fr/mirror
+  ...
+  tt2/de/mirror
+  ...
+and so on. The default language used is "en" (English), if
+the user's preference isn't available.
+

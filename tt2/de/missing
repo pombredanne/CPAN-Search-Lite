@@ -1,0 +1,9 @@
+[% IF query %]
+Traurig - keine Resultate f&uuml;r
+<b>&quot;[% query %]&quot;</b> 
+wurden von der Art <b>[% mode %]</b> gefunden.
+Versuchen Sie bitte eine andere Suchbezeichnung. 
+[% ELSE %]
+Verstehen, traurig - ich k&ouml;nnte nicht was um gebeten wurde. 
+Bitte Versuch wieder.
+[% END -%]

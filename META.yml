@@ -1,8 +1,8 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         CPAN-Search-Lite
-version:      0.47
-version_from: lib/CPAN/Search/Lite/Index.pm
+version:      0.53
+version_from: lib/CPAN/Search/Lite.pm
 installdirs:  site
 requires:
     Archive::Tar:                  1.08
@@ -19,6 +19,7 @@ requires:
     Pod::Select:                   0
     SOAP::Lite:                    0
     Sort::Versions:                0
+    Text::English:                 0
     XML::Parser:                   2
     YAML:                          0
 

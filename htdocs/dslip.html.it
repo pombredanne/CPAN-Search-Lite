@@ -1,0 +1,89 @@
+<html><meta http-equiv="content-type" content="text/html; charset=UTF-8"><base href="http://cpan.uwinnipeg.ca/htdocs/faqs/dslip.html">
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- removed -->
+  <meta http-equiv="Content-Type" content="text/html ; CHARSET=UTF-8"><head>
+    <title>Le Informazioni di DSLIP</title>
+  <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
+  </head>
+  <body>
+La lista completa delle opzioni possibili di DSLIP 
+&egrave;:
+<dl>
+<dt><b></b><b>D - Fase Di Sviluppo (Nota: * NESSUN 
+SCALE CRONOLOGICHE IMPLICITE *)</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>i</td><td>&nbsp;-&nbsp;</td><td>Idea, elencata per guadagnare consenso o come 
+placeholder</td></tr>
+<tr valign=top><td>c</td><td>&nbsp;-&nbsp;</td><td>In costruzione ma l'pre-alfa (non ancora liberati)</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Prova dell'alfa</td></tr>
+
+<tr valign=top><td>b</td><td>&nbsp;-&nbsp;</td><td>Beta prova</td></tr>
+<tr valign=top><td>R</td><td>&nbsp;-&nbsp;</td><td>Liberato</td></tr>
+<tr valign=top><td>M.</td><td>&nbsp;-&nbsp;</td><td>Faccia maturare (nessuna definizione rigorosa)</td></tr>
+<tr valign=top><td>S</td><td>&nbsp;-&nbsp;</td><td>Campione, fornito con il Perl 5</td></tr>
+</table></dd>
+<dt><b>S - Livello Di Sostegno</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>m.</td><td>&nbsp;-&nbsp;</td><td>Sped-lista</td></tr>
+<tr valign=top><td>d</td><td>&nbsp;-&nbsp;</td><td>Sviluppatore</td></tr>
+<tr valign=top><td>u</td><td>&nbsp;-&nbsp;</td><td>Newsgroup di USENET comp.lang.perl.modules</td></tr>
+
+<tr valign=top><td>n</td><td>&nbsp;-&nbsp;</td><td>Nessuno conosciuti, prova comp.lang.perl.modules</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Abbandonato, il modulo &egrave; stato abbandonato dal relativo
+autore</td></tr>
+</table></dd>
+
+<dt><b>L - Lingua Usata</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>p</td><td>&nbsp;-&nbsp;</td><td>Perl-soltanto, nessun compilatore stato necessario, 
+dovrebbe essere independent della piattaforma</td></tr>
+<tr valign=top><td>c</td><td>&nbsp;-&nbsp;</td><td>La C ed il Perl, un compilatore di C saranno necessari</td></tr>
+<tr valign=top><td>h</td><td>&nbsp;-&nbsp;</td><td>L'ibrido, scritto in Perl con il codice facoltativo di 
+C, nessun compilatore ha avuto bisogno di</td></tr>
+<tr valign=top><td>+</td><td>&nbsp;-&nbsp;</td><td>C++ ed il Perl, un compilatore di C++ saranno necessari</td></tr>
+
+<tr valign=top><td>o</td><td>&nbsp;-&nbsp;</td><td>Perl e un'altra lingua tranne la C o C++</td></tr>
+</table></dd>
+
+<dt><b>I - Stile Dell'Interfaccia</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>f</td><td>&nbsp;-&nbsp;</td><td>funzioni normali, nessun riferimenti usati</td></tr>
+<tr valign=top><td>h</td><td>&nbsp;-&nbsp;</td><td>interfacce dell'ibrido, dell'oggetto e di funzione 
+disponibili</td></tr>
+
+<tr valign=top><td>n</td><td>&nbsp;-&nbsp;</td><td>nessun'interfaccia affatto (huh?)</td></tr>
+<tr valign=top><td>r</td><td>&nbsp;-&nbsp;</td><td>un certo uso di unblessed i riferimenti o i legami</td></tr>
+<tr valign=top><td>O</td><td>&nbsp;-&nbsp;</td><td>L'oggetto ha orientato usando i riferimenti benedetti 
+e/o l'eredit&agrave;</td></tr>
+</table></dd>
+<dt><b>P - Autorizzazione Pubblica</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>p</td><td>&nbsp;-&nbsp;</td><td>Standard-Perl: l'utente pu&ograve; scegliere fra GPL ed 
+artistico</td></tr>
+
+<tr valign=top><td>g</td><td>&nbsp;-&nbsp;</td><td>Gpl: Autorizzazione Del Grande Pubblico di Gnu</td></tr>
+<tr valign=top><td>l</td><td>&nbsp;-&nbsp;</td><td>LGPL: "GNU poca autorizzazione del grande 
+pubblico" (precedentemente conosciuta come "l'autorizzazione del 
+grande pubblico della biblioteca di GNU")</td></tr>
+<tr valign=top><td>b</td><td>&nbsp;-&nbsp;</td><td>BSD: L'Autorizzazione del BSD</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Autorizzazione artistica da solo</td></tr>
+<tr valign=top><td>o</td><td>&nbsp;-&nbsp;</td><td>altro (ma distribuzione permessa senza limitazioni)</td></tr>
+
+</table></dd>
+</dl>
+<p>
+<b>DINIEGO:</b> La condizione del campo
+pubblico dell'autorizzazione &egrave; l&agrave; per scopo informativo soltanto e 
+non costituisce un grippaggio legale affatto del genere. Per 
+ottenere le informazioni adeguate sui termini di autorizzazione di un 
+modulo e delle relative lime accompagnanti, riferiscasi prego alla 
+distribuzione dei moduli o mettasi in contatto con l'autore come 
+adatto. Informi prego
+
+	<a href="mailto:modules@perl.org">modules@perl.org</a>
+     se incontrate qualunque disadattamento fra il contenuto del
+campo pubblico dell'autorizzazione e che cosa la distribuzione 
+realmente dice a questo proposito.
+    <hr>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+[% home = 'http://localhost' %]
+[%
+   PROCESS splash/config;
+   search = "$home/search"
+   download = "$home/cpan"
+   doc = "$home/htdocs"
+   values = { module => 'Modules',
+              dist => 'Distributions',
+              author => 'Authors',
+           }
+   testers = 'http://testers.cpan.org/show/'
+   searchcpan = 'http://search.cpan.org/'
+   rt = 'http://rt.cpan.org/NoAuth/Bugs.html?Dist='
+   splash.images = 'http://theoryx5.uwinnipeg.ca/tt2/images/splash'
+   cpan = 'http://www.cpan.org'
+   backpan = 'http://backpan.cpan.org'
+   splash.style.default.col.fore = 'grey75'
+   splash.style.default.col.text = 'black'
+   splash.style.select.col.fore = 'sky'
+   splash.style.select.col.text = 'black'
+   splash.style.select.font.bold = 1
+   splash.style.select.font.size = '+1'
+   maintainer = 'Randy Kobes'
+   maintainer_email = 'randy@theoryx5.uwinnipeg.ca'
+   faq =  "$home/htdocs/faq.html"
+   dslip = "$home/htdocs/dslip.html"
+   extra_files = { readme => {name => 'README', link => 'README.html'},
+                   meta => {name => 'META', link => 'META.yaml'},
+                   changes => {name => 'Changes', link => 'Changes.html'},
+                   install => {name => 'INSTALL', link => 'INSTALL.html'},
+                }
+%]

@@ -6,10 +6,11 @@ use mod_perl 1.99_11;     # sanity check for a recent version
 use Apache::Const -compile => qw(OK REDIRECT SERVER_ERROR 
                                  TAKE1 RSRC_CONF ACCESS_CONF);
 use CPAN::Search::Lite::Query;
-use CPAN::Search::Lite::Util qw($mode_info $query_info 
+use CPAN::Search::Lite::Util qw($mode_info $query_info %modes
                                 %chaps_rev %chaps $tt2_pages);
+use CPAN::Search::Lite::Lang qw(%langs $chaps_desc $pages);
 use Template;
-use File::Spec::Functions qw(catfile);
+use File::Spec::Functions qw(catfile catdir);
 use Apache::Request;
 use Apache::Cookie;
 use Apache::RequestRec;
@@ -63,12 +64,12 @@ our @APACHE_MODULE_COMMANDS = (
                                },
 );
 
-my %modes = map {$_ => 1} keys %$mode_info;
-my $cookie_name = 'cpan_search_mirror';
+my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
 
 sub new {
     my ($class, $r) = @_;
+    my $lang = lang_wanted($r);
     my $req = Apache::Request->new($r);
     $cfg ||= Apache::Module->get_config(__PACKAGE__, 
                                          $r->server,
@@ -76,6 +77,8 @@ sub new {
 
     $dl ||= $cfg->{dl} || 'http://www.cpan.org';
     $max_results ||= $cfg->{max_results} || 200;
+    my $lang_dir = catdir $cfg->{tt2}, $lang;
+    my $tt2_rel_dir = (-d $lang_dir) ? $lang : '';
 
     $template ||= Template->new({
                                  INCLUDE_PATH => [$cfg->{tt2},
@@ -91,6 +94,7 @@ sub new {
                                               user => $cfg->{user},
                                               passwd => $cfg->{passwd},
                                               max_results => $max_results);
+    $CPAN::Search::Lite::Query::lang = $lang;
     my $mode = $req->param('mode');
     unless ($r->location eq '/mirror') {
         if ($r->protocol =~ /(\d\.\d)/ && $1 >= 1.1) {
@@ -119,8 +123,8 @@ sub new {
     $r->content_type('text/html');
 
     my $self = {mode => $mode, mirror => $mirror, req => $req,
-                html_root => $cfg->{html_root},
-               html_uri => $cfg->{html_uri}};
+                html_root => $cfg->{html_root}, lang => $lang,
+                html_uri => $cfg->{html_uri}, tt2_rel_dir => $tt2_rel_dir};
     bless $self, $class;
 }
 
@@ -157,6 +161,7 @@ sub search : method {
     }
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {results => $results,
@@ -164,8 +169,9 @@ sub search : method {
                 mode => $mode,
                 mirror => $self->{mirror},
                 %extra_info,
+                pages => $pages->{$self->{lang}},
                };
-    $template->process($page, $vars) or do {
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -212,12 +218,14 @@ sub cpanid : method {
                 mode => $mode,
                 mirror => $self->{mirror},
                 %extra_info,
-               };
+                pages => $pages->{$self->{lang}},
+                };
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($page, $vars) or do {
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -271,12 +279,14 @@ sub author : method {
                 mirror => $self->{mirror},
                 letter => $letter,
                 %extra_info,
-               };
+                pages => $pages->{$self->{lang}},
+                };
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($page, $vars) or do {
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -329,6 +339,7 @@ sub dist : method {
     }
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {results => $results,
@@ -336,8 +347,9 @@ sub dist : method {
                 mirror => $self->{mirror},
                 letter => $letter,
                 %extra_info,
-               };
-    $template->process($page, $vars) or do {
+                pages => $pages->{$self->{lang}},
+                };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -390,6 +402,7 @@ sub module : method {
     }
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {results => $results,
@@ -397,8 +410,9 @@ sub module : method {
                 mirror => $self->{mirror},
                 letter => $letter,
                 %extra_info,
-               };
-    $template->process($page, $vars)or do {
+                pages => $pages->{$self->{lang}},
+                };
+    $template->process($self->rel_page($page), $vars)or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -413,7 +427,7 @@ sub chapter : method {
     my $mode = 'chapter';
     my ($results, $page, %extra_info);
     if (not $path_info) {
-        $results = chap_results();
+        $results = $self->chap_results();
         $page = $results ? 'chapterid' : 'missing';
     }
     elsif ($path_info =~ m!^/([^/]+)/?(.*)!) {
@@ -422,6 +436,7 @@ sub chapter : method {
         $args{mode} = $mode;
         $args{id} = $chaps_rev{$chapter};
         $extra_info{chapter} = $chapter;
+        $extra_info{chapter_desc} = $chaps_desc->{$self->{lang}}->{$args{id}};
         if ($subchapter) {
             $args{subchapter} = $subchapter;
             $extra_info{subchapter} = $subchapter;
@@ -436,14 +451,16 @@ sub chapter : method {
     }
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {results => $results,
                 mode => $mode,
                 mirror => $self->{mirror},
                 %extra_info,
-               };
-    $template->process($page, $vars) or do {
+                pages => $pages->{$self->{lang}},
+                };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -468,14 +485,16 @@ sub mirror : method {
     my $page = 'mirror';
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {mode => $mode,
                 mirror => $self->{mirror},
                 path => $path,
                 %extra_info,
-               };
-    $template->process($page, $vars) or do {
+                pages => $pages->{$self->{lang}},
+                };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -495,14 +514,16 @@ sub recent : method {
     my $page = $results ? 'recent' : 'missing';
     if (my $error = $query->{error}) {
         $r->log->error($error);
+        $query->{error} = undef;
         $page = 'error';
     }
     my $vars = {results => $results,
                 mode => $mode,
                 mirror => $self->{mirror},
                 age => $age,
-               };
-    $template->process($page, $vars) or do {
+                pages => $pages->{$self->{lang}},
+                };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -517,7 +538,7 @@ sub perldoc : method {
   my $mode = 'module';
   my ($page, $request, $results);
   if (not $path_info) {
-    $results = chap_results();
+    $results = $self->chap_results();
     $page = $results ? 'chapterid' : 'missing';
   }
   else {
@@ -525,7 +546,7 @@ sub perldoc : method {
       $request = $1;
     }
     else {
-      $results = chap_results();
+      $results = $self->chap_results();
       $page = $results ? 'chapterid' : 'missing';        
     }
   }
@@ -533,8 +554,9 @@ sub perldoc : method {
   if ($page) {
     $vars = {results => $results,
              mirror => $self->{mirror},
-            };
-    $template->process($page, $vars) or do {
+             pages => $pages->{$self->{lang}},
+             };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -568,8 +590,9 @@ sub perldoc : method {
     $page = 'not_found';        
     $vars = {request => $request,
              mirror => $self->{mirror},
-            };
-    $template->process($page, $vars) or do {
+             pages => $pages->{$self->{lang}},
+             };
+    $template->process($self->rel_page($page), $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -583,11 +606,13 @@ sub perldoc : method {
 }
 
 sub chap_results {
+    my $self = shift;
     my $chapters;
     foreach my $key( sort {$a <=> $b} keys %chaps) {
         push @$chapters, {chapterid => $key, 
-                         chap_desc => $chaps{$key}
-                     };
+                          chap_link => $chaps{$key},
+                          chap_desc => $chaps_desc->{$self->{lang}}->{$key},
+                         };
     }
     return $chapters;
 }
@@ -611,6 +636,36 @@ sub trim {
     $string =~ s/\s+/ /g;
     $string =~ s/\"|\'|\\//g;
     return ($string =~ /\w/) ? $string : undef;
+}
+
+sub lang_wanted {
+  my $r = shift;
+  my $accept = $r->headers_in->{'Accept-Language'};
+  return 'en' unless $accept;
+  my %wanted;
+  foreach my $lang(split /,/, $accept) {
+    if ($lang !~ /;/) {
+      $lang =~ s{(\w+)-\w+}{$1};
+      $wanted{1} = lc $lang;
+    }
+    else {
+      my @q = split /;/, $lang, 2;
+      $q[1] =~ s{q=}{};
+      $q[1] = trim($q[1]);
+      $q[0] =~ s{(\w+)-\w+}{$1};
+      $wanted{$q[1]} = lc trim($q[0]);
+    }
+  }
+  for (reverse sort {$a <=> $b} keys %wanted) {
+    return $wanted{$_} if $langs{$wanted{$_}};
+  }
+  return 'en';
+}
+
+sub rel_page {
+  my ($self, $page) = @_;
+  return $self->{tt2_rel_dir} ? 
+    catfile($self->{tt2_rel_dir}, $page) : $page; 
 }
 
 sub CSL_db {
@@ -694,7 +749,15 @@ the password to use for this user [required]
 
 =item C<CSL_tt2 /path/to/tt2>
 
-the path to the tt2 pages [required]
+the path to the tt2 pages [required]. If a subdirectory
+C<lang> exists under C</path/to/tt2> (eg, C<en> or C<fr>), 
+where C<lang> is the first available language specified in the
+C<Accept-Language> header sent by the browser (if sent), then this
+subdirectory will be used for the path to the tt2 pages.
+See the C<%langs> hash in L<CPAN::Search::Lite::Util>
+for a list of available languages. If the language
+specified by the browser isn't available, C<en> (English)
+will be used.
 
 =item C<CSL_dl http://www.cpan.org>
 

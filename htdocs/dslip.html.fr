@@ -1,0 +1,88 @@
+<html><meta http-equiv="content-type" content="text/html; charset=UTF-8"><base href="http://cpan.uwinnipeg.ca/htdocs/faqs/dslip.html">
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- removed -->
+  <meta http-equiv="Content-Type" content="text/html ; CHARSET=UTF-8"><head>
+    <title>L'Information de DSLIP</title>
+  <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
+  </head>
+  <body>
+La pleine liste d'options possibles de DSLIP sont :
+<dl>
+<dt><b></b><b>D - &Eacute;tape De D&eacute;veloppement (Note : * 
+AUCUNS CALENDRIERS IMPLICITES *)</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>i</td><td>&nbsp;-&nbsp;</td><td>Id&eacute;e, &eacute;num&eacute;r&eacute;e pour gagner le consensus ou comme 
+placeholder</td></tr>
+<tr valign=top><td>c</td><td>&nbsp;-&nbsp;</td><td>En construction mais l'pr&eacute;-alpha (pas encore lib&eacute;r&eacute;s)</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Essai d'alpha</td></tr>
+
+<tr valign=top><td>b</td><td>&nbsp;-&nbsp;</td><td>B&ecirc;ta essai</td></tr>
+<tr valign=top><td>R</td><td>&nbsp;-&nbsp;</td><td>Lib&eacute;r&eacute;</td></tr>
+<tr valign=top><td>M</td><td>&nbsp;-&nbsp;</td><td>M&ucirc;rissez (aucune d&eacute;finition rigoureuse)</td></tr>
+<tr valign=top><td>S</td><td>&nbsp;-&nbsp;</td><td>Norme, fournie avec Perl 5</td></tr>
+</table></dd>
+<dt><b>S - Niveau De Soutien</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>m</td><td>&nbsp;-&nbsp;</td><td>Exp&eacute;dier-liste</td></tr>
+<tr valign=top><td>d</td><td>&nbsp;-&nbsp;</td><td>R&eacute;alisateur</td></tr>
+<tr valign=top><td>u</td><td>&nbsp;-&nbsp;</td><td>Groupe de discussion Usenet comp.lang.perl.modules</td></tr>
+
+<tr valign=top><td>n</td><td>&nbsp;-&nbsp;</td><td>Aucun connu, essai comp.lang.perl.modules</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Abandonn&eacute;, le module a &eacute;t&eacute; abandonn&eacute; par son auteur</td></tr>
+</table></dd>
+
+<dt><b>L - La Langue A employ&eacute;</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>p</td><td>&nbsp;-&nbsp;</td><td>Perl-seulement, aucun compilateur requis, devrait &ecirc;tre 
+ind&eacute;pendant de plateforme</td></tr>
+<tr valign=top><td>c</td><td>&nbsp;-&nbsp;</td><td>C et Perl, un compilateur de C seront n&eacute;cessaires</td></tr>
+<tr valign=top><td>h</td><td>&nbsp;-&nbsp;</td><td>L'hybride, &eacute;crit dans le Perl avec le code facultatif 
+de C, aucun compilateur a eu besoin</td></tr>
+<tr valign=top><td>+</td><td>&nbsp;-&nbsp;</td><td>C++ et Perl, un compilateur de C++ seront n&eacute;cessaires</td></tr>
+
+<tr valign=top><td>o</td><td>&nbsp;-&nbsp;</td><td>un Perl et une langue diff&eacute;rente autre que C ou C++</td></tr>
+</table></dd>
+
+<dt><b>I - Mod&egrave;le D'Interface</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>f</td><td>&nbsp;-&nbsp;</td><td>les fonctions plates, aucunes r&eacute;f&eacute;rences ont employ&eacute;</td></tr>
+<tr valign=top><td>h</td><td>&nbsp;-&nbsp;</td><td>interfaces d'hybride, d'objet et de fonction 
+disponibles</td></tr>
+
+<tr valign=top><td>n</td><td>&nbsp;-&nbsp;</td><td>aucune interface du tout (huh ?)</td></tr>
+<tr valign=top><td>r</td><td>&nbsp;-&nbsp;</td><td>une certaine utilisation de unblessed des r&eacute;f&eacute;rences 
+ou des cravates</td></tr>
+<tr valign=top><td>O</td><td>&nbsp;-&nbsp;</td><td>L'objet a orient&eacute; en utilisant des r&eacute;f&eacute;rences b&eacute;nies
+et/ou la transmission</td></tr>
+</table></dd>
+<dt><b>P - Permis Public</b></dt>
+<dd><p><table cellpadding=0 cellspacing=0>
+<tr valign=top><td>p</td><td>&nbsp;-&nbsp;</td><td>Standard-Perl : l'utilisateur peut choisir entre 
+le GPL et artistique</td></tr>
+
+<tr valign=top><td>g</td><td>&nbsp;-&nbsp;</td><td>GPL : Permis De Grand Public de Gnu</td></tr>
+<tr valign=top><td>l</td><td>&nbsp;-&nbsp;</td><td>LGPL : "GNU peu de permis de grand public" 
+(pr&eacute;c&eacute;demment connu sous le nom de "permis de grand public de 
+biblioth&egrave;que de GNU")</td></tr>
+<tr valign=top><td>b</td><td>&nbsp;-&nbsp;</td><td>Sch&eacute;ma : Le Permis de Sch&eacute;ma</td></tr>
+<tr valign=top><td>a</td><td>&nbsp;-&nbsp;</td><td>Seul permis artistique</td></tr>
+<tr valign=top><td>o</td><td>&nbsp;-&nbsp;</td><td>autre (mais distribution permise sans restrictions)</td></tr>
+
+</table></dd>
+</dl>
+<p>
+<b>D&Eacute;NI :</b> Le statut du champ 
+public de permis est l&agrave; pour le but informationnel seulement et ne 
+constitue pas une attache l&eacute;gale  de sorte. Pour obtenir des 
+informations appropri&eacute;es sur les limites d'autorisation d'un module 
+et de ses dossiers d'accompagnement, r&eacute;f&eacute;rez-vous svp &agrave; la 
+distribution des modules ou contactez l'auteur comme appropri&eacute;. 
+Veuillez informer
+
+	<a href="mailto:modules@perl.org">modules@perl.org</a>
+     si vous rencontrez n'importe quelle disparit&eacute; entre le 
+contenu du champ public de permis et ce que la distribution indique 
+r&eacute;ellement &agrave; son sujet.
+    <hr>
+  </body>
+</html>

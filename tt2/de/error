@@ -1,0 +1,21 @@
+[% IF query %]
+Traurig - es gab eine St&ouml;rung in Ihrer Frage f&uuml;r  
+<b>&quot;[% query %]&quot;</b>
+der Art <b>[% mode %]</b>.
+[% ELSE %]
+Traurig - eine St&ouml;rung war encoutered.
+[% END -%]
+Die spezifische St&ouml;rung ist notiert worden. 
+Wenn dieses auftrat, als eine regelm&auml;&szlig;ige 
+Ausdruck Suche durchgef&uuml;hrt wurde, k&ouml;nnen Sie die        
+<a 
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+erlaubte Syntax</a>
+&uuml;berpr&uuml;fen w&uuml;nschen.
+<p>
+Wenn Sie denken, ist dieses eine Wanze im Suchwerkzeug, 
+Sie kann helfen, in dieses unten aufsp&uuml;ren, indem es 
+<A HREF="mailto:[% maintainer_email %]">
+[% maintainer %]</A> 
+mit Details schickt von, nach was eine Anzeige Sie suchten, 
+als dieses geschah. Danke!

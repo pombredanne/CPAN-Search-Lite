@@ -1,0 +1,324 @@
+<html><meta http-equiv="content-type" content="text/html; charset=UTF-8"><base href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html">
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- removed -->
+  <meta http-equiv="Content-Type" content="text/html ; CHARSET=UTF-8"><head>
+  <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
+  <title>CPAN Suche-FAQ</title>
+  </head>
+
+  <body>
+<br><div class=t5> H&auml;ufig Gestellte Fragen</div>
+<ol>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#01">Was l&auml;&szlig;t dieser Aufstellungsort an laufen?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#01"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02">Warum ist "Modul vermissendes X"?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#02"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03">Warum ist "Modul X" vermissend, dennoch es erscheint auf 
+search.cpan.org?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#03"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04">Warum sind die Unterlagen f&uuml;r "Modul X" vermissend?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#04"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05">Warum fehlen einige oder alle, Paketvorbedingungen?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#05"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06">Was ist die Syntax f&uuml;r Fragen?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#06"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07">Wie verwende ich die PPMS respositories, die erscheinen?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#07"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08">Gibt es irgendwelche anderen Search Engines f&uuml;r CPAN?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#08"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09">Welche Versammlungen werden besch&auml;ftigt, die f&uuml;r externe
+Verbindungen verwendet werden k&ouml;nnen?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#09"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10">Ich fand ein Problem. Mit wem trete ich in 
+Verbindung?</a>
+</li>
+<li>
+<a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#10"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11">Ist das Quellenprogramm f&uuml;r Betrieb dieser vorhandene 
+Aufstellungsort?</a>
+</li>
+</ol>
+<hr>
+<dl class=faq>
+<dt>
+<a class="t5" name="01"></a><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html#11"></a><a class="t5" name="01">Was l&auml;&szlig;t dieser Aufstellungsort an laufen?</a>
+</dt>
+<dd><p>
+<a class="t5" name="01"></a>Die grundlegende Maschine ist ein <a href="http://www.linux.org/">linux</a> Kasten. Die benutzte 
+Software schlie&szlig;t <a href="http://www.mysql.com/">mysql</a>, 
+<a href="http://www.apache.org/">Apache</a> und
+<a href="http://perl.apache.org/">mod_perl</a>, 
+<a href="http://www.template-toolkit.org/">Schablone-Template-Toolkit</a>und 
+selbstverst&auml;ndlich <a href="http://www.perl.com/">Perl</a>ein. 
+Der Mehrfachkoppler verwendete, Downloads umzuadressieren, 
+(hoffnungsvoll), das nahe gelegene CPAN Spiegel auf <a href="http://www.maxmind.com/">GeoIP 
+<a href="http://www.maxmind.com/"></a></a>basiert</a>. Die Network 
+Connection wird von der <a href="http://www.uwinnipeg.ca/">Universit&auml;t <a href="http://www.uwinnipeg.ca/">
+</a>von 
+Winnipeg </a>zur Verf&uuml;gung gestellt</a>.
+</p></dd>
+<dt>
+<a class="t5" name="02"></a><a class="t5" name="02">Warum ist "Modul vermissendes X"?</a>
+</dt>
+<dd><p>
+<a class="t5" name="02"></a>Annehmend, da&szlig; es erfolgreich auf <a href="http://www.cpan.org/">CPAN 
+</a>registriert worden
+<a href="http://www.cpan.org/"></a>ist</a>und 
+da&szlig; gen&uuml;gende Zeit abgelaufen ist, damit der lokale Spiegel es 
+abgeholt hat, kann dieses an der Verteilung liegen, die einer 
+non-conventional Struktur folgt. Insbesondere wird es hier 
+angenommen, da&szlig; die Verteilung in ein Unterverzeichnis auspackt, das 
+vom Namen der Verteilung abgeleitet wird und da&szlig; der Verteilung Name 
+und eine g&uuml;ltige Version Zeichenkette mit Graham Barrs 
+<a href="http://cpan.uwinnipeg.ca/%7egbarr/CPAN-DistnameInfo">CPAN-DistnameInfo </a>Modul
+<a href="http://cpan.uwinnipeg.ca/%7egbarr/CPAN-DistnameInfo">
+</a>ausziehbar</a> sind.
+</p></dd>
+<dt>
+<a class="t5" name="03"></a><a class="t5" name="03">Warum ist "Modul X" vermissend, dennoch es erscheint auf
+search.cpan.org?</a>
+</dt>
+<dd><p>
+<a class="t5" name="03"></a>Die verwendete Index-Bewegung basiert auf den CPAN 
+Indizes, die einschr&auml;nkender als ist, welches <a href="http://search.cpan.org/">
+search.cpan.org</a> verwendet. So 
+wenn ein Modul nicht hier erscheint, sind Wahrscheinlichkeiten es auch
+fehlen von den Werkzeugen wie <code>CPAN/CPANPLUS</code>. Dieses kann an einer
+Anzahl von Gr&uuml;nden liegen - es kann eine Entwicklung Version sein 
+(angezeigt als solcher mit einem Unterstreichen in der Versionsnummer 
+der Verteilung), oder es kann m&ouml;glicherweise nicht mit 
+<a href="http://pause.perl.org/">PAUSE 
+<a href="http://pause.perl.org/"></a></a>,</a>oder 
+m&ouml;glicherweise registriert werden aber unter einer anderen CPAN 
+Kennzeichnung registriert werden. Merken Sie auch, da&szlig; nur die 
+neuesten Versionen von Verteilungen in der Datenbank gehalten werden, 
+die folglich die Module ausschlie&szlig;t, die nur in den &auml;lteren 
+Versionen von Verteilungen vom Erscheinen bestehen.
+</p></dd>
+<dt>
+<a class="t5" name="04"></a><a class="t5" name="04">Warum sind die Unterlagen f&uuml;r "Modul X" vermissend?</a>
+</dt>
+<dd><p>
+<a class="t5" name="04"></a>Dieses kann an den Problemen liegen, welche die H&uuml;lse 
+extrahieren und/oder sie in HTML umwandeln. Eine andere 
+M&ouml;glichkeit ist, da&szlig; sie sich nicht an die angenommene Versammlung 
+f&uuml;r den Abschnitt <code>NAME</code>
+der H&uuml;lse anpa&szlig;t, da&szlig; der Name des 
+Moduls spezifiziert wird. Schlie&szlig;lich kann es, da&szlig; es anwesend
+sei, aber nicht in einer Standardposition sein - Sie k&ouml;nnen 
+&uuml;berpr&uuml;fen, dokumentiert z.B.
+<a href="http://cpan.uwinnipeg.ca/htdocs/libnet/">
+</a>
+allen 
+<a href="http://cpan.uwinnipeg.ca/htdocs/libnet/">http://cpan.uwinnipeg.ca/htdocs/libnet/ </a>f&uuml;r eine 
+Auflistung von verbundenes mit einer gegebenen Verteilung.
+</p></dd>
+<dt>
+<a class="t5" name="05"></a><a class="t5" name="05">Warum fehlen einige oder alle, Paketvorbedingungen?</a>
+</dt>
+<dd><p>
+<a class="t5" name="05"></a>Informationen f&uuml;r die Vorbedingungen werden von einer 
+Akte innerhalb
+<code>META.yml</code> einer Verteilung extrahiert. Nicht 
+alle Verteilungen haben diese Akte, da sie erzeugt wird, wenn man eine
+Verteilung nur mit verh&auml;ltnism&auml;&szlig;ig neuer Version von irgendeinem 
+bildet <code>ExtUtils::MakeMaker</code> oder <code>Module::Build</code>.
+</p></dd>
+<dt>
+<a class="t5" name="06"></a><a class="t5" name="06">Was ist die Syntax f&uuml;r Fragen?</a>
+</dt>
+<dd>
+<ul>
+<li><a class="t5" name="06"></a>Eine grundlegende Frage wie f&uuml;r <code>foo bar</code> Willenssuche, abh&auml;ngig von der Suchart spezifiziert, 
+durch Modulnamen und -ausz&uuml;ge, Verteilung Namen und Ausz&uuml;ge oder 
+CPAN Identifikation und volle Namen und R&uuml;ckholresultate, die 
+<i>alle <i></i></i>Frage</i> Bezeichnungen 
+spezifiziert zusammenbringen. Beim Suchen durch Ausz&uuml;ge, 
+benennt nur Suche l&auml;nger, als zwei Buchstaben benutzt werden.
+</li><li>
+Wenn Sie eine Suchbezeichnung von den Resultaten 
+ausschlie&szlig;en m&ouml;chten, stellen Sie diese Bezeichnung mit einem 
+Minuszeichen voran (z.B. <code>foo -bar</code>).
+</li><li>
+Suchen k&ouml;nnen mit <a href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">regelm&auml;&szlig;igen Ausdr&uuml;cken
+<a
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+</a></a>auch gebildet werden</a> - diese 
+werden durch das Aussehen von einem oder mehr der Buchstaben <code>^, $, *, +, ?, |</code>
+in der Frage Bezeichnung erkannt.
+</li></ul>
+</dd>
+<dt>
+<a class="t5" name="07"></a><a class="t5" name="07">Wie verwende ich die Win32 PPMS respositories?</a>
+</dt>
+<dd><p>
+<a class="t5" name="07"></a>Beraten Sie die Unterlagen, die mit <a href="http://www.activestate.com/">ActivePerl 
+<a href="http://www.activestate.com/"></a></a>f&uuml;r</a>
+allgemeine 
+Gebrauchsanweisungen PPMS kommt. Die PPMS Pakete, die hier 
+erscheinen, k&ouml;nnen mit dem PPMS Dienstprogramm angebracht werden. 
+F&uuml;r die ActivePerl Pakete sollten Sie gerade in der LageSEIN, 
+das Paket wie <code>install Package-Name</code> innerhalb vom PPMS Oberteil anzubringen; 
+f&uuml;r die anderen Pakete k&ouml;nnen Sie die angezeigte Position 
+Ihrer Liste der Beh&auml;lter hinzuf&uuml;gen m&uuml;ssen:
+</p>
+<ul>
+<li><b></b><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, f&uuml;r den <i>crazyinsomniac Perl 5.6 
+Beh&auml;lter</i></li>
+<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, f&uuml;r den <i>crazyinsomniac Perl 5.8 
+Beh&auml;lter</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer</b>, f&uuml;r den <i>uwinnipeg Perl 5.6 
+Beh&auml;lter</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer58</b>, f&uuml;r den <i>uwinnipeg Perl 5.8 
+Beh&auml;lter</i></li>
+</ul>
+<p>
+&Uuml;berpr&uuml;fen Sie, ob Sie einen Beh&auml;lter benutzen,
+der f&uuml;r Ihre Perl Version passend ist (5.6 Beh&auml;lter f&uuml;r ActivePerl 
+errichtet 6xx, und 5.8 Beh&auml;lter f&uuml;r ActivePerl errichtet 8xx). 
+Merken Sie auch, da&szlig; der Name des Pakets, das hier erscheint, 
+basiert auf dem CPAN Verteilung Namen, zu verwenden ist der,, wenn er 
+ein Paket anbringt; dieses h&auml;ufig, aber nicht immer, entspricht
+dem Namen des Hauptmoduls im Paket.
+</p><p>
+Wenn Sie einen PPMS Beh&auml;lter beibehalten und ihn hier 
+eingeschlossen in der Datenbank w&uuml;nschen, zur Zeit wird <i></i>eine</i> <i>summary.ppm </i>zusammenfassende
+Akte der vorhandenen PPMS Pakete auf dem Beh&auml;lter angefordert. 
+Wie man dieses wird beschrieben in einem Index erzeugt, der in 
+der <i>PPMS 
+<i></i></i>Verteilung</i> auf 
+<a href="http://www.cpan.org/authors/id/M/MU/MURRAY/">CPAN
+<a href="http://www.cpan.org/authors/id/M/MU/MURRAY/"></a></a>vorhanden ist</a>. 
+Nachdem Sie dieses erzeugt haben, treten Sie bitte
+<a href="mailto:randy@theoryx5.uwinnipeg.ca">mit Randy Kobes</a>
+mit Details Ihres 
+Beh&auml;lters in Verbindung.
+</p></dd>
+<dt>
+<a class="t5" name="08"></a><a class="t5" name="08">Gibt es irgendwelche anderen Search Engines f&uuml;r CPAN?</a>
+</dt>
+<dd>
+<a class="t5" name="08"></a>Ja.
+<ul>
+<li><a href="http://search.cpan.org/"></a><a href="http://search.cpan.org/">search.cpan.org</a>.</li>
+<li><a href="http://www.perldoc.com/"></a><a href="http://www.perldoc.com/">www.perldoc.com</a>.</li>
+<li><a href="http://wait.cpan.org/"></a><a href="http://wait.cpan.org/">wait.cpan.org</a>.</li>
+</ul>
+</dd>
+<dt>
+<a class="t5" name="09"></a><a class="t5" name="09">Welche Versammlungen werden besch&auml;ftigt, die f&uuml;r 
+externe Verbindungen verwendet werden k&ouml;nnen?</a>
+</dt>
+<dd>
+<ul>
+<li><a class="t5" name="09"></a>Eine Verbindung wie <a href="http://cpan.uwinnipeg.ca/%7egbarr">
+http://cpan.uwinnipeg.ca/~gbarr</a> holt 
+oben Informationen &uuml;ber den CPAN Autor mit 
+Kennzeichnung <code>GBARR</code>.
+</li><li>Zu Information &uuml;ber eine bestimmte Verteilung oder ein 
+Modul, verwenden Sie eine Verbindung wie
+<a href="http://cpan.uwinnipeg.ca/dist/libnet">
+http://cpan.uwinnipeg.ca/dist/libnet</a> (f&uuml;r Verteilungen) oder <a href="http://cpan.uwinnipeg.ca/module/Net::FTP">
+http://cpan.uwinnipeg.ca/module/Net::FTP</a> (f&uuml;r Module). F&uuml;r Verteilungen <a href="http://cpan.uwinnipeg.ca/%7egbarr/libnet">
+</a>kann</a> <a href="http://cpan.uwinnipeg.ca/%7egbarr/libnet">http://cpan.uwinnipeg.ca/~gbarr/libnet </a>auch 
+verwendet werden, wenn Sie den CPAN Autor kennen.
+</li><li>
+F&uuml;r alphabetische Auflistungen von Verteilungen oder von 
+Modulen, verwenden Sie
+<a href="http://cpan.uwinnipeg.ca/dist/A/">
+http://cpan.uwinnipeg.ca/dist/A/</a>
+oder <a href="http://cpan.uwinnipeg.ca/module/A/">
+http://cpan.uwinnipeg.ca/module/A/</a>
+f&uuml;r alle Verteilungen oder Module, die mit einem 
+bestimmten Buchstaben anfangen. Verwenden Sie
+<a href="http://cpan.uwinnipeg.ca/dist/Apache/">
+http://cpan.uwinnipeg.ca/dist/Apache/</a>
+oder <a href="http://cpan.uwinnipeg.ca/module/Apache/">
+http://cpan.uwinnipeg.ca/module/Apache/</a>
+, um, beziehungsweise, die zusammenpassenden Verteilungen 
+oder <code>Apache-*</code>
+das Modulzusammenbringen zu 
+verzeichnen <code>Apache::*</code>. Merken Sie den schleppenden 
+Vorw&auml;rtsschr&auml;gstrich in diesen Verbindungen.
+</li><li>F&uuml;r die Verbindung mit einer Kategorie Auflistung, kann 
+man <a href="http://cpan.uwinnipeg.ca/chapter">http://cpan.uwinnipeg.ca/chapter
+<a href="http://cpan.uwinnipeg.ca/chapter">
+</a></a>f&uuml;r</a> die Hauptkapitel&uuml;berschriften, 
+<a href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI">http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI 
+<a
+href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI">
+</a></a>f&uuml;r</a>
+ein spezifisches Kapitel 
+und 
+<a href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI/Apache">http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI/Apache 
+<a
+href="http://cpan.uwinnipeg.ca/chapter/World_Wide_Web_HTML_HTTP_CGI/Apache">
+</a></a>f&uuml;r</a>
+ein subchapter verwenden.
+</li><li>
+Verbindungen zu den Dokumenten f&uuml;r bestimmte Module 
+k&ouml;nnen als <a href="http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html">http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html
+<a href="http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html">
+</a></a>f&uuml;r</a>
+das Finden der Unterlagen 
+f&uuml;r <code>Net::FTP</code> in die Verteilung
+<code>libnet</code> gebildet werden. 
+Wechselweise kann man 
+<a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">http://cpan.uwinnipeg.ca/perldoc/Net::FTP <a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
+</a></a>verwenden</a>. (dieses arbeitet auch 
+f&uuml;r die Kernperl Unterlagen - zum Beispiel
+<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
+</a>holt</a>
+<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">http://cpan.uwinnipeg.ca/perldoc/perlfaq 
+</a>oben die <i>perlfaq</i> Unterlagen). Merken Sie, da&szlig; diese Unterlagen 
+Verbindungen m&ouml;glicherweise nicht f&uuml;r alle Module, f&uuml;r eine 
+Vielzahl von Gr&uuml;nden arbeiten k&ouml;nnen, mit den Versammlungen, die in 
+den CPAN Indizes angenommen werden und der Form der H&uuml;lseunterlagen 
+meistens zu tun, die in der Verteilung gefunden werden.
+</li></ul>
+</dd>
+<dt>
+<a class="t5" name="10"></a><a class="t5" name="10">Ich fand ein Problem. Mit wem trete ich in 
+Verbindung?</a>
+</dt>
+<dd><p>
+<a class="t5" name="10"></a>Bitte email 
+<a href="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</a>
+, wenn Sie Probleme antreffen, einschlie&szlig;lich defekte 
+Unterlagen verbindet und St&ouml;rungen in der
+&Uuml;bersetzung. Schlie&szlig;en Sie bitte Details ein (und 
+Verbindungen) von, was Sie taten, als das Problem auftrat.
+<dt>
+<a class="t5" name="11"></a><a class="t5" name="11">Ist das Quellenprogramm f&uuml;r Betrieb dieser vorhandene 
+Aufstellungsort?</a>
+</dt>
+<dd><p>
+<a class="t5" name="11"></a>Ja. Sehen Sie das <i>CPAN-Search-Lite</i> Projekt auf
+<a href="http://sourceforge.net/projects/cpan-search/">
+SourceForge</a>. Eine verschickende 
+Liste ist dort f&uuml;r das Stellen von von Fragen &uuml;ber Sachen aufstellen
+vorhanden und bespricht Wanzen und f&uuml;r das Vorschlagen von von 
+Verbesserungen und von von Eigenschaften. Merken Sie, da&szlig; 
+dieses Projekt nicht "konkurrieren" mit (das &Uuml;berraschen) 
+<a href="http://search.cpan.org/">search.cpan.org </a>beabsichtigt
+<a href="http://search.cpan.org/"></a>wird</a>, das eine Anzahl von den 
+Eigenschaften enth&auml;lt, die hier nicht vorhanden sind (vorhergehende 
+Freigaben von Verteilungen <code>grep</code> und <code>diff</code>
+F&auml;higkeiten, etc.). Eine Richtung, die dieser 
+bestimmte Code nehmen kann, ist in Richtung zu den Dienstleistungen 
+anders als Standardnetz eine (zum Beispiel, Seife-gegr&uuml;ndete 
+Werkzeuge).
+</p></dd>
+</dl>
+<hr />
+</body>
+</html>

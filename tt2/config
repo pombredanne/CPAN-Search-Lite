@@ -4,14 +4,11 @@
    search = "$home/search"
    download = "$home/cpan"
    doc = "$home/htdocs"
-   values = { module => 'Modules',
-              dist => 'Distributions',
-              author => 'Authors',
-           }
+   cpanimg = "$home/icons/cpan.jpg"
    testers = 'http://testers.cpan.org/show/'
    searchcpan = 'http://search.cpan.org/'
    rt = 'http://rt.cpan.org/NoAuth/Bugs.html?Dist='
-   splash.images = 'http://theoryx5.uwinnipeg.ca/tt2/images/splash'
+   splash.images = "$home/tt2/images/splash"
    cpan = 'http://www.cpan.org'
    backpan = 'http://backpan.cpan.org'
    splash.style.default.col.fore = 'grey75'
@@ -24,6 +21,7 @@
    maintainer_email = 'randy@theoryx5.uwinnipeg.ca'
    faq =  "$home/htdocs/faq.html"
    dslip = "$home/htdocs/dslip.html"
+   ppm = "$home/htdocs/ppm.html"
    extra_files = { readme => {name => 'README', link => 'README.html'},
                    meta => {name => 'META', link => 'META.yaml'},
                    changes => {name => 'Changes', link => 'Changes.html'},

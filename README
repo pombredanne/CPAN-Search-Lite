@@ -21,6 +21,7 @@ CPAN::Search::Lite::State     - get the state of the current database
 CPAN::Search::Lite::Populate  - populate the database
 CPAN::Search::Lite::Query     - query the database
 CPAN::Search::Lite::Util      - some common data structures
+CPAN::Search::Lite::Lang      - some common language data structures
 
 As well, some PPM::XML::* modules (from the PPM distribution of 
 MURRAY, on CPAN) are included for extracting info from the PPM
@@ -49,4 +50,23 @@ SOAP::Lite is required in order to perform soap queries.
 See the INSTALL file for directions on installation.
 Development takes place at the CPAN-Search-Lite project
 on SourceForge at http://sourceforge.net/projects/cpan-search/.
+
+Support for presenting results in different languages in a
+web environment, based on the browser's language preference, is
+available - see the INSTALL file for a brief discussion
+on how to set this up. At present English, French, German,
+Italian, and Spanish are available, although others can readily
+be added (this would involve providing translation of terms
+appearing in CPAN::Search::Lite::Lang, as well as providing
+the corresponding tt2 pages). Note that this does not include,
+in particular, translations of the abstracts of modules or
+distributions, nor of the accompanying documentation. The translations
+here were done through http://world.altavista.com/babelfish/tr.
+I (Randy Kobes) am a native English speaker, with a passing
+knowledge of French, so there most likely are errors in the
+translations, as well as incorrect usage. Patches are welcome;
+if you are familiar with the diff utility in making up patches,
+this would help in getting them applied sooner. Thanks.
+
+Randy Kobes <r.kobes@uwinnipeg.ca>
 

@@ -1,0 +1,9 @@
+[% IF query %]
+Apesadumbrado - ningunos resultados para el 
+<b>&quot;[% query %]&quot;</b> 
+fueron encontrados del tipo <b>[% mode %]</b>. 
+Intente por favor otro t&eacute;rmino de la b&uacute;squeda. 
+[% ELSE %]
+Apesadumbrado - no podr&iacute;a entender qu&eacute; fue preguntada. 
+Por favor intento otra vez.
+[% END -%]

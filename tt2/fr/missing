@@ -1,0 +1,9 @@
+[% IF query %]
+D&eacute;sol&eacute; - aucuns r&eacute;sultats pour le 
+<b>&quot;[% query %]&quot;</b> 
+ ont &eacute;t&eacute; trouv&eacute;s du type <b>[% mode %]</b>. 
+Veuillez essayer une autre limite de recherche. 
+[% ELSE %]
+D&eacute;sol&eacute; - je ne pourrais pas comprendre ce qui 
+a &eacute;t&eacute; demand&eacute;. Svp essai encore.
+[% END -%]

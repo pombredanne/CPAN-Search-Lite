@@ -1,0 +1,85 @@
+<div class=path>
+<a href="[% home %]/[% mode %]">[% pages.list.$mode %]</a>
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+<a href="[% home %]/[% mode %]/[% letter %]/">
+[% letter %]</a>
+[% IF subletter %]
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+<a href="[% home %]/[% mode %]/[% subletter %]/">
+[% subletter %]</a>
+[% END -%]
+</div>
+<div class=box>
+<h2 class=t1>[% results.mod_name %]</h1>
+<table>
+<tr>
+<td class=label>Module</td>
+<td class=cell>
+[% results.mod_name %]
+[% IF results.html %]
+&nbsp; [ <a href="[% doc %]/[% results.html %]">
+<font size="-1">documentation</font></a>]
+[% END -%]
+</td></tr><tr>
+<td class=label>Distribution</td>
+<td class=cell><a href="[% home %]/dist/[% results.dist_name %]">
+[% results.dist_name %]</a>
+&nbsp;[<a 
+[% host = mirror ? mirror : download %]
+href="[% host %]/authors/id/[% results.download %]">Download</a>]
+&nbsp;&nbsp;[<a
+href="[% doc %]/[% results.dist_name %]/">documentation</a>]
+</td></tr><tr>
+<td class=label>Author</td>
+<td class=cell>
+<a href="[% home %]/~[% results.cpanid | lower %]">
+[% results.cpanid %]</a> [ [% results.fullname %] ]</td>
+</tr><tr>
+<td class=label>Version</td>
+<td class=cell>[% results.mod_vers %]</td>
+</tr><tr>
+<td class=label>Abstract</td>
+<td class=cell>[% results.mod_abs %]</td>
+</tr><tr>
+<td class=label><a href="[% home %]/chapter">
+Category</a></td>
+<td class=cell>
+<a href="[% home %]/chapter/[% results.chap_link %]">
+[% results.chap_desc %]</a></td>
+</tr><tr>
+<td class=label>Links</td>
+<td class=cell>
+<a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">
+search.cpan.org</a>&nbsp; |
+&nbsp;<a href="[% rt %][% results.dist_name %]">
+rt.cpan.org bugs</a>&nbsp; |
+&nbsp;<a href="[% testers %][% results.dist_name %].html">
+CPAN testers</a>
+</tr></table>
+</div>
+[% IF results.dslip %]
+<div class=box>
+<h2 class=t2><a href="[% dslip %]">dslip</a> information</h2>
+<table width=100% class=dslip>
+[% FOREACH item = results.dslip_info %]
+<tr>
+<td>[% item.desc %]</td>
+<td>[% item.what %]</td>
+</tr>
+[% END -%]
+</table></div>
+[% END -%]
+[% IF results.ppms %]
+<div class=box>
+<h2 class=t2>Win32 
+<a href="[% ppm %]">PPM </a> packages
+for &quot;[% results.dist_name %]&quot;</h2>
+<table width=100% class=ppm>
+[% FOREACH item = results.ppms %]
+<tr><td>
+<a href="[% item.browse %]">[% item.desc %]</a>
+&nbsp; [ &nbsp; [% item.ppm_vers %] &nbsp; ]
+</td></tr>
+[% END -%]
+</table></div>
+[% END -%]

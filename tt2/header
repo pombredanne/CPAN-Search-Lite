@@ -3,22 +3,22 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="/style.css" type="text/css">
-  <title>browse and search CPAN</title>
+  <title>[% pages.title %]</title>
  </head>
 <table width="100%">
 <tr>
 <td width="5%" rowspan=3>
 <a href="http://www.cpan.org/">
-<img src="http://cpan.uwinnipeg.ca/htdocs/cpan.jpg" alt="CPAN" /></a></td>
+<img src="[% cpanimg %]" alt="CPAN" /></a></td>
 <td align=center>
 [% buttons = [
- {text => 'Home', link => "$home/chapter"}
- {text => 'Documentation', link => 'http://theoryx5.uwinnipeg.ca/cgi-bin/docperl'}
- {text => 'Recent', link => "$home/recent"}
- {text => 'Mirror', link => "$home/mirror"}
- {text => 'Modules', link => "$home/module"}
- {text => 'Distributions', link => "$home/dist"}
- {text => 'Authors', link => "$home/author"}
+ {text => "$pages.buttons.Home", link => "$home/chapter"}
+ {text => "$pages.buttons.Documentation", link => 'http://theoryx5.uwinnipeg.ca/cgi-bin/docperl'}
+ {text => "$pages.buttons.Recent", link => "$home/recent"}
+ {text => "$pages.buttons.Mirror", link => "$home/mirror"}
+ {text => "$pages.buttons.Modules", link => "$home/module"}
+ {text => "$pages.buttons.Distributions", link => "$home/dist"}
+ {text => "$pages.buttons.Authors", link => "$home/author"}
   ]
 %]
 [% INCLUDE splash/menu
@@ -28,18 +28,19 @@
 </td></tr><tr><td colspan=2></td></tr><tr><td colspan=2 align=center>
 <form method=get action="[% search %]" name=f>
 <table><tr><td>
-<font size="-1">Find</font> &nbsp; 
+<font size="-1">[% pages.form.Find %]</font> &nbsp; 
 <input type="text" name="query" value="[% query %]" size=20 ></td>
-<td align=left>&nbsp;<font size="-1">in</font>&nbsp; 
+<td align=left>&nbsp;<font size="-1">[% pages.form.in %]</font>&nbsp; 
 <select name="mode">&nbsp; &nbsp;
 [% FOREACH m = ['dist', 'module', 'author'] %]
 [% IF m == mode %] 
- <option value="[% m %]" selected="selected">[% values.$m %]</option>
+ <option value="[% m %]" selected="selected">[% pages.list.$m %]</option>
 [% ELSE %]
- <option value="[% m %]">[% values.$m %]</option> [% mode %]
+ <option value="[% m %]">[% pages.list.$m %]</option> [% mode %]
 [% END %]
 [% END %]
-</select>&nbsp;&nbsp; &nbsp;<input type="submit" value="Search">
+</select>&nbsp;&nbsp; &nbsp;
+<input type="submit" value="[% pages.form.Search %]">
 </td></tr></table>
 </form>
 </td></tr></table>

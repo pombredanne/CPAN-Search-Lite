@@ -1,0 +1,21 @@
+[% IF query %]
+Spiacente - ci era un errore nella vostra domanda per 
+<b>&quot;[% query %]&quot;</b>
+di tipo <b>[% mode %]</b>.
+[% ELSE %]
+Spiacente - un errore era encoutered.
+[% END -%]
+L'errore specifico &egrave; stato registrato. 
+Se questo accadesse quando una ricerca normale di espressione 
+stava effettuanda, potete desiderare controllare
+<a 
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+la sintassi permessa</a>. 
+<p>
+Se pensate questo &egrave; un insetto nell'attrezzo di ricerca, 
+voi pu&ograve; aiutare nell'inseguimento del questo gi&ugrave; 
+trasmettendo un messaggio a 
+<A HREF="mailto:[% maintainer_email %]">
+[% maintainer %]</A>
+con i particolari di che cosa stavate cercando quando questo &egrave; 
+accaduto. Grazie!

@@ -2,11 +2,13 @@ package CPAN::Search::Lite::Query;
 use strict;
 use warnings;
 no warnings qw(redefine);
-use CPAN::Search::Lite::Util qw($repositories %chaps $dslip 
+use CPAN::Search::Lite::Util qw($repositories %chaps
                                 $full_id $mode_info);
+use CPAN::Search::Lite::Lang qw($dslip $chaps_desc %na);
 use DBI;
+use Text::English;
 
-our $dbh;
+our ($dbh, $lang);
 our $max_results = 200;
 
 my %mode2obj;
@@ -23,6 +25,7 @@ sub new {
         or die "Cannot connect to $args{db}";
 
     $max_results = $args{max_results} if $args{max_results};
+    $lang = 'en' unless $lang;
     my $self = {results => undef, error => ''};
     bless $self, $class;
 }
@@ -213,6 +216,7 @@ sub info {
                         $self->{results}->{dist_file});
 
     if (my $chapterid = $self->{results}->{chapterid}) {
+        $self->{results}->{chap_link} = $self->chap_link($chapterid);
         $self->{results}->{chap_desc} = $self->chap_desc($chapterid);
     }
 
@@ -340,6 +344,7 @@ sub info {
     if ($self->{results}->{chaps} = $self->fetch(%args, wantarray => 1)) {
         foreach my $chap (@{$self->{results}->{chaps}}) {
             $chap->{chap_desc} = $self->chap_desc($chap->{chapterid});
+            $chap->{chap_link} = $self->chap_link($chap->{chapterid});
         }
     }
   
@@ -515,7 +520,12 @@ sub sql_statement {
     my ($match, @words);
     if ($text_search and not $not) {
         @words = split ' ', $search->{value};
-        my $join = join ' ', map { /^-/ ? "$_*" : "+$_*" } @words;
+        my %excl = map {$_ => 1} grep /^-/, @words;
+        my @stems = Text::English::stem(@words);
+        for (0 .. $#stems) {
+            $stems[$_] = "-$stems[$_]" if $excl{$words[$_]};
+        }
+        my $join = join ' ', map { /^-/ ? "$_*" : "+$_*" } @stems;
         $match = q/ MATCH (/ .
                            $search->{field}->{text} .
                            q/) AGAINST ('/ . $join .
@@ -614,9 +624,9 @@ sub expand_dslip {
         my $entry;
         my $given = $given[$_];
         my $info = $info[$_];
-        $entry->{desc} = $dslip->{$given}->{desc};
+        $entry->{desc} = $dslip->{$lang}->{$given}->{desc};
         $entry->{what} = (not $info or $info eq '?') ?
-            'not specified' : $dslip->{$given}->{$info};
+            $na{$lang} : $dslip->{$lang}->{$given}->{$info};
         push @$entries, $entry;
     }
     return $entries;
@@ -638,9 +648,14 @@ sub download {
     return $download;
 }
 
-sub chap_desc {
+sub chap_link {
     my ($self, $id) = @_;
     return $chaps{$id};
+}
+
+sub chap_desc {
+    my ($self, $id) = @_;
+    return $chaps_desc->{$lang}->{$id};
 }
 
 sub db_error {
@@ -700,6 +715,14 @@ This is the password to use when connecting.
 This is the maximum value used to limit the number of results
 returned under a user query. If not specified, a value contained
 within C<CPAN::Search::Lite::Query> will be used.
+
+=item * lang =E<gt> $lang
+
+This is used to specify what language the description of the
+CPAN chapter ids and the dslip information is to be returned
+in. If not specified, or if specified but not present as
+a key in C<%langs> of C<CPAN::Search::Lite::Util>, the
+default of C<en> (English) will be used.
 
 =back
 
@@ -882,7 +905,14 @@ to specify the url of the distribution.
 =item * C<chap_desc>
 
 An accompanying entry C<chap_desc> is supplied giving a
-description of C<chapterid>, if present. 
+description of C<chapterid>, if present. This is given in
+the language specified, if present, with a default of English. 
+
+=item * C<chap_link>
+
+An accompanying entry C<chap_link> is supplied giving a
+string (in English) suitable for use in a link for 
+C<chapterid>, if present. 
 
 =item * C<dslip_info>
 
@@ -966,8 +996,10 @@ that module are returned.
 
 If present, an array reference C<chaps> is returned, each
 entry of which is a hash reference containing C<chapterid>,
-C<subchapter>, and C<chap_desc> (a description of the
-chapter id).
+C<subchapter>, C<chap_desc> (a description of the
+chapter id, in the language specified), and C<chap_link>
+(a string in English suitable for use as a link to
+C<chapterid>).
 
 =item * C<reqs>
 

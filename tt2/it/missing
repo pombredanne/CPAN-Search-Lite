@@ -1,0 +1,9 @@
+[% IF query %]
+Spiacente - nessun risultati per
+<b>&quot;[% query %]&quot;</b> 
+sono stati trovati di tipo <b>[% mode %]</b>.
+Provi prego un altro termine di ricerca.
+[% ELSE %]
+Spiacente - non potrei capire che cosa &egrave; stato chiesto. 
+Prego prova ancora.
+[% END -%]

@@ -2,11 +2,11 @@
 <table width="100%">
 <tr>
 <td align=left>
-<font size="-2">Problems, suggestions, or comments to 
+<font size="-2">[% pages.Problems %]
 <A HREF="mailto:[% maintainer_email %]">
 [% maintainer %]</A>.</font>
 </td><td align=right>
-<font size="-2">Questions? Check the</font>
+<font size="-2">[% pages.Questions %]</font>
 <a href="[% faq %]"><font size="-1">FAQ</font></a>.
 </td></tr></table>
 </body>

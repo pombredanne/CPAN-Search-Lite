@@ -1,0 +1,21 @@
+[% IF query %]
+Apesadumbrado - hab&iacute;a un error en su pregunta para el
+<b>&quot;[% query %]&quot;</b>
+del tipo <b>[% mode %]</b>.
+[% ELSE %]
+Apesadumbrado - un error era encoutered.
+[% END -%]
+Se ha registrado el error espec&iacute;fico. Si ocurri&oacute; 
+esto cuando una b&uacute;squeda regular de la expresi&oacute;n era 
+realizada, usted puede desear comprobar
+<a 
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+el sintaxis permitido</a>. 
+<p>
+Si usted piensa esto es un insecto en la herramienta de 
+la b&uacute;squeda, usted puede ayudar en seguir esto abajo 
+enviando un mensaje a
+<A HREF="mailto:[% maintainer_email %]">
+[% maintainer %]</A> 
+ con los detalles de lo que usted buscaba cuando sucedi&oacute; 
+esto. &iexcl;Grazias!

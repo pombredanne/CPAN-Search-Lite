@@ -1,0 +1,24 @@
+<div class=path> <b>T&eacute;l&eacute;chargements en 
+[% age %] derniers jours</b>.</div>
+[% host = mirror ? mirror : download %]
+[% birth = results.0.birth %]
+<table width="100%"><tr>
+<td class=datecell colspan=3><b>[% birth %]</b></td>
+</tr></table><ul>
+[% FOREACH item = results %]
+[% IF item.birth != birth %]
+</ul><table width="100%"><tr>
+<td class=datecell colspan=3><b>[% item.birth %]</b></td>
+</tr></table><ul>
+[% birth = item.birth %]
+[% END -%]
+[% IF item.dist_id %]
+<li><a href="[% home %]/dist/[% item.dist_name %]"> 
+<b>[% item.dist_name %]-[% item.dist_vers %]</b></a>
+&nbsp;<small>&nbsp;[<a
+href="[% host %]/authors/id/[% item.download %]">
+T&eacute;l&eacute;chargement</a>]</small>
+&nbsp;<small>[% item.dist_abs %]</small></li>
+[% END -%]
+[% END -%]
+</ul>

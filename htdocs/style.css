@@ -1,12 +1,134 @@
-/* based on search.cpan.org */
+/* standard elements */
+body
+    {
+    background: #FFFFFF;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 90%;
+    }	
+td
+    {
+    font-size: 80%;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    text-decoration: none;
+    }
+input
+    {
+	font-size: 12px;
+    }
+select
+    {
+	font-size: 12px;
+    }
+p
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    }
+blockquote
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    }
+dl
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    }
 
-BODY {
-  background: white;
-  color: black;
-  font-family: arial,sans-serif;
-  margin: 0;
-  padding: 1ex;
-}
+dt
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    }
+
+ul
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    list-style-type: disc;
+    }
+ol
+    {
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    }
+h1
+    { 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #B82619;
+    }
+h2 
+    {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #B82619;
+    background-color: #EAE2BB;
+    }
+h3
+    { 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #000000;
+    }        
+h4
+    { 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #B82619; 
+    } 	
+
+pre
+    {
+    font-size: 120%;
+    }
+tt
+    {
+    font-size: 120%;
+    }
+code
+    {
+    font-size: 120%;
+    }
+kbd
+    {
+    font-size: 120%;
+    }
+   
+/* default links */
+a:link 
+	{ 
+	color: #B82619;
+    text-decoration: underline;
+	}
+a:visited 
+	{ 
+	color: #80764F;
+    text-decoration: underline;
+	}
+a:hover
+	{
+	color: #000000;
+    text-decoration: underline;
+	}
+a:active 
+	{ 
+	color: #B82619;
+    text-decoration: underline;
+	}
+
 
 TABLE {
   border-collapse: collapse;
@@ -22,6 +144,7 @@ input { margin: 2px; }
 A.fred {
   text-decoration: none;
 }
+
 
 A:link {
   background: transparent;
@@ -107,6 +230,11 @@ TH A:link, TH A:visited {
 }
 .t4 {
   padding: 0.2ex 0.4ex;
+}
+
+.t5 {
+  padding: 0.2ex 0.4ex;
+  font-weight: bold;
 }
 .t1, .t2, .t3  {
   padding: 0.5ex 1ex;
@@ -195,7 +323,8 @@ TH A:link, TH A:visited {
   background: #F5DAB9;
   border-bottom: 1px solid #006699;
   color: black;
- /*  font-size: 1.4em;*/
+  font-weight: bold;
+  font-size: 90%;
   margin: 1ex 0;
   padding: 0.5ex 1ex;
 }
@@ -256,31 +385,31 @@ A.m:hover {
 table.dslip     {
   background: #FAF0E6;
   border: 0.4ex solid #FAF0E6;
-  font-size: small;
+  font-size: 95%;
 }
 
 table.ppm     {
   background: #FAF0E6;
   border: 0.4ex solid #FAF0E6;
-  font-size: small;
+  font-size: 95%;
 }
 
 table.cats     {
   background: #FAF0E6;
   border: 0.4ex solid #FAF0E6;
-  font-size: small;
+  font-size: 95%;
 }
 
 table.mods     {
   background: #FAF0E6;
   border: 0.4ex solid #FAF0E6;
-  font-size: small;
+  font-size: 95%;
 }
 
 table.dists     {
   background: #FFFAF0;
   border: 0.4ex solid #FFFAF0;
-  font-size: small;
+  font-size: 95%;
 }
 
 

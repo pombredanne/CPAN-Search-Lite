@@ -3,10 +3,10 @@ use strict;
 use warnings;
 
 use base qw(Exporter);
-our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, $dslip, $table_id,
-     $query_info, $mode_info, $full_id, $tt2_pages);
-@EXPORT_OK = qw(%chaps %chaps_rev $repositories $dslip $table_id
-                $query_info $mode_info $full_id $tt2_pages);
+our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, %modes,
+     $table_id, $query_info, $mode_info, $full_id, $tt2_pages);
+@EXPORT_OK = qw(%chaps %chaps_rev $repositories $tt2_pages %modes
+                $table_id $query_info $mode_info $full_id);
 
 make_ids();
 
@@ -36,6 +36,8 @@ $tt2_pages = {module => {search => 'mod_search',
                          info => 'auth_info', letter => 'auth_letter'},
               chapter => {search => 'chap_search', info => 'chap_info'},
              };
+
+%modes = map {$_ => 1} keys %$mode_info;
 
 $query_info = { module => {mode => 'module', type => 'name'},
                 mod_id => {mode => 'module', type => 'id'},
@@ -76,6 +78,7 @@ $query_info = { module => {mode => 'module', type => 'name'},
          );
 
 %chaps_rev = reverse %chaps;
+
 
 $repositories = {
                  1 => {
@@ -140,52 +143,6 @@ $repositories = {
                       },
                 };
 
-$dslip = {
-          d => {
-                desc => 'Development Stage (Note: *NO IMPLIED TIMESCALES*)',
-                i => 'Idea, listed to gain consensus or as a placeholder',
-                c => 'Under construction but pre-alpha (not yet released)',
-                a => 'Alpha testing',
-                b => 'Beta testing',
-                R => 'Released',
-                M => 'Mature (no rigorous definition)',
-                S => 'Standard, supplied with Perl 5',
-               },
-          s => {
-                desc => 'Support Level',
-                m => 'Mailing-list',
-                d => 'Developer',
-                u => 'Usenet newsgroup comp.lang.perl.modules',
-                n => 'None known, try comp.lang.perl.modules',
-                a => 'Abandoned, the module has been abandoned by its author',
-               },
-          l => {
-                desc => 'Language Used',
-                p => 'Perl-only, no compiler needed, should be platform independent',
-                c => 'C and perl, a C compiler will be needed',
-                h => 'Hybrid, written in perl with optional C code, no compiler needed',
-                '+' => 'C++ and perl, a C++ compiler will be needed',
-                o => 'perl and another language other than C or C++',
-               },
-          i => {
-                desc => 'Interface Style',
-                f => 'plain Functions, no references used',
-                h => 'hybrid, object and function interfaces available',
-                n => 'no interface at all (huh?)',
-                r => 'some use of unblessed References or ties',
-                O => 'Object oriented using blessed references and/or inheritance',
-               },
-          p => {
-                desc => 'Public License',
-                p => 'Standard-Perl: user may choose between GPL and Artistic',
-                g => 'GPL: GNU General Public License',
-                l => 'LGPL: "GNU Lesser General Public License" (previously known as "GNU Library General Public License")',
-                b => 'BSD: The BSD License',
-                a => 'Artistic license alone',
-                o => 'other (but distribution allowed without restrictions)',
-               },
-         };
-
 sub make_ids {
     my @tables = qw(mods dists auths);
     foreach my $table (@tables) {
@@ -194,7 +151,6 @@ sub make_ids {
         $full_id->{$id} = $table . '.' . $id;
     }
 }
-
 
 1;
 
@@ -245,19 +201,6 @@ repository (eg, I<6xx>, for Perl 5.6, andI<8xx>, for 5.8).
 =item C<PerlV> - the Perl version that the repository supports.
 
 =back
-
-=item * C<$dslip>
-
-This is a hash reference describing the I<dslip> (development,
-support, language, interface, and public license) information:
-
-  for my $key (keys %$dslip) {
-    print "For key $key (description: $dslip->{$key}->{desc})\n";
-    for my $entry (keys %{$dslip->{$key}}) {
-      next if $entry eq 'desc';
-      print "  Entry $entry has description $dslip->{$key}->{$entry}\n"; 
-    }
-  }
 
 =item * C<$table_id>
 

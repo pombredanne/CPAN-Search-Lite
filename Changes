@@ -1,3 +1,15 @@
+July 29, 2004 - 0.53
+    - fix bug where an error message, for example, in a regular
+      expression query was getting cached across requests.
+    - introduce presentation of results in different languages,
+      based on the language preference of the web browser.
+      This entails some changes in the config/header/footer tt2
+      pages, as well as provision of the rest of the pages in
+      a translated form.
+    - introduce stemming (from Text::English) when doing a text
+      search of the module/distribution abstracts; this is an
+      experiment to see if better search results are obtained.
+
 June 14, 2004 - 0.47
     - fix bug in Query.pm to return an array if requested.
 
