@@ -1,0 +1,19 @@
+[% IF query %]
+Sorry - there was an error in your query for 
+<b>&quot;[% query %]&quot;</b>
+of type <b>[% mode %]</b>.
+[% ELSE %]
+Sorry - an error was encountered.
+[% END -%]
+The specific error has been recorded. If this occurred when
+a regular expression search was being performed, you may
+want to check the
+<a 
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
+allowed syntax</a>. 
+<p>
+If you think this is a bug in the search tool, you can help
+in tracking this down by sending a message to
+<A HREF="mailto:[% maintainer_email %]">
+[% maintainer %]</A> with details of what you were
+looking for when this happened. Thanks!

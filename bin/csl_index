@@ -1,0 +1,56 @@
+#!D:/Perl/bin/perl
+use strict;
+use warnings;
+use CPAN::Search::Lite::Index;
+use Getopt::Long;
+my ($config, $setup, $help);
+
+my $rc = GetOptions('config=s' => \$config,
+                    'setup' => \$setup,
+                    'help' => \$help);
+
+if ($help or not $config) {
+    print <<"END";
+
+Setup or update CPAN::Search database
+Usage: 
+   $^X $0 --config /path/to/cpan.conf [ --setup ]
+   $^X $0 --help
+END
+    exit(1);
+}
+my $index = CPAN::Search::Lite::Index->new(config => $config, setup => $setup);
+$index->index();
+ 
+__END__
+
+=head1 NAME
+
+csl_index - interface to C<CPAN::Search::Lite::Index>
+
+=head1 DESCRIPTION
+
+This script is an interface to C<CPAN::Search::Lite::Index>, used
+to set up and subsequently maintain the database. One option,
+C<config> is required:
+
+   perl csl_index --config /path/to/cpan.conf
+
+where C</path/to/cpan.conf> is the configuration file
+specifying the additional options needed (these are
+described in L<CPAN::Search::Lite::Index>). An optional
+argument of C<setup>:
+
+   perl csl_index --config /path/to/cpan.conf --setup
+
+is used to create and populate the needed tables initially;
+note that any existing tables will be dropped with this option.
+Without the C<setup> option, the current tables will be
+updated, as required.
+
+=head1 SEE ALSO
+
+L<CPAN::Search::Lite::Index>.
+
+=cut
+

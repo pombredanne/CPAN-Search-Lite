@@ -1,0 +1,59 @@
+<div class=path>
+<a href="[% search %]?mode=[% mode %]">[% values.$mode %]</a>
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+<a href="[% search %]?mode=[% mode %];letter=[% letter %]">
+[% letter %]</a>
+[% IF subletter %]
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+<a href="[% search %]?mode=[% mode %];letter=[% subletter %]">
+[% subletter %]</a>
+[% END -%]
+</div>
+<div class=box>
+<h2 class=t1>[% results.cpanid %]</h1>
+<table>
+<tr>
+<td class=label>CPAN id</td>
+<td class=cell>[% results.cpanid %]</td>
+</tr><tr>
+<td class=label>Full name</td>
+<td class=cell>[% results.fullname %]</td>
+</tr><tr>
+<td class=label>email</td>
+<td class=cell><a href="mailto:[% results.email %]">
+[% results.email %]</a></td>
+<tr><td class=label>Links</td>
+<td class=cell>
+[&nbsp;
+<a href="[% searchcpan %]~[% results.cpanid %]">
+search.cpan.org</a>&nbsp;]
+[&nbsp;
+<a href="[% cpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
+www.cpan.org</a>&nbsp;]
+[&nbsp;
+<a href="[% backpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
+Archive</a>&nbsp;]
+</td>
+</tr>
+</table>
+</div>
+[% IF results.dists %]
+[% host = mirror ? mirror : download %]
+<div class=box>
+<h2 class=t2>Distributions</h2>
+<table width=100% class=dists>
+[% class = 's' %]
+[% FOREACH item = results.dists %]
+[% class = (class == 'r') ? 's' : 'r' %]
+<tr valign="top" class=[% class %]>
+<td><a href="[% search %]?dist_id=[% item.dist_id %]">
+[% item.dist_name %]-[% item.dist_vers %]</a>
+&nbsp;&nbsp;[&nbsp;<a
+href="[% host %]/authors/id/[% item.download %]">
+Download</a>&nbsp;]</td>
+<td>[% item.dist_abs %]</td>
+<td align=right>[% item.birth %]</td></tr>
+[% END -%]
+</table>
+</div>
+[% END -%]

@@ -1,0 +1,54 @@
+June 14, 2004 - 0.47
+    - fix bug in Query.pm to return an array if requested.
+
+June 2, 2004 - 0.46
+    - fix bug where some updates weren't being recorded properly
+      when they involved a change in module author
+
+April 15, 2004 - 0.45
+    - add custom Apache2 configuration directives for
+      mod_perl 2 based modules, rather than having to edit
+      the files
+    - add mod_perl 2 SOAP-based services (requires Apache2::SOAP,
+      which is a mod_perl 2 aware version of Apache::SOAP of the
+      SOAP-Lite distribution), and provide examples within
+      bin/csl_soap and bin/perldocs.
+
+March 19, 2004 - 0.25
+    - add perldocs, a soap-enhanced Pod::Perldoc to fetch from
+      remote repository modules pods not available on local system.
+
+March 13, 2004 - 0.23
+    - when calling CPAN::Search::Lite::Query->new(), accept as an argument
+      max_results => $max_results, specifying the maximum number
+      of results to return.
+    - fix a bug where $max_results was being applied to more than
+      just user queries (which it now does).
+    - move declaration of Template::Toolkit object to a package
+      variable in the mod_perl handlers, so as to cache it.
+    - move declaration of CPAN::Search::Lite::Query object to
+      a package variable in the mod_perl handlers, so as to cache it.
+
+March 10, 2004 - 0.20
+    - ensure the labelled INSTALL and README files for a distribution
+      are not possible .pm files.
+    - add a fix_links method to Populate.pm to fix the links in the
+      generated html files. The reason for this is that when the html
+      file are created no cache is used, to maintain consistency between
+      updates, and so links to packages outside a given package may
+      be wrong. This method queries the database to see what module
+      docs are really present, and asjusts the links accordingly
+      (or removes them, if they're not present).
+
+Mar 7, 2004 - 0.15
+    - trim whitespace from query term, and remove quotes and
+      backslashes
+    - verify presence of table id before updating tables
+    - check for validity of regular expression query term
+    - direct to main page if query term is empty
+    - various checks to avoid warnings about uninitialized
+      hash elements
+    - documentation fixes
+      
+Feb 29, 2004 - 0.1
+    - initial release

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="/style.css" type="text/css">
+  <title>browse and search CPAN</title>
+ </head>
+<table width="100%">
+<tr>
+<td width="5%" rowspan=3>
+<a href="http://www.cpan.org/">
+<img src="http://cpan.uwinnipeg.ca/htdocs/cpan.jpg" alt="CPAN" /></a></td>
+<td align=center>
+[% buttons = [
+ {text => 'Home', link => "$home/chapter"}
+ {text => 'Documentation', link => 'http://theoryx5.uwinnipeg.ca/cgi-bin/docperl'}
+ {text => 'Recent', link => "$home/recent"}
+ {text => 'Mirror', link => "$home/mirror"}
+ {text => 'Modules', link => "$home/module"}
+ {text => 'Distributions', link => "$home/dist"}
+ {text => 'Authors', link => "$home/author"}
+  ]
+%]
+[% INCLUDE splash/menu
+     width   = "60%"
+     style=splash.style.select
+%]
+</td></tr><tr><td colspan=2></td></tr><tr><td colspan=2 align=center>
+<form method=get action="[% search %]" name=f>
+<table><tr><td>
+<font size="-1">Find</font> &nbsp; 
+<input type="text" name="query" value="[% query %]" size=20 ></td>
+<td align=left>&nbsp;<font size="-1">in</font>&nbsp; 
+<select name="mode">&nbsp; &nbsp;
+[% FOREACH m = ['dist', 'module', 'author'] %]
+[% IF m == mode %] 
+ <option value="[% m %]" selected="selected">[% values.$m %]</option>
+[% ELSE %]
+ <option value="[% m %]">[% values.$m %]</option> [% mode %]
+[% END %]
+[% END %]
+</select>&nbsp;&nbsp; &nbsp;<input type="submit" value="Search">
+</td></tr></table>
+</form>
+</td></tr></table>
+<hr />

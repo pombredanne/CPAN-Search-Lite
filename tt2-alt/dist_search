@@ -1,0 +1,28 @@
+<br><div class=t4>
+<small>
+[% results.size %] results found
+</small></div>
+[% class = 's' %]
+<table width="100%">
+[% USE table(results, rows=3) %]
+[% FOREACH column = table.cols %]
+[% FOREACH item = column %]
+[% IF item == column.first %]
+[% class = (class == 'r') ? 's' : 'r' %]
+<tr valign="top" class="[% class %]">
+[% END -%]
+<td><a href="[% search %]?dist_id=[% item.dist_id %]"> 
+<b>[% item.dist_name %]</b></a> 
+<br /><small>[% item.dist_abs %]</small></td>
+[% IF item == column.last %]
+</tr>
+[% END -%]
+[% END -%]
+[% END -%]
+</table>
+<hr />
+[% IF mode && query %]
+Try this query on <a href=
+"[%searchcpan%]search?mode=[% mode %];query=[% query | uri | html %]">
+search.cpan.org</a>
+[% END %]

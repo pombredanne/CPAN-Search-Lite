@@ -1,0 +1,35 @@
+<div class=path>
+<a href="[% search %]?mode=[% mode %]">[% values.$mode %]</a>
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+[% IF subletter %]
+<a href="[% search %]?mode=[% mode %];letter=[% letter %]">
+[% letter %]</a>
+&nbsp; &nbsp; <b>&gt; &gt;</b> &nbsp; &nbsp;
+<B>[% subletter %]</B>
+[% ELSE -%]
+<B>[% letter -%]</B>
+[% END -%]
+</div>
+[% class = 's' %]
+<table width="100%">
+[% USE table(results, rows=3) %]
+[% FOREACH column = table.cols %]
+[% FOREACH item = column %]
+[% IF item == column.first %]
+[% class = (class == 'r') ? 's' : 'r' %]
+<tr valign="top" class="[% class %]">
+[% END -%]
+[% IF item.letter %]
+<td><a href="[% search %]?mode=[% mode %];letter=[% item.letter %]">
+<b>[% item.letter %]::*</b></td>
+[% ELSIF item.mod_id %]
+<td><a href="[% search %]?mod_id=[% item.mod_id %]"> 
+<b>[% item.mod_name %] </b></a> 
+<br /><small>[% item.mod_abs %]</small></td>
+[% END -%]
+[% IF item == column.last %]
+</tr>
+[% END -%]
+[% END -%]
+[% END -%]
+</table>
