@@ -15,13 +15,13 @@
 </h2>
 <table><tr>
 [% host = mirror ? mirror : download %]
-<td class=label>Verteilung</td>
+<td class=label>Distribution</td>
 <td class=cell>
 [% results.dist_name %]
 &nbsp;[<a
 href="[% host %]/authors/id/[% results.download %]">Download</a>]
 &nbsp;[<a
-href="[% doc %]/[% results.dist_name %]/">Unterlagen</a>]</td>
+href="[% doc %]/[% results.dist_name %]/">Dokumentation</a>]</td>
 </td></tr><tr>
 <td class=label>Autor</td>
 <td class=cell>
@@ -31,16 +31,16 @@ href="[% doc %]/[% results.dist_name %]/">Unterlagen</a>]</td>
 <td class=label>Version</td>
 <td class=cell>[% results.dist_vers %]</td>
 </tr><tr>
-<td class=label>Auszug</td>
+<td class=label>Kurzbeschreibung</td>
 <td class=cell>[% results.dist_abs %]</td>
 </tr><tr>
-<td class=label>Verursacht</td>
+<td class=label>Erstellt</td>
 <td class=cell>[% results.birth %]</td>
 </tr><tr>
 <td class=label>Gr&ouml;&szlig;e</td>
-<td class=cell>[% results.size %] bytes</td>
+<td class=cell>[% results.size %] </td>
 </tr><tr>
-<td class=label>Zus&auml;tzliche Akten</td>
+<td class=label>Zus&auml;tzliche Dateien</td>
 <td class=cell>
 [% FOREACH file = ['readme', 'meta', 'changes', 'install' ] %]
 [% IF results.$file %]
@@ -49,7 +49,7 @@ href="[% doc %]/[% results.dist_name %]/">Unterlagen</a>]</td>
 [% END -%]
 [% END -%]
 </td></tr><tr>
-<td class=label>Verbindungen</td>
+<td class=label>Links</td>
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">
 search.cpan.org</a> &nbsp; | &nbsp;
@@ -59,7 +59,7 @@ rt.cpan.org bugs</a>&nbsp; | &nbsp;
 CPAN testers</a>
 </td></tr>
 [% IF results.reqs %]
-<td class=label>Prerequisites</td>
+<td class=label>Voraussetzungen</td>
 <td class=cell>
 [% FOREACH item = results.reqs %]
 <a href="[% home %]/module/[% item.mod_name %]">

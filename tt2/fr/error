@@ -1,22 +1,18 @@
 [% IF query %]
-D&eacute;sol&eacute; - il y avait une erreur dans votre question pour le 
-<b>&quot;[% query %]&quot;</b>
-du type <b>[% mode %]</b>.
+D&eacute;sol&eacute; - Un probl&egrave;me est survenu lors de votre requ&ecirc;te 
+du type <b>[% mode %]</b> 
+concernant <b>&quot;[% query %]&quot;</b>.
 [% ELSE %]
-D&eacute;sol&eacute; - une erreur &eacute;tait encoutered.
+D&eacute;sol&eacute; - Un probl&egrave;me est survenu.
 [% END -%]
-L'erreur sp&eacute;cifique a &eacute;t&eacute; enregistr&eacute;e. 
-Si ceci se produisait quand une recherche r&eacute;guli&egrave;re 
-d'expression &eacute;tait ex&eacute;cut&eacute;e, 
-vous pouvez vouloir v&eacute;rifier
+Ce probl&egrave;me a &eacute;t&eacute; enregistr&eacute;. 
+Si l'erreur s'est produite lors d'une recherche avec des expressions r&eacute;guli&egrave;res, 
+nous vous conseillons de v&eacute;rifier  
 <a 
-href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
-la syntaxe permise</a>. 
+href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">les r&egrave;gles de syntaxe</a>. 
 <p>
-Si vous pensez c'est un bogue dans l'outil de recherche, 
-vous peut aider en d&eacute;pistant ceci vers le bas en 
-envoyant un message &agrave;
-<A HREF="mailto:[% maintainer_email %]">
-[% maintainer %]</A> 
-avec des d&eacute;tails de ce que vous recherchiez 
-quand ceci s'est produit. Merci !
+Si vous pensez que le probl&egrave;me provient de l'outil de recherche, 
+merci de nous aider en envoyant un message contenant les d&eacute;tails
+de votre recherche, ainsi que la page d'erreur, &agrave; 
+<A HREF="mailto:[% maintainer_email %]">[% maintainer %]</A>. Merci&nbsp;!
+

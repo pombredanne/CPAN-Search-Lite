@@ -1,21 +1,10 @@
 [% IF query %]
-Apesadumbrado - hab&iacute;a un error en su pregunta para el
-<b>&quot;[% query %]&quot;</b>
-del tipo <b>[% mode %]</b>.
+Lo siento - hab&iacute;a un error en su b&uacute;squeda por <b>&quot;[% query %]&quot;</b> del tipo <b>[% mode %]</b>.
 [% ELSE %]
-Apesadumbrado - un error era encoutered.
+Lo siento - ocurri&oacute; un error.
 [% END -%]
-Se ha registrado el error espec&iacute;fico. Si ocurri&oacute; 
-esto cuando una b&uacute;squeda regular de la expresi&oacute;n era 
-realizada, usted puede desear comprobar
-<a 
-href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
-el sintaxis permitido</a>. 
-<p>
-Si usted piensa esto es un insecto en la herramienta de 
-la b&uacute;squeda, usted puede ayudar en seguir esto abajo 
-enviando un mensaje a
+Se ha registrado el error. Si ha ocurrido cuando se realizaba una b&uacute;squeda
+con expresiones regulares, quiz&aacute;s desee comprobar la <a href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">sintaxis permitida</a>.
+<p>Si usted piensa que es un error de la herramienta de b&uacute;squeda, puede ayudarnos para arreglarlo enviando un mensaje a
 <A HREF="mailto:[% maintainer_email %]">
-[% maintainer %]</A> 
- con los detalles de lo que usted buscaba cuando sucedi&oacute; 
-esto. &iexcl;Grazias!
+[% maintainer %]</A> con los detalles de lo que buscaba cuando sucedi&oacute; esto. &iexcl;Gracias!

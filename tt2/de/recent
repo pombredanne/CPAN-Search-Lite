@@ -1,5 +1,5 @@
-<div class=path> <b>Antriebskr&auml;fte an den letzten
- [% age %] Tagen</b>.</div>
+<div class=path> <b>Neue Module der letzten
+ [% age %] Tage</b>.</div>
 [% host = mirror ? mirror : download %]
 [% birth = results.0.birth %]
 <table width="100%"><tr>

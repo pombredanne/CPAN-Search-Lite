@@ -20,11 +20,12 @@
 <tr valign="top" class="[% class %]">
 [% END -%]
 [% IF item.letter %]
-<td><a href="[% home %]/[% mode %]/[% item.letter %]/">
-<b>[% item.letter %]::*</b></td>
-[% ELSIF item.mod_id %]
-<td><a href="[% home %]/[% mode %]/[% item.mod_name %]"> 
-<b>[% item.mod_name %] </b></a> 
+<td><a 
+href="[% home %]/[% mode %]/[% item.letter %]/"><b>[% item.letter %]::*</b></a>
+<br /><small>[ more ... ]</small></td>
+[% ELSIF item.mod_name %]
+<td><a 
+href="[% home %]/[% mode %]/[% item.mod_name %]"><b>[% item.mod_name %] </b></a> 
 <br /><small>[% item.mod_abs %]</small></td>
 [% END -%]
 [% IF item == column.last %]

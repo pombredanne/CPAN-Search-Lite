@@ -16,13 +16,14 @@ Categories</a> &nbsp; &nbsp;<b>&gt; &gt; </b>&nbsp; &nbsp;
 [% class = (class == 'r') ? 's' : 'r' %]
 <tr valign="top" class="[% class %]">
 [% END -%]
-[% IF item.dist_id %]
+[% IF item.dist_name %]
 <td>
-<a href="[% home %]/dist/[% item.dist_name %]">
-[% item.dist_name %]</a>
+<a href="[% home %]/dist/[% item.dist_name %]">[% item.dist_name %]</a>
+[% IF item.dist_abs %]
 <br /><small>[% item.dist_abs %]</small>
-</td>
 [% END -%]
+[% END -%]
+</td>
 [% IF item == column.last %]
 </tr>
 [% END -%]

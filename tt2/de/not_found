@@ -1,7 +1,7 @@
 [% IF request %]
-Sorry - no results for <b>&quot;[% request %]&quot;</b> were found.
-Please try another search term.
+Es wurden leider keine Ergebnisse f&uuml;r <b>&quot;[% request %]&quot;</b> gefunden.
+Bitte versuchen Sie es mit einem anderen Suchbegriff.
 [% ELSE %]
-Sorry - I could not understand what was asked for. Please
-try again.
+Unbekannte Anfrage. Bitte versuchen Sie es 
+nocheinmal.
 [% END -%]

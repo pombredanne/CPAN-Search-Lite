@@ -38,12 +38,22 @@ password, and name of the database to be used when connecting to
 the database for performing queries. The embedded pod documentation
 contains more details.
 
-The bin/ subdirectory contains 4 scripts:
+The bin/ subdirectory contains 3 scripts:
 
 csl_index   - create and subsequently update the database
 csl_query   - an example script for performing local queries
 csl_soap    - an example script for performing soap-based queries
-perldocs    - a soap-enhanced perldoc to view remote pods
+
+The cgi-bin/ subdirectory contain 4 scripts:
+
+search        - a cgi interface to CPAN::Search::Lite::Query
+soap.cgi      - a SOAP-based query form (see bin/csl_soap)
+docserver.cgi - the SOAP server for perldocs, for viewing remote
+                pod documentation - see Pod::Perldocs, and the
+                Pod-Perldocs project at http://sourceforge.net/projects/cpan-search/.
+ppminfo.cgi   - the SOAP server for PPM::Make, used to get author,
+                module, and distribution information - see PPM::Make, and the
+                PPM-Make project at http://sourceforge.net/projects/cpan-search/.
 
 SOAP::Lite is required in order to perform soap queries.
 
@@ -61,12 +71,17 @@ appearing in CPAN::Search::Lite::Lang, as well as providing
 the corresponding tt2 pages). Note that this does not include,
 in particular, translations of the abstracts of modules or
 distributions, nor of the accompanying documentation. The translations
-here were done through http://world.altavista.com/babelfish/tr.
-I (Randy Kobes) am a native English speaker, with a passing
-knowledge of French, so there most likely are errors in the
-translations, as well as incorrect usage. Patches are welcome;
-if you are familiar with the diff utility in making up patches,
-this would help in getting them applied sooner. Thanks.
+were initially done through http://world.altavista.com/babelfish/tr,
+but have been greatly improved with the help of
+  French: Isabelle Hernandez <isa at panix.com>
+          Arnaud Assad <arnaud at underlands.org>
+  German: Florian Greb <greb at inf.fu-berlin.de>
+  Italian: Enrico Sorcinelli <bepi at modperl.it>
+  Spanish: Joaquin Ferrero <explorer at joaquinferrero.com>
+As this is still evolving, patches are welcome.
+
+An implementation of this search engine is at
+  http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html
 
 Randy Kobes <r.kobes@uwinnipeg.ca>
 

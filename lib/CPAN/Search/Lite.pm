@@ -4,7 +4,7 @@ use warnings;
 
 our ($VERSION);
 
-$VERSION = 0.53;
+$VERSION = 0.55;
 
 1;
 

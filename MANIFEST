@@ -1,10 +1,10 @@
 bin/csl_index
 bin/csl_query
 bin/csl_soap
-bin/perldocs
 cgi-bin/docserver.cgi
 cgi-bin/search
 cgi-bin/soap.cgi
+cgi-bin/ppminfo.cgi
 Changes
 htdocs/Active.css
 htdocs/cpan-search.html
@@ -49,7 +49,6 @@ lib/CPAN/Search/Lite/State.pm
 lib/CPAN/Search/Lite/Util.pm
 lib/CPAN/Search/Lite.pm
 lib/CPAN/Search/Lite/Lang.pm
-lib/Pod/Perldocs.pm
 lib/PPM/XML/Element.pm
 lib/PPM/XML/PPD.pm
 lib/PPM/XML/PPMConfig.pm

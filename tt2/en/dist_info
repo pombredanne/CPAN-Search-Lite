@@ -38,7 +38,7 @@ href="[% doc %]/[% results.dist_name %]/">documentation</a>]</td>
 <td class=cell>[% results.birth %]</td>
 </tr><tr>
 <td class=label>Size</td>
-<td class=cell>[% results.size %] bytes</td>
+<td class=cell>[% results.size %] </td>
 </tr><tr>
 <td class=label>Additional Files</td>
 <td class=cell>

@@ -18,27 +18,24 @@
 <td class=label>Distribuci&oacute;n</td>
 <td class=cell>
 [% results.dist_name %]
-&nbsp;[<a
-href="[% host %]/authors/id/[% results.download %]">Transferencia directa</a>]
-&nbsp;[<a
-href="[% doc %]/[% results.dist_name %]/">documentaci&oacute;n</a>]</td>
+&nbsp;[<a href="[% host %]/authors/id/[% results.download %]">Descarga</a>]
+&nbsp;[<a href="[% doc %]/[% results.dist_name %]/">documentaci&oacute;n</a>]</td>
 </td></tr><tr>
 <td class=label>Autor</td>
-<td class=cell>
-<a href="[% home %]/~[% results.cpanid | lower %]">
+<td class=cell><a href="[% home %]/~[% results.cpanid | lower %]">
 [% results.cpanid %]</a> [ [% results.fullname %] ]</td>
 </tr><tr>
 <td class=label>Versi&oacute;n</td>
 <td class=cell>[% results.dist_vers %]</td>
 </tr><tr>
-<td class=label>Extracto</td>
+<td class=label>Resumen</td>
 <td class=cell>[% results.dist_abs %]</td>
 </tr><tr>
 <td class=label>Creado</td>
 <td class=cell>[% results.birth %]</td>
 </tr><tr>
 <td class=label>Tama&ntilde;o</td>
-<td class=cell>[% results.size %] bytes</td>
+<td class=cell>[% results.size %] </td>
 </tr><tr>
 <td class=label>Archivos Adicionales</td>
 <td class=cell>
@@ -49,17 +46,10 @@ href="[% doc %]/[% results.dist_name %]/">documentaci&oacute;n</a>]</td>
 [% END -%]
 [% END -%]
 </td></tr><tr>
-<td class=label>Acoplamientos</td>
-<td class=cell>
-<a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">
-search.cpan.org</a> &nbsp; | &nbsp;
-<a href="[% rt %][% results.dist_name %]">
-rt.cpan.org bugs</a>&nbsp; | &nbsp;
-<a href="[% testers %][% results.dist_name %].html">
-CPAN testers</a>
-</td></tr>
+<td class=label>Enlaces</td>
+<td class=cell><a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">search.cpan.org</a> &nbsp; | &nbsp;<a href="[% rt %][% results.dist_name %]">rt.cpan.org errores</a>&nbsp; | &nbsp;<a href="[% testers %][% results.dist_name %].html">CPAN testeadores</a></td></tr>
 [% IF results.reqs %]
-<td class=label>Prerequisites</td>
+<td class=label>Prerequisitos</td>
 <td class=cell>
 [% FOREACH item = results.reqs %]
 <a href="[% home %]/module/[% item.mod_name %]">
@@ -119,9 +109,7 @@ Categor&iacute;as</a></h1>
 [% END -%]
 [% IF results.ppms %]
 <div class=box>
-<h2 class=t2>Win32 
-<a href="[% ppm %]">PPM </a> paquetes
-para &quot;[% results.dist_name %]&quot;</h2>
+<h2 class=t2>Win32 <a href="[% ppm %]">PPM </a> paquetes para &quot;[% results.dist_name %]&quot;</h2>
 <table width=100% class=ppm>
 [% FOREACH item = results.ppms %]
 <tr><td>

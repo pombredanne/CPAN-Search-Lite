@@ -1,24 +1,22 @@
 [% PROCESS mirror_list %]
-<div class=path><b>CPAN Specchios</b></div>
-Con questa forma potete specificare da dove desiderate prendere 
-i trasferimenti dal sistema centrale verso i satelliti 
-(questo richiede i biscotti essere permesso). 
-La vostra regolazione della corrente &egrave; 
+<div class=path><b>Mirror CPAN</b></div>
+Con questo form puoi specificare da dove desideri scaricare 
+i moduli (&egrave; necessario abilitare i cookie). 
+La tua impostazione corrente &egrave; 
 [% host = mirror || download %]
 <a href="[% host %]">
-[% host %]</a>. Il collegamento del multiplexor di
-<a href="[% download %]">[% download %]</a>
- tenter&agrave; di riorientarlo ad uno ad uno specchio vicino di 
-CPAN, basato sul vostro p&aelig;se d'origine.<p />
+[% host %]</a>. L'URL <a href="[% download %]">[% download %]</a>,
+basandosi sulla tua nazione d'origine, cercher&agrave; di 
+ridirigerti ad un mirror CPAN vicino.<p />
 <form action="[% home %][% path %]" method="post">
 [% IF save -%]
 [% FOREACH key = save.keys -%]
 <input type="hidden" name="[% key %]" value="[% save.$key %]">
 [% END -%]
 [% END -%]
-<b>1. Specchio pubblico</b><br />
+<b>1. Mirror pubblici</b><br />
 <select name="host">
-<option value="">Nessum - usi il URL di abitudine</option>
+<option value="">Nessuno - Usa l'URL personalizzato</option>
 [% FOREACH item = mirror_list -%]
 [% FOREACH protocol = ['http', 'ftp'] -%]
 [% IF item.$protocol %]
@@ -28,10 +26,10 @@ CPAN, basato sul vostro p&aelig;se d'origine.<p />
 [% END -%]
 [% END -%]
 </select><p />
-<b>or</b><p /><b>2. URL di abitudine</b> 
-(per esempio http://my.site/CPAN/)<br />
+<b>or</b><p /><b>2. URL personalizzato</b> 
+(ad esempio: http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
 <br /><p />
-<input type=submit value=Submit>
+<input type=submit value=Invia>
 </form>
 

@@ -44,7 +44,8 @@ sub read_config {
     my $args = shift;
     my $cfg = Config::IniFiles->new(-file => $args->{config});
     my $section = 'CPAN';
-    foreach (qw(CPAN pod_root html_root no_mirror no_ppm remote_mirror multiplex) ) {
+    foreach (qw(CPAN pod_root html_root no_mirror no_cat
+                cat_threshold no_ppm remote_mirror multiplex) ) {
         $args->{$_} = $cfg->val($section, $_) if $cfg->val($section, $_);
     }
     $section = 'DB';
@@ -153,7 +154,8 @@ sub state {
 sub populate {
     my $self = shift;
     my %wanted = map {$_ => $self->{$_}} 
-    qw(db user passwd index setup no_ppm state html_root no_mirror);
+        qw(db user passwd index setup no_ppm state no_cat
+           cat_threshold html_root no_mirror pod_root);
     my $db = CPAN::Search::Lite::Populate->new(%wanted);
     $db->populate() or return;
     return 1;
@@ -381,6 +383,23 @@ will be used.
 This can be used to specify a multiplexer to redirect
 downloads to nearby CPAN mirrors. See, for example,
 L<Apache::GeoIP> for one implementation.
+
+=item * cat_threshold = 0.99
+
+Many modules do not have a category (chapter) associated with
+them. In such cases, when populating the database, the 
+I<AI::Catgorizer> module is used to guess which category
+should be assigned to such a module, based on available information 
+for those modules that do have a category. The value of I<cat_threshold>
+is used to determine if the guessed category should be accepted
+(a perfect match has a score of 1, and no match has 0). If no
+such value is given, a default of 0.995 is used.
+
+=item * no_cat = 1
+
+Set I<no_cat> equal to a true value if you don't want
+I<AI::Categorizer> to try categorizing modules which
+don't have a category assigned.
 
 =back
 

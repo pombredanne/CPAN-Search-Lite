@@ -23,7 +23,9 @@
 </div>
 <hr />
 [% IF mode && query %]
-<font size="-1">Versuchen Sie diese Frage an</font> <a href=
+<font size="-1">Auf </font>
+<a href=
 "[%searchcpan%]search?mode=[% mode %];query=[% query | uri | html %]">
 <font size="-1">search.cpan.org</font></a>
+<font size="-1"> nach &quot;[% query | uri | html %]&quot; suchen</font> 
 [% END %]

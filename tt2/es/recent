@@ -1,4 +1,4 @@
-<div class=path> <b>Uploads en los [% age %] d&iacute;as pasados</b>.</div>
+<div class=path> <b>Novedades de los &uacute;ltimos [% age %] d&iacute;as</b>.</div>
 [% host = mirror ? mirror : download %]
 [% birth = results.0.birth %]
 <table width="100%"><tr>
@@ -15,8 +15,7 @@
 <li><a href="[% home %]/dist/[% item.dist_name %]"> 
 <b>[% item.dist_name %]-[% item.dist_vers %]</b></a>
 &nbsp;<small>&nbsp;[<a
-href="[% host %]/authors/id/[% item.download %]">
-Transferencia directa</a>]</small>
+href="[% host %]/authors/id/[% item.download %]"> Descarga</a>]</small>
 &nbsp;<small>[% item.dist_abs %]</small></li>
 [% END -%]
 [% END -%]

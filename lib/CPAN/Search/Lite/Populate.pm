@@ -7,10 +7,18 @@ use CPAN::Search::Lite::Util qw($table_id);
 use File::Find;
 use File::Basename;
 use File::Spec::Functions;
+use File::Path;
+use AI::Categorizer;
+use AI::Categorizer::Learner::NaiveBayes;
+use AI::Categorizer::Document;
+use AI::Categorizer::KnowledgeSet;
+use Lingua::StopWords;
 
 our ($dbh);
 
 my ($setup, $no_ppm);
+my $DEBUG = 1;
+
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ 
     for (qw(dists mods auths ppms chaps reqs));
@@ -46,14 +54,22 @@ sub new {
 
   my $no_mirror = $args{no_mirror};
   my $html_root = $args{html_root};
+  my $pod_root = $args{pod_root};
+  my $cat_threshold = $args{cat_threshold} || 0.998;
+  my $no_cat = $args{no_cat};
+
   unless ($no_mirror) {
       die "Please supply the html root" unless $html_root;
+      die "Please supply the pod root" unless $pod_root;
   }
   my $self = {index => $index,
               state => $state,
               obj => {},
               no_mirror => $no_mirror,
               html_root => $html_root,
+              pod_root => $pod_root,
+              cat_threshold => $cat_threshold,
+              no_cat => $no_cat,
              };
   bless $self, $class;
 }
@@ -111,6 +127,13 @@ sub create_objs {
         }
     }
 
+    my $pack = __PACKAGE__ . '::cat';
+    my $obj = $pack->new(cat_threshold => $self->{cat_threshold});
+    foreach (qw(dists auths mods)) {
+        $obj->{obj}->{$_} = $self->{obj}->{$_};
+    }
+    $self->{obj}->{cat} = $obj;
+
     unless ($setup) {
         my $state = $self->{state};
         my @tables = qw(auths dists mods);
@@ -146,6 +169,21 @@ sub populate_tables {
             }
         }
     }
+
+    unless ($self->{no_cat}) {
+        my $cat = $self->{obj}->{cat};
+        unless ($cat->categorize()) {
+            if (my $error = $cat->{error_msg}) {
+                print "Fatal error from ", ref($cat), ": ", $error, $/;
+                return;
+            }
+            else {
+                my $info = $cat->{info_msg};
+                print "Info from ", ref($cat), ": ", $info, $/;
+            }
+        }
+    }
+
     return 1;
 }
 
@@ -161,7 +199,7 @@ sub create_tables {
   $dbh->do(q{CREATE TABLE mods (
                                 mod_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
                                 dist_id SMALLINT UNSIGNED NOT NULL,
-                                mod_name VARCHAR(50) NOT NULL,
+                                mod_name VARCHAR(70) NOT NULL,
                                 mod_abs TINYTEXT,
                                 doc bool,
                                 mod_vers VARCHAR(10),
@@ -264,6 +302,7 @@ sub fix_links {
     my %textfiles = map {$_ . '.html' => 1} 
     qw(README META Changes META index INSTALL);
     my $html_root = $self->{html_root};
+    my $pod_root = $self->{pod_root};
 
     my $docs;
     my $sql = q{ SELECT mod_name,dist_name,doc } .
@@ -284,7 +323,7 @@ sub fix_links {
         warn "No dist object available";
         return;
     }
-    my (@dist_roots, $data);
+    my (@dist_roots, @goners, $data);
     if ($setup) {
         $data = $dist_obj->{info};
         if ($self->has_data($data)) {
@@ -300,7 +339,29 @@ sub fix_links {
         if ($self->has_data($data)) {
             push @dist_roots, keys %$data;
         }
+        $data = $dist_obj->{delete};
+        if ($self->has_data($data)) {
+            push @goners, keys %$data;
+        }
     }
+
+    if (@goners) {
+        foreach my $dist_root (@goners) {
+            my $html_path = catdir $html_root, $dist_root;
+            if (-d $html_path) {
+                print "Removing $html_path\n";
+                rmtree($html_path, $DEBUG, 1)
+                    or warn "Cannot rmtree $html_path: $!";
+            }
+            my $pod_path = catdir $pod_root, $dist_root;
+            if (-d $pod_path) {
+                print "Removing $pod_path\n";
+                rmtree($pod_path, $DEBUG, 1)
+                    or warn "Cannot rmtree $pod_path: $!";
+            }
+        }
+    }
+
     unless (@dist_roots) {
         print "No distributions need editing";
         return 1;
@@ -826,7 +887,7 @@ sub insert {
     $self->db_error($sth);
     return;
   };
-    $sth->finish();
+  $sth->finish();
   return 1;
 }
 
@@ -1031,7 +1092,7 @@ sub update {
     next unless defined $values->{requires};
     foreach my $module (keys %{$values->{requires}}) {
       next unless ($dist_ids->{$dist} and $mod_ids->{$module});
-      $sth->execute($dist_ids->{$dist}, $mod_ids->{$module}, 
+      $sth->execute($dist_ids->{$dist}, $mod_ids->{$module},
                     $values->{requires}->{$module})
         or do {
           $self->db_error($sth);
@@ -1220,6 +1281,306 @@ sub delete {
     return;
   };
   return 1;
+}
+
+package CPAN::Search::Lite::Populate::cat;
+use base qw(CPAN::Search::Lite::Populate);
+
+my %features = (content_weights => {
+                                    subject => 2,
+                                    body => 1,
+                                   },
+                stopwords => Lingua::StopWords::getStopWords('en'),
+                stemming => 'porter',
+               );
+
+my $chaps = {
+  2 => {subject => q{Perl Core Modules},
+        body => q{Perl Core Modules},
+       },
+  3 => {subject => q{Development Support},
+        body => q{Development Support},
+       },
+  4 => {subject => q{Operating System Interfaces},
+        body => q{Operating System Interfaces},
+       },
+  5 => {subject => q{Networking Devices IPC},
+        body => q{Network Devices IPC FTP Socket},
+       },
+  6 => {subject => q{Data Type Utilities},
+        body => q{Data Type Utilities Date Time Math Tie List Tree Class Algorithm Sort Statistics},
+       },
+  7 => {subject => q{Database Interfaces},
+        body => q{Database Interfaces DBD DBI SQL},
+       },
+  8 => {subject => q{User Interfaces},
+        body => q{User Interfaces Tk Term Curses Dialogue Log},
+       },
+  9 => {subject => q{Language Interfaces},
+        body => q{Language Interfaces},
+       },
+  10 => {subject => q{File Names Systems Locking},
+         body => q{File Name System Locking Directory Dir Stat cwd},
+        },
+  11 => {subject => q{String Lang Text Proc},
+         body => q{String Language Text Processing XML Parse},
+        },
+  12 => {subject => q{Opt Arg Param Proc},
+         body => q{Option Argument Parameters Processing Argv Config Getopt},
+        },
+  13 => {subject => q{Internationalization Locale},
+         body => q{Internationalization Locale Unicode I18N},
+        },
+  14 => {subject => q{Security and Encryption},
+         body => q{Security Encryption Authentication Authen Crypt Digest PGP Des},
+        },
+  15 => {subject => q{World Wide Web HTML HTTP CGI},
+         body => q{World Wide Web HTML HTTP CGI WWW Apache MIME Kwiki URI URL},
+        },
+  16 => {subject => q{Server and Daemon Utilities},
+         body => q{Server Daemon Utilties Event},
+        },
+  17 => {subject => q{Archiving and Compression},
+         body => q{Archive Compress File tar gzip gz zip bzip},
+        },
+  18 => {subject => q{Images Pixmaps Bitmaps},
+         body => q{Image Pixmap Bitmap Chart Graph Graphic},
+        },
+  19 => {subject => q{Mail and Usenet News},
+         body => q{Mail Usenet News Sendmail NNTP SMTP IMAP POP3 MIME},
+        },
+  20 => {subject => q{Control Flow Utilities},
+         body => q{Control Flow Utilities callback exception hook},
+        },
+  21 => {subject => q{File Handle Input Output},
+         body => q{File Handle Input Output Dir Directory Log IO},
+        },
+  22 => {subject => q{Microsoft Windows Modules},
+         body => q{Microsoft Windows Modules Win32 Win32API},
+        },
+  23 => {subject => q{Miscellaneous Modules},
+         body => q{Miscellaneous Modules},
+        },
+  24 => {subject => q{Commercial Software Interfaces},
+         body => q{Commercial Software Interfaces},
+        },
+  99 => {subject => q{Not Yet In Modulelist},
+         body => q{Not Yet In Modulelist},
+        },
+};
+
+sub new {
+  my ($class, %args) = @_;
+  my $self = {
+              obj => {},
+              error_msg => '',
+              info_msg => '',
+              learner => {},
+              missing => {},
+              cat_threshold => $args{cat_threshold},
+             };
+  bless $self, $class;
+}
+
+sub categorize {
+    my $self = shift;
+    $self->train() or return;
+    $self->missing() or return;
+    $self->insert_and_update() or return;
+    return 1;
+}
+
+sub train {
+    my $self = shift;
+    return unless my $mod_obj = $self->{obj}->{mods};
+    my $mod_info = $mod_obj->{info};
+    my ($docs);
+
+    foreach my $mod_name (%$mod_info) {
+        (my $subject = $mod_name) =~ s{::}{ }g;
+        my $body = '';
+        my $abs = $mod_info->{$mod_name}->{description};
+        ($body = $abs) =~ s{::}{ }g if $abs;
+        my $chapterid = $mod_info->{$mod_name}->{chapterid};
+        if ($chapterid) {
+            $docs->{$mod_name} = {categories => [$chapterid],
+                                  content => {subject => $subject,
+                                              body => $body,
+                                             },
+                                 };
+        }
+    }
+
+    foreach my $cat(keys %$chaps) {
+        $docs->{$cat} = {categories => [$cat],
+                         content => {subject => $chaps->{$cat}->{subject},
+                                     body => $chaps->{$cat}->{body},
+                                    },
+                        };
+    }
+    my $c = 
+        AI::Categorizer->new(
+                             knowledge_set => 
+                             AI::Categorizer::KnowledgeSet->new( name => 'CSL',
+                                                               ),
+                             verbose => 1,
+                            );
+    while (my ($name, $data) = each %$docs) {
+        $c->knowledge_set->make_document(name => $name, %$data, %features);
+    }
+
+    my $learner = $c->learner;
+    $learner->train;
+    $self->{learner} = $learner;
+    return 1;
+}
+
+sub missing {
+    my $self = shift;
+    unless ($dbh) {
+        $self->{error_msg} = q{No db handle available};
+        return;
+    }
+    return unless my $dist_obj = $self->{obj}->{dists};
+    my $dist_info = $dist_obj->{info};
+    my $missing_mods;
+    my $sql = 'SELECT mod_name,mod_id,mod_abs,dist_id ' .
+        ' FROM mods WHERE chapterid IS NULL ';
+    my $sth = $dbh->prepare($sql) or do {
+        $self->db_error();
+        return;
+    };
+    $sth->execute() or do {
+        $self->db_error($sth);
+        return;
+    };
+    while (my ($mod_name,$mod_id,$mod_abs,$dist_id,$dist_name) = 
+           $sth->fetchrow_array) {
+        (my $subject = $mod_name) =~ s{::}{ }g;
+        my $body = '';
+        ($body = $mod_abs) =~ s{::}{ }g if $mod_abs;
+        $missing_mods->{$mod_name} = {content => {subject => $subject,
+                                                  body => $body,
+                                                 },
+                                      dist_id => $dist_id,
+                                      mod_id => $mod_id,
+                                 };
+    }
+    $sth->finish;
+
+    my $cat_dists;
+    $sql = 'SELECT chapterid,dist_id,subchapter FROM chaps';
+    $sth = $dbh->prepare($sql) or do {
+        $self->db_error();
+        return;
+    };
+    $sth->execute() or do {
+        $self->db_error($sth);
+        return;
+    };
+    while (my ($chapterid, $dist_id, $subchapter) = $sth->fetchrow_array) {
+        $cat_dists->{$dist_id}->{$chapterid}->{$subchapter}++;
+    }
+    $sth->finish;
+
+    my $learner = $self->{learner};
+    my $insert_mods;
+    my $cat_threshold = $self->{cat_threshold};
+    while (my ($name, $data) = each %$missing_mods) {
+        my $doc = AI::Categorizer::Document->new( name => $name,
+                                                  content => $data->{content},
+                                                  %features);
+        my $r = $learner->categorize($doc);
+        my $b = $r->best_category;
+        next unless ($b and $r->scores($b) > $cat_threshold);
+        $insert_mods->{$name} = {chapterid => $b,
+                                 dist_id => $data->{dist_id},
+                                 mod_id => $data->{mod_id},
+                                };
+    }
+
+    my $insert_dists;
+    foreach my $dist (keys %$dist_info) {
+        my $dist_id;
+        foreach my $module (keys %{$dist_info->{$dist}->{modules}}) {
+            my $chapterid = $insert_mods->{$module}->{chapterid};
+            next unless defined $chapterid;
+            $dist_id = $insert_mods->{$module}->{dist_id};
+            next unless defined $dist_id;
+            (my $subchapter = $module) =~ s!^([^:]+).*!$1!;
+            next unless $subchapter;
+            next if $cat_dists->{$dist_id}->{$chapterid}->{$subchapter};
+            $insert_dists->{$dist_id}->{$chapterid}->{$subchapter}++;
+        }
+    }
+    $self->{missing} = {mods => $insert_mods, dists => $insert_dists};
+    return 1;
+}
+
+sub insert_and_update {
+    my $self = shift;
+    unless ($dbh) {
+        $self->{error_msg} = q{No db handle available};
+        return;
+    }
+    return unless my $mod_obj = $self->{obj}->{mods};
+    my $mod_ids = $mod_obj->{ids};
+    return unless my $dist_obj = $self->{obj}->{dists};
+    my $dist_ids = $dist_obj->{ids};
+    my %dist_names = reverse %$dist_ids;
+
+    my $update = $self->{missing}->{mods};
+    foreach my $module (keys %$update) {
+        next unless $update->{$module};
+        next unless (my $chapterid = $update->{$module}->{chapterid});
+        next unless (my $mod_id = $update->{$module}->{mod_id});
+        my $sql = q{UPDATE LOW_PRIORITY } .
+            qq{ mods SET chapterid = $chapterid } .
+                qq{ WHERE mod_id = $mod_id };
+        my $sth = $dbh->prepare($sql) or do {
+            $self->db_error();
+            return;
+        };
+        $sth->execute() or do {
+            $self->db_error($sth);
+            return;
+        };
+        print "Inserting chapterid = $chapterid for $module\n";
+        $sth->finish;
+    }
+    $dbh->commit or do {
+        $self->db_error();
+        return;
+    };
+
+    my $insert = $self->{missing}->{dists};
+    my @fields = qw(chapterid dist_id subchapter);
+    my $flds = join ',', @fields;
+    my $vals = join ',', map '?', @fields;
+    my $sql = q{INSERT LOW_PRIORITY INTO chaps } .
+        qq{ ($flds) VALUES ($vals) };
+    my $sth = $dbh->prepare($sql) or do {
+        $self->db_error();
+        return;
+    };
+    foreach my $dist_id (keys %$insert) {
+        foreach my $chapterid (keys %{$insert->{$dist_id}} ) {
+            foreach my $subchapter (keys %{$insert->{$dist_id}->{$chapterid}}) {
+                $sth->execute($chapterid, $dist_id, $subchapter)
+                    or do {
+                        $self->db_error($sth);
+                        return;
+                    };
+                print "Inserting chapter info: $chapterid/$subchapter for $dist_names{$dist_id}\n";
+            }
+        }
+    }
+    $dbh->commit or do {
+        $self->db_error($sth);
+        return;
+    };
+    $sth->finish();
+    return 1;
 }
 
 package CPAN::Search::Lite::Populate;
@@ -1577,6 +1938,22 @@ C<$repositories> data structure.
 This is the version of the ppm package found.
 
 =back
+
+=head1 CATEGORIES
+
+When uploading a module to PAUSE, there exists an option
+to assign it to one of 24 broad categories. However, many
+modules have not been assigned such a category, for one
+reason or another. When populating the tables, the
+I<AI::Categorizer> module is used to guess a possible
+category for those modules that haven't been assigned one,
+based on a training set based on the modules that have been
+assigned a category (see <AI::Categorizer> for general
+details). If this guess is above a configurable
+threshold (see L<CPAN::Search::Lite::Index>, the guess is
+accepted and subsequently inserted into the database, as
+well as updating the categories associated with the
+module's distribution.
 
 =head1 SEE ALSO
 

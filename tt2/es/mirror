@@ -1,14 +1,14 @@
 [% PROCESS mirror_list %]
 <div class=path><b>CPAN Espejos</b></div>
-Con esta forma usted puede especificar de donde usted desea 
-traer transferencias directas (esto requiere las galletas ser permitida). 
-Su ajuste de la corriente es 
+Con este formulario usted puede especificar de d&oacute;nde desea 
+realizar las descargas (esto requiere que las cookies est&eacute;n permitidas). 
+Su configuraci&oacute;n actual es 
 [% host = mirror || download %]
 <a href="[% host %]">
 [% host %]</a>. 
-El acoplamiento del multiplexor de
+El enlace por defecto de
 <a href="[% download %]">[% download %]</a>
-procurar&aacute; volverle a dirigir a un espejo pr&oacute;ximo 
+intentar&aacute; redirigirle a un espejo pr&oacute;ximo 
 de CPAN, basado en su pa&iacute;s de origen.<p />
 <form action="[% home %][% path %]" method="post">
 [% IF save -%]
@@ -18,7 +18,7 @@ de CPAN, basado en su pa&iacute;s de origen.<p />
 [% END -%]
 <b>1. Espejo p&uacute;blico.</b><br />
 <select name="host">
-<option value="">Ningunos - utilice el URL custumbre</option>
+<option value="">Ninguno - usar URL personal</option>
 [% FOREACH item = mirror_list -%]
 [% FOREACH protocol = ['http', 'ftp'] -%]
 [% IF item.$protocol %]
@@ -28,7 +28,7 @@ de CPAN, basado en su pa&iacute;s de origen.<p />
 [% END -%]
 [% END -%]
 </select><p />
-<b>or</b><p /><b>2. URL del costumbre </b>(eg http://my.site/CPAN/)<br />
+<b>o</b><p /><b>2. URL personal </b>(eg http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
 <br /><p />
 <input type=submit value=Submit>

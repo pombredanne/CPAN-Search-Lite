@@ -1,9 +1,5 @@
 [% IF query %]
-Apesadumbrado - ningunos resultados para el 
-<b>&quot;[% query %]&quot;</b> 
-fueron encontrados del tipo <b>[% mode %]</b>. 
-Intente por favor otro t&eacute;rmino de la b&uacute;squeda. 
+Lo siento - Ning&uacute;n resultado por <b>&quot;[% query %]&quot;</b> se encontr&oacute; del tipo <b>[% mode %]</b>. Int&eacute;ntelo por favor con otro t&eacute;rmino de b&uacute;squeda. 
 [% ELSE %]
-Apesadumbrado - no podr&iacute;a entender qu&eacute; fue preguntada. 
-Por favor intento otra vez.
+Lo siento - No entiendo lo que se intent&oacute; buscar. Por favor int&eacute;ntelo otra vez.
 [% END -%]

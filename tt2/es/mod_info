@@ -13,7 +13,7 @@
 <h2 class=t1>[% results.mod_name %]</h1>
 <table>
 <tr>
-<td class=label>Module</td>
+<td class=label>M&oacute;dulo</td>
 <td class=cell>
 [% results.mod_name %]
 [% IF results.html %]
@@ -26,7 +26,7 @@
 [% results.dist_name %]</a>
 &nbsp;[<a 
 [% host = mirror ? mirror : download %]
-href="[% host %]/authors/id/[% results.download %]">Transferencia directa</a>]
+href="[% host %]/authors/id/[% results.download %]">Descarga</a>]
 &nbsp;&nbsp;[<a
 href="[% doc %]/[% results.dist_name %]/">documentaci&oacute;n</a>]
 </td></tr><tr>
@@ -38,23 +38,29 @@ href="[% doc %]/[% results.dist_name %]/">documentaci&oacute;n</a>]
 <td class=label>Versi&oacute;n</td>
 <td class=cell>[% results.mod_vers %]</td>
 </tr><tr>
-<td class=label>Extracto</td>
+<td class=label>Resumen</td>
+[% IF results.mod_abs %]
 <td class=cell>[% results.mod_abs %]</td>
+[% END -%]
 </tr><tr>
-<td class=label><a href="[% home %]/chapter">
-Categor&iacute;a</a></td>
-<td class=cell>
-<a href="[% home %]/chapter/[% results.chap_link %]">
-[% results.chap_desc %]</a></td>
+<td class=label><a href="[% home %]/chapter">Categor&iacute;a</a></td>
+[% IF results.chap_desc %]
+<td class=cell colspan=2>
+<a href="[% home %]/chapter/[% results.chap_link %]">[% results.chap_desc %]</a>
+[% IF subchapter %]
+&nbsp; &nbsp;<b>&gt;&gt;</b> &nbsp; &nbsp;
+<a href="[% home %]/chapter/[% results.chap_link %]/[% subchapter %]">[% subchapter %]</a>
+[% END -%]
+</td>
+[% END -%]
 </tr><tr>
-<td class=label>Acoplamientos</td>
+<td class=label>Enlaces</td>
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">
 search.cpan.org</a>&nbsp; |
 &nbsp;<a href="[% rt %][% results.dist_name %]">
-rt.cpan.org bugs</a>&nbsp; |
-&nbsp;<a href="[% testers %][% results.dist_name %].html">
-CPAN testers</a>
+rt.cpan.org errores</a>&nbsp; |
+&nbsp;<a href="[% testers %][% results.dist_name %].html">CPAN testeadores</a>
 </tr></table>
 </div>
 [% IF results.dslip %]

@@ -1,4 +1,4 @@
-<div class=t1>Passez en revue par [% pages.list.$mode %]</div><br />
+<div class=t1>Index des [% pages.list.$mode %]</div><br />
 <center>
 <table class=chmenu><tr>
 [% FOREACH letter = ['A' .. 'Z'] %]

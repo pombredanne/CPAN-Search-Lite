@@ -1,9 +1,9 @@
 [% IF query %]
-D&eacute;sol&eacute; - aucuns r&eacute;sultats pour le 
-<b>&quot;[% query %]&quot;</b> 
- ont &eacute;t&eacute; trouv&eacute;s du type <b>[% mode %]</b>. 
-Veuillez essayer une autre limite de recherche. 
+D&eacute;sol&eacute; - Votre requ&ecirc;te <b>&quot;[% query %]&quot;</b>
+du type <b>[% mode %]</b> n'a donn&eacute; aucun r&eacute;sultat.<br />
+Veuillez entrer un autre mot-cl&eacute; pour votre recherche. 
 [% ELSE %]
-D&eacute;sol&eacute; - je ne pourrais pas comprendre ce qui 
-a &eacute;t&eacute; demand&eacute;. Svp essai encore.
+D&eacute;sol&eacute; - Je n'ai pas compris ce que 
+vous demandiez. 
+Veuillez r&eacute;essayer.
 [% END -%]

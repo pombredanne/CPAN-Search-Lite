@@ -1,4 +1,4 @@
-<div class=path> <b>T&eacute;l&eacute;chargements en 
+<div class=path> <b>T&eacute;l&eacute;chargements de ces 
 [% age %] derniers jours</b>.</div>
 [% host = mirror ? mirror : download %]
 [% birth = results.0.birth %]
@@ -17,7 +17,7 @@
 <b>[% item.dist_name %]-[% item.dist_vers %]</b></a>
 &nbsp;<small>&nbsp;[<a
 href="[% host %]/authors/id/[% item.download %]">
-T&eacute;l&eacute;chargement</a>]</small>
+T&eacute;l&eacute;charger</a>]</small>
 &nbsp;<small>[% item.dist_abs %]</small></li>
 [% END -%]
 [% END -%]

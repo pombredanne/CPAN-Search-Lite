@@ -39,13 +39,20 @@ href="[% doc %]/[% results.dist_name %]/">documentation</a>]
 <td class=cell>[% results.mod_vers %]</td>
 </tr><tr>
 <td class=label>Abstract</td>
+[% IF results.mod_abs %]
 <td class=cell>[% results.mod_abs %]</td>
+[% END -%]
 </tr><tr>
-<td class=label><a href="[% home %]/chapter">
-Category</a></td>
-<td class=cell>
-<a href="[% home %]/chapter/[% results.chap_link %]">
-[% results.chap_desc %]</a></td>
+<td class=label><a href="[% home %]/chapter">Category</a></td>
+[% IF results.chap_desc %]
+<td class=cell colspan=2>
+<a href="[% home %]/chapter/[% results.chap_link %]">[% results.chap_desc %]</a>
+[% IF subchapter %]
+&nbsp; &nbsp;<b>&gt;&gt;</b> &nbsp; &nbsp;
+<a href="[% home %]/chapter/[% results.chap_link %]/[% subchapter %]">[% subchapter %]</a>
+[% END -%]
+</td>
+[% END -%]
 </tr><tr>
 <td class=label>Links</td>
 <td class=cell>

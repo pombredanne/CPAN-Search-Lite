@@ -1,3 +1,30 @@
+Sept 4, 2004 - 0.55
+    - use AI::Categorizer to guess at a category for unassigned
+      modules/distributions, based on the learning from existing
+      categorized modules. There are two new options available
+      in the [CPAN] section of the configuration file:
+         - cat_threshold: a number between 0 and 1 used as a threshold
+           for assigning categories
+         - no_cat: to not use this feature
+    - bump up length of module names stored in the mods table,
+      as some modules were longer than this
+    - if there is only one result available for a link from a "letter"
+      page of modules/distributions or a chapter page, redirect to
+      that page directly, rather than show a page with one link
+    - present the date and file size associated with distributions
+      in different languages
+    - (greatly) improved translations:
+         French: Isabelle Hernandez <isa at panix.com>
+                 Arnaud Assad <arnaud at underlands.org>
+         German: Florian Greb <greb at inf.fu-berlin.de>
+         Italian: Enrico Sorcinelli <bepi at modperl.it>
+         Spanish: Joaquin Ferrero <explorer at joaquinferrero.com>
+      Thanks!
+    - add ppminfo.cgi, a soap server script now used by PPM::Make
+      to get module/distribution/author info.
+    - switch to Lingua::Stem for the stemming algorithm used
+      in the text searches
+
 July 29, 2004 - 0.53
     - fix bug where an error message, for example, in a regular
       expression query was getting cached across requests.

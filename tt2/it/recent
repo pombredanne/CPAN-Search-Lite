@@ -1,4 +1,4 @@
-<div class=path> <b>Uploads negli ultimi [% age %] giorni</b>.</div>
+<div class=path> <b>Upload negli ultimi [% age %] giorni</b>.</div>
 [% host = mirror ? mirror : download %]
 [% birth = results.0.birth %]
 <table width="100%"><tr>
@@ -15,7 +15,7 @@
 <li><a href="[% home %]/dist/[% item.dist_name %]"> 
 <b>[% item.dist_name %]-[% item.dist_vers %]</b></a>
 &nbsp;<small>&nbsp;[<a
-href="[% host %]/authors/id/[% item.download %]">Download</a>]</small>
+href="[% host %]/authors/id/[% item.download %]">Scarica</a>]</small>
 &nbsp;<small>[% item.dist_abs %]</small></li>
 [% END -%]
 [% END -%]

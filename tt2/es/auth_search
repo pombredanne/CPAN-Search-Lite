@@ -1,5 +1,5 @@
 <div class=path>
-[% results.size %] los resultados encontraron
+[% results.size %] resultados encontrados
 </div>
 [% class = 's' %]
 <div class=box>
@@ -25,7 +25,7 @@
 </div>
 <hr />
 [% IF mode && query %]
-<font size="-1">Intente esta pregunta encendido</font> <a href=
+<font size="-1">Intente esta b&uacute;squeda en</font> <a href=
 "[%searchcpan%]search?mode=[% mode %];query=[% query | uri | html %]">
 <font size="-1">search.cpan.org</font></a>
 [% END %]

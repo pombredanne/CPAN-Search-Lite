@@ -1,24 +1,24 @@
 [% PROCESS mirror_list %]
-<div class=path><b>CPAN Spiegels</b></div>
-Spezifizieren mit dieser Form k&ouml;nnen Sie, 
-wo Sie holen m&ouml;chten Downloads von (dieses 
-erfordert Pl&auml;tzchen erm&ouml;glicht zu werden). 
-Ihre Stromeinstellung ist
+<div class=path><b>CPAN Mirrors</b></div>
+Mit dieser Form k&ouml;nnen Sie einstellen, 
+von welchem Mirror Sie Ihre Downloads beziehen wollen. 
+Dieses Feature ben&ouml;tigt Cookies. 
+Ihre aktuelle Einstellung ist
 [% host = mirror || download %]
 <a href="[% host %]">
-[% host %]</a>. Die Mehrfachkopplerverbindung von
+[% host %]</a>. Die Deafaultlink 
 <a href="[% download %]">[% download %]</a>
-versucht, Sie zu einem nahe gelegenen CPAN Spiegel umzuadressieren, 
-basiert auf Ihrem Ursprungsland.<p />
+versucht automatisch, Sie auf einen &ouml;rtlich nahegelegenen 
+CPAN Mirror weiterzuleiten. <p />
 <form action="[% home %][% path %]" method="post">
 [% IF save -%]
 [% FOREACH key = save.keys -%]
 <input type="hidden" name="[% key %]" value="[% save.$key %]">
 [% END -%]
 [% END -%]
-<b>1. Allgemeiner Spiegel</b><br />
+<b>1. &Ouml;ffentlicher Mirror</b><br />
 <select name="host">
-<option value="">Keine - benutzen Sie Gewohnheit URL</option>
+<option value="">Keiner - privaten Mirror nutzen</option>
 [% FOREACH item = mirror_list -%]
 [% FOREACH protocol = ['http', 'ftp'] -%]
 [% IF item.$protocol %]
@@ -28,7 +28,7 @@ basiert auf Ihrem Ursprungsland.<p />
 [% END -%]
 [% END -%]
 </select><p />
-<b>or</b><p /><b>2. Gewohnheit URL</b> (z.B. http://my.site/CPAN/)<br />
+<b>or</b><p /><b>2. Privater Mirror</b> (z.B. http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
 <br /><p />
 <input type=submit value=Submit>

@@ -19,9 +19,9 @@
 <td class=cell>
 [% results.dist_name %]
 &nbsp;[<a
-href="[% host %]/authors/id/[% results.download %]">T&eacute;l&eacute;chargement</a>]
+href="[% host %]/authors/id/[% results.download %]">T&eacute;l&eacute;charger</a>]
 &nbsp;[<a
-href="[% doc %]/[% results.dist_name %]/">documentation</a>]</td>
+href="[% doc %]/[% results.dist_name %]/">Documentation</a>]</td>
 </td></tr><tr>
 <td class=label>Auteur</td>
 <td class=cell>
@@ -31,16 +31,16 @@ href="[% doc %]/[% results.dist_name %]/">documentation</a>]</td>
 <td class=label>Version</td>
 <td class=cell>[% results.dist_vers %]</td>
 </tr><tr>
-<td class=label>Abstrait</td>
+<td class=label>R&eacute;sum&eacute;</td>
 <td class=cell>[% results.dist_abs %]</td>
 </tr><tr>
-<td class=label>Cr&eacute;&eacute;</td>
+<td class=label>Distribu&eacute; le</td>
 <td class=cell>[% results.birth %]</td>
 </tr><tr>
 <td class=label>Taille</td>
-<td class=cell>[% results.size %] bytes</td>
+<td class=cell>[% results.size %] </td>
 </tr><tr>
-<td class=label>Dossiers Additionnels</td>
+<td class=label>Fichiers suppl&eacute;mentaires</td>
 <td class=cell>
 [% FOREACH file = ['readme', 'meta', 'changes', 'install' ] %]
 [% IF results.$file %]
@@ -53,13 +53,13 @@ href="[% doc %]/[% results.dist_name %]/">documentation</a>]</td>
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">
 search.cpan.org</a> &nbsp; | &nbsp;
-<a href="[% rt %][% results.dist_name %]">
-rt.cpan.org bugs</a>&nbsp; | &nbsp;
+<a href="[% rt %][% results.dist_name %]" title="Bogues r&eacute;pertori&eacute;s sur rt.cpan.org">
+rt.cpan.org</a>&nbsp; | &nbsp;
 <a href="[% testers %][% results.dist_name %].html">
-CPAN testers</a>
+Testeurs CPAN</a>
 </td></tr>
 [% IF results.reqs %]
-<td class=label>Prerequisites</td>
+<td class=label>Fichiers n&eacute;cessaires</td>
 <td class=cell>
 [% FOREACH item = results.reqs %]
 <a href="[% home %]/module/[% item.mod_name %]">
@@ -80,7 +80,7 @@ CPAN testers</a>
 [% END -%]
 [% IF item.html %]
 &nbsp; [
-<a href="[% doc %]/[% item.html %]">documentation</a> ]
+<a href="[% doc %]/[% item.html %]">Documentation</a> ]
 [% END -%]
 </td><td align="left">
 [% item.mod_abs %]
@@ -106,7 +106,7 @@ Cat&eacute;gories</a></h1>
 [% END -%]
 [% IF results.dslip %]
 <div class=box>
-<h2 class=t2><a href="[% dslip %]">dslip</a> l'information</h2>
+<h2 class=t2>Informations <a href="[% dslip %]">salsl</a></h2>
 <table class=dslip width=100%>
 [% FOREACH item = results.dslip_info %]
 <tr>
@@ -119,8 +119,8 @@ Cat&eacute;gories</a></h1>
 [% END -%]
 [% IF results.ppms %]
 <div class=box>
-<h2 class=t2>Win32 
-<a href="[% ppm %]">PPM </a> paquets
+<h2 class=t2> 
+Paquetage Win32 <a href="[% ppm %]">PPM </a>
 pour &quot;[% results.dist_name %]&quot;</h2>
 <table width=100% class=ppm>
 [% FOREACH item = results.ppms %]

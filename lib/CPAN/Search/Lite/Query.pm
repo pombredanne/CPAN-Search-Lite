@@ -4,9 +4,12 @@ use warnings;
 no warnings qw(redefine);
 use CPAN::Search::Lite::Util qw($repositories %chaps
                                 $full_id $mode_info);
-use CPAN::Search::Lite::Lang qw($dslip $chaps_desc %na);
+use CPAN::Search::Lite::Lang qw($dslip $chaps_desc %na $months %bytes);
 use DBI;
-use Text::English;
+use Lingua::Stem qw(:stem);
+use constant GB => 1024 * 1024 * 1024;
+use constant MB => 1024 * 1024;
+use constant KB => 1024;
 
 our ($dbh, $lang);
 our $max_results = 200;
@@ -144,6 +147,7 @@ sub info {
         foreach my $dist (@{$self->{results}->{dists}}) {
             $dist->{download} = 
                 $self->download($cpanid, $dist->{dist_file});
+            $dist->{birth} = $self->date_format($dist->{birth});
         }
     }
     return 1;
@@ -236,47 +240,63 @@ sub info {
 }
 
 sub search {
-    my ($self, %args) = @_;
-    return unless $args{search};
-    
-    $args{fields} = [ qw(mod_id mod_name mod_abs) ];
-    $args{table} = 'mods';
-    $args{order_by} = 'mod_name';
-    $args{limit} = $max_results;
-    return unless $self->{results} = $self->fetch(%args);
-    if (ref($self->{results}) ne 'ARRAY') {
-        return $self->query(mode => 'module',
-                            id => $self->{results}->{mod_id});
-    }
-    return 1;
+  my ($self, %args) = @_;
+  return unless $args{search};
+  
+  $args{fields} = [ qw(mod_id mod_name mod_abs) ];
+  $args{table} = 'mods';
+  $args{order_by} = 'mod_name';
+  $args{limit} = $max_results;
+  return unless $self->{results} = $self->fetch(%args);
+  if (ref($self->{results}) ne 'ARRAY') {
+    return $self->query(mode => 'module',
+                        id => $self->{results}->{mod_id});
+  }
+  return 1;
 }
 
 sub letter {
-    my ($self, %args) = @_;
-    return unless $args{search};
-    
-    $args{fields} = [ qw(mod_id mod_name mod_abs) ];
-    $args{table} = 'mods';
-    $args{order_by} = 'mod_name';
-    return unless $self->{results} = $self->fetch(%args, letter => 1,
-                                                 wantarray => 1);
-    if ($args{search}->{value} =~ /^\w$/) {
-        my $results = [];
-        my %seen; 
-        foreach my $result (@{$self->{results}}) {
-            if ($result->{mod_name} =~ /^([^:]+)::/) {
-                my $letter = $1;
-                next if $seen{$letter};
-                push @$results, {letter => $letter};
-                $seen{$letter}++;
-            }
-            else {
-                push @$results, $result;
-            }
-        }
-        $self->{results} = $results;
+  my ($self, %args) = @_;
+  return unless $args{search};
+  
+  $args{fields} = [ qw(mod_id mod_name mod_abs) ];
+  $args{table} = 'mods';
+  $args{order_by} = 'mod_name';
+  my $match;
+  return unless $match = $self->fetch(%args, letter => 1,
+                                      wantarray => 1);
+  $self->{results} = $match;
+  my $mod_re = qr{^([^:]+)::};
+  if ($args{search}->{value} =~ /^\w$/) {
+    my %count;
+    foreach my $result (@$match) {
+      if ($result->{mod_name} =~ /$mod_re/) {
+        $count{$1}++;
+      }
     }
-    return 1;
+    my %seen;
+    my $results = [];
+    foreach my $result (@$match) {
+      if ($result->{mod_name} =~ /$mod_re/) {
+        my $letter = $1;
+        my $count = $count{$letter};
+        if ( $count == 1) {
+          push @$results, $result;
+        }
+        else {
+          next if $seen{$letter};
+          push @$results, {letter => $letter,
+                           count => $count};
+          $seen{$letter}++;
+        }
+      }
+      else {
+        push @$results, $result;
+      }
+    }
+    $self->{results} = $results;
+  }
+  return 1;
 }
 
 package CPAN::Search::Lite::Query::dist;
@@ -301,6 +321,8 @@ sub info {
 
     return unless ($self->{results} = $self->fetch(%args, distinct => 1,
                                                    case_sensitive => 1));
+    $self->{results}->{birth} = $self->date_format($self->{results}->{birth});
+    $self->{results}->{size} = $self->size_format($self->{results}->{size});
     return 1 if $args{user_fields};
 
     $self->{results}->{download} = 
@@ -376,31 +398,48 @@ sub search {
 }
 
 sub letter {
-    my ($self, %args) = @_;
-    return unless $args{search};
-    
-    $args{fields} = [ qw(dist_id dist_name dist_abs) ];
-    $args{table} = 'dists';
-    $args{order_by} = 'dist_name';
-    return unless $self->{results} = $self->fetch(%args, letter => 1,
-                                                 wantarray => 1);
-    if ($args{search}->{value} =~ /^\w$/) {
-        my %seen;
-        my $results = [];
-        foreach my $result (@{$self->{results}}) {
-            if ($result->{dist_name} =~ /^([^-]+)-/) {
-                my $letter = $1;
-                next if $seen{$letter};
-                push @$results, {letter => $letter};
-                $seen{$letter}++;
-            }
-            else {
-                push @$results, $result;
-            }
-        }
-        $self->{results} = $results;
+  my ($self, %args) = @_;
+  return unless $args{search};
+  
+  $args{fields} = [ qw(dist_id dist_name dist_abs) ];
+  $args{table} = 'dists';
+  $args{order_by} = 'dist_name';
+  my $match;
+  return unless $match = $self->fetch(%args, letter => 1,
+                                      wantarray => 1);
+  $self->{results} = $match;
+
+  my $dist_re = qr{^([^-]+)-};
+  if ($args{search}->{value} =~ /^\w$/) {
+    my %count;
+    foreach my $result(@$match) {
+      if ($result->{dist_name} =~ /$dist_re/) {
+        $count{$1}++;
+      }
     }
-    return 1;
+    my %seen;
+    my $results = [];
+    foreach my $result (@$match) {
+      if ($result->{dist_name} =~ /$dist_re/) {
+        my $letter = $1;
+        my $count = $count{$letter};
+        if ( $count == 1) {
+          push @$results, $result;
+        }
+        else {
+          next if $seen{$letter};
+          push @$results, {letter => $letter,
+                           count => $count};
+          $seen{$letter}++;
+        }
+      }
+      else {
+        push @$results, $result;
+      }
+    }
+    $self->{results} = $results;
+  }
+  return 1;
 }
 
 sub recent {
@@ -417,6 +456,7 @@ sub recent {
                                                  age => 1);
     foreach my $result(@$results) {
         $result->{download} = $self->download($result->{cpanid}, $result->{dist_file});
+        $result->{birth} = $self->date_format($result->{birth});
     }
     $self->{results} = $results;
     return 1;
@@ -436,11 +476,31 @@ sub info {
     my ($self, %args) = @_;
     return unless $args{search};
     
-    $args{fields} = [ qw(subchapter) ];
+    $args{fields} = [ qw(dist_id dist_abs subchapter) ];
     $args{table} = 'chaps';
     $args{order_by} = 'subchapter';
-    return unless $self->{results} = $self->fetch(%args, wantarray => 1, 
-                                                  distinct => 1);
+    $args{join} = {dists => 'dist_id'};
+    my $match;
+    return unless $match = $self->fetch(%args, wantarray => 1,
+                                          distinct => 1);
+    my %count;
+    $count{$_->{subchapter}}++ for @$match;
+    my $results = [];
+    my %seen;
+    foreach my $result (@$match) {
+      my $subchapter = $result->{subchapter};
+      next if $seen{$subchapter};
+      my $count = $count{$subchapter};
+      if ($count > 1) {
+        push @$results, {subchapter => $subchapter,
+                         count => $count};
+        $seen{$subchapter}++;
+      }
+      else {
+        push @$results, $result;
+      }
+    }
+    $self->{results} = $results;
     return 1;
 }
 
@@ -521,7 +581,8 @@ sub sql_statement {
     if ($text_search and not $not) {
         @words = split ' ', $search->{value};
         my %excl = map {$_ => 1} grep /^-/, @words;
-        my @stems = Text::English::stem(@words);
+        my $stems = stem(@words);
+        my @stems = @$stems;
         for (0 .. $#stems) {
             $stems[$_] = "-$stems[$_]" if $excl{$words[$_]};
         }
@@ -537,8 +598,8 @@ sub sql_statement {
         @{$fields} : ($fields);
     for (@fields) {
         $_ = $full_id->{$_} if $full_id->{$_};
-        $_ = qq{DATE_FORMAT($_, '%e %b %Y')} if $_ eq 'birth';
-        $_ = qq{FORMAT($_, 0)} if $_ eq 'size';
+#        $_ = qq{DATE_FORMAT($_, '%e %b %Y')} if $_ eq 'birth';
+#        $_ = qq{FORMAT($_, 0)} if $_ eq 'size';
     }
     push @fields, $match if defined $match;
     my $sql = qq{SELECT $distinct } . join(',', @fields);
@@ -663,6 +724,34 @@ sub db_error {
     return unless $dbh;
     $sth->finish if $sth;
     $obj->{error} = q{Database error: } . $dbh->errstr;
+}
+
+sub date_format {
+    my ($self, $date) = @_;
+    my @e = split /-/, $date;
+    return sprintf("%d %s %d", $e[2], $months->{$lang}->{$e[1]}, $e[0]);
+}
+
+sub size_format {
+    my ($self, $size) = @_;
+    my ($test, $string);
+  SWITCH: {
+        ( ($test = $size / GB) && int($test) > 0) and do {
+            $string = sprintf('%.1f GB', $test);
+            last SWITCH;
+        };
+        ( ($test = $size / MB) && int($test) > 0) and do {
+            $string = sprintf('%.1f MB', $test);
+            last SWITCH;
+        };
+        ( ($test = $size / KB) && int($test) > 0) and do {
+            $string = sprintf('%.1f KB', $test);
+            last SWITCH;
+        };
+        $string = sprintf("%d $bytes{$lang}", $size);
+    }
+    $string =~ s{\.}{,} unless ($lang eq 'en');
+    return $string;
 }
 
 1;
@@ -940,10 +1029,11 @@ repository.
 This returns an array reference, each entry of which can
 be of two types. If there are multiple occurrences
 of a module matching C<FOO::*> at the top level, then the entry 
-is a hash reference with key C<letter> and associated value C<FOO>.
-If there is only one module matching C<FOO::*> at the
+is a hash reference with key C<letter> and associated value C<FOO>,
+as well as a key C<count> with value giving the number of matching
+entries. If there is only one module matching C<FOO::*> at the
 top level, then the entry is
-a hash reference containing the C<mod_id>, C<mod_name>, and
+a hash reference containing the C<mod_name>, C<mod_id>, and
 C<mod_abs> fields.
 
 =item * C<query> query
@@ -1026,10 +1116,11 @@ repository.
 This returns an array reference, each entry of which can
 be of two types. If there are multiple occurrences
 of a distribution matching C<FOO-*> at the top level, then the entry 
-is a hash reference with key C<letter> and associated value C<FOO>.
-If there is only one distribution matching C<FOO-*> at the
+is a hash reference with key C<letter> and associated value C<FOO>,
+as well as a key C<count> with value giving the number of matching
+entries. If there is only one distribution matching C<FOO-*> at the
 top level, then the entry is
-a hash reference containing the C<dist_id>, C<dist_name>, and
+a hash reference containing the C<dist_name>, C<dist_id>, and
 C<dist_abs> fields.
 
 =item * C<query> query
@@ -1061,14 +1152,18 @@ to specify the url of the distribution.
 
 This will return an array reference, each item of which
 is a hash reference containing the corresponding
-C<subchapter> field.
+C<subchapter> field. If there is only one entry within
+a subchapter, the C<dist_abs> and C<dist_id> of the associated 
+distribution is also returned, while if there is more than one entry,
+a key C<count> with value giving the number of matching
+entries is returned.
 
 =item * subchapter =E<gt> $subchapter
 
 This will return an array reference corresponding to all
 distributions with the specified subchapter within the given chapter.
 Each item of the array reference is a hash reference specifying
-the C<dist_id>, C<dist_name>, and C<dist_abs> of the
+the C<dist_name>, C<dist_id>, and C<dist_abs> of the
 distribution.
 
 =back

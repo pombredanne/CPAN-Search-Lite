@@ -1,21 +1,22 @@
 [% IF query %]
-Traurig - es gab eine St&ouml;rung in Ihrer Frage f&uuml;r  
+Leider ist bei der Verarbeitung Ihrer Frage nach  
 <b>&quot;[% query %]&quot;</b>
-der Art <b>[% mode %]</b>.
+in der Rubrik <b>[% mode %]</b> ein Fehler aufgetreten.
 [% ELSE %]
-Traurig - eine St&ouml;rung war encoutered.
+Bei der Verarbeitung ist ein Fehler aufgetreten.
 [% END -%]
-Die spezifische St&ouml;rung ist notiert worden. 
-Wenn dieses auftrat, als eine regelm&auml;&szlig;ige 
-Ausdruck Suche durchgef&uuml;hrt wurde, k&ouml;nnen Sie die        
+Genaue Fehlerinformationen sind zur Kontrolle gespeichert worden. 
+<p>Wenn dieser Fehler auftrat, w&auml;hrend eine regex-Suche durchgef&uuml;hrt 
+wurde, pr&uuml;fen Sie bitte die 
 <a 
 href="http://www.mysql.com/documentation/mysql/bychapter/manual_Regexp.html#Regexp">
-erlaubte Syntax</a>
-&uuml;berpr&uuml;fen w&uuml;nschen.
+syntaktische Korrektheit</a>
+Ihrer Anfrage.
 <p>
-Wenn Sie denken, ist dieses eine Wanze im Suchwerkzeug, 
-Sie kann helfen, in dieses unten aufsp&uuml;ren, indem es 
+Wenn Sie denken, da&azlig; dies ein Bug ist, 
+k&ouml;nnen Sie helfen ihn aufzusp&uuml;ren, indem Sie 
 <A HREF="mailto:[% maintainer_email %]">
 [% maintainer %]</A> 
-mit Details schickt von, nach was eine Anzeige Sie suchten, 
-als dieses geschah. Danke!
+eine eMail schicken, in welcher Sie erkl&auml;ren wonach Sie suchten, 
+als der Fehler auftrat.
+Danke!

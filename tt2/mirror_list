@@ -12,6 +12,7 @@
    { host => 'komo.vlsm.org', location => 'Asia, Indonesia, Jakarta',  http => 'http://komo.vlsm.org/CPAN',  ftp => 'ftp://komo.vlsm.org/CPAN', }
    { host => 'mirrors.chipset.or.id', location => 'Asia, Indonesia, Jakarta, Kebon Jeruk',  http => 'http://mirrors.chipset.or.id/CPAN',  ftp => 'ftp://ftp.chipset.or.id/CPAN', }
    { host => 'mirrors.tf.itb.ac.id', location => 'Asia, Indonesia, West Java, Bandung',  http => 'http://mirrors.tf.itb.ac.id/cpan', }
+   { host => 'mirror.mirimar.net', location => 'Asia, Israel, Mahoz, HeKarmel, Haifa',  http => 'http://mirror.mirimar.net/cpan', }
    { host => 'bioinfo.weizmann.ac.il', location => 'Asia, Israel, Mehoz, HaMerkaz, Rehovot',  http => 'http://bioinfo.weizmann.ac.il/pub/software/perl/CPAN',  ftp => 'ftp://bioinfo.weizmann.ac.il/pub/software/perl/CPAN', }
    { host => 'ftp.iglu.org.il', location => 'Asia, Israel, Mehoz, Hefa, Haifa',  ftp => 'ftp://ftp.iglu.org.il/pub/CPAN', }
    { host => 'ftp.u-aizu.ac.jp', location => 'Asia, Japan, Fukushima, Tohoku-chiho, Aizu-Wakamatsu',  ftp => 'ftp://ftp.u-aizu.ac.jp/pub/CPAN', }
@@ -21,9 +22,9 @@
    { host => 'ftp.kddlabs.co.jp', location => 'Asia, Japan, Saitama-ken, Kanto, Kamifukuoka',  ftp => 'ftp://ftp.kddlabs.co.jp/CPAN', }
    { host => 'ftp.cpan.jp', location => 'Asia, Japan, Shibuya-ward, Tokyo',  http => 'http://ftp.cpan.jp', }
    { host => 'ftp.ayamura.org', location => 'Asia, Japan, Tokyo, Shinagawa-ku',  ftp => 'ftp://ftp.ayamura.org/pub/CPAN', }
-   { host => 'ossig.mncc.com.my', location => 'Asia, Malaysia, Kuala Lumpur',  http => 'http://ossig.mncc.com.my/mirror/pub/CPAN', }
    { host => 'mirror.leafbug.org', location => 'Asia, Malaysia, Kuala Lumpur',  http => 'http://mirror.leafbug.org/pub/CPAN', }
    { host => 'cpan.bieffe.org', location => 'Asia, Malaysia, Kuala Lumpur',  http => 'http://cpan.bieffe.org', }
+   { host => 'ossig.mncc.com.my', location => 'Asia, Malaysia, Kuala Lumpur',  http => 'http://ossig.mncc.com.my/mirror/pub/CPAN', }
    { host => 'cpan.MyBSD.org.my', location => 'Asia, Malaysia, Selangor, Gombak',  http => 'http://cpan.MyBSD.org.my', }
    { host => 'www.opensourcecommunity.ph', location => 'Asia, Philippines, Zamboanga City',  http => 'http://www.opensourcecommunity.ph/CPAN', }
    { host => 'ftp.kaist.ac.kr', location => 'Asia, Republic of Korea, Daejeon',  http => 'http://ftp.kaist.ac.kr/pub/CPAN',  ftp => 'ftp@ftp.kaist.ac.kr', }
@@ -31,13 +32,15 @@
    { host => 'ftp.bora.net', location => 'Asia, Republic of Korea, Seoul',  http => 'http://CPAN.bora.net',  ftp => 'ftp://ftp.bora.net/pub/CPAN', }
    { host => 'cpan.tomsk.ru', location => 'Asia, Russian Federation, Siberia, Tomsk',  http => 'http://cpan.tomsk.ru',  ftp => 'ftp://cpan.tomsk.ru', }
    { host => 'ftp.isu.net.sa', location => 'Asia, Saudi Arabia, al-Wusta, Riyadh',  ftp => 'ftp://ftp.isu.net.sa/pub/CPAN', }
+   { host => 'cpan.acnova.com', location => 'Asia, Singapore, Singapore',  http => 'http://cpan.acnova.com',  ftp => 'ftp://ftp.acnova.com/pub/CPAN', }
    { host => 'mirror.intermedia.com.sg', location => 'Asia, Singapore, Singapore',  http => 'http://cpan.mirror.intermedia.com.sg',  ftp => 'ftp://mirror.intermedia.com.sg/pub/CPAN', }
-   { host => 'mirror.averse.net', location => 'Asia, Singapore, Singapore',  http => 'http://mirror.averse.net/pub/CPAN',  ftp => 'ftp://mirror.averse.net/pub/CPAN', }
    { host => 'www.oss.eznetsols.org', location => 'Asia, Singapore, Singapore',  http => 'http://cpan.oss.eznetsols.org',  ftp => 'ftp://ftp.oss.eznetsols.org/cpan', }
+   { host => 'mirror.averse.net', location => 'Asia, Singapore, Singapore',  http => 'http://mirror.averse.net/pub/CPAN',  ftp => 'ftp://mirror.averse.net/pub/CPAN', }
    { host => 'ftp.nctu.edu.tw', location => 'Asia, Taiwan, HsinChu',  ftp => 'ftp://ftp.nctu.edu.tw/UNIX/perl/CPAN', }
    { host => 'ftp.isu.edu.tw', location => 'Asia, Taiwan, Kao-hsiung',  http => 'http://ftp.isu.edu.tw/pub/CPAN',  ftp => 'ftp://ftp.isu.edu.tw/pub/CPAN', }
    { host => 'cpan.cdpa.nsysu.edu.tw', location => 'Asia, Taiwan, Kao-hsiung',  http => 'http://cpan.cdpa.nsysu.edu.tw',  ftp => 'ftp://cpan.cdpa.nsysu.edu.tw/pub/CPAN', }
    { host => 'ftp.tku.edu.tw', location => 'Asia, Taiwan, Tai-pei Hsien, TamSui',  http => 'http://ftp.tku.edu.tw/pub/CPAN',  ftp => 'ftp://ftp.tku.edu.tw/pub/CPAN', }
+   { host => 'cpan.cs.pu.edu.tw', location => 'Asia, Taiwan, Taichung',  http => 'http://cpan.cs.pu.edu.tw',  ftp => 'ftp://cpan.cs.pu.edu.tw/pub/CPAN', }
    { host => 'ftp1.sinica.edu.tw', location => 'Asia, Taiwan, Taipei',  ftp => 'ftp://ftp1.sinica.edu.tw/pub1/perl/CPAN', }
    { host => 'ftp.loxinfo.co.th', location => 'Asia, Thailand, Bangkok',  ftp => 'ftp://ftp.loxinfo.co.th/pub/cpan', }
    { host => 'ftp.cs.riubon.ac.th', location => 'Asia, Thailand, Ubon Ratchathani',  ftp => 'ftp://ftp.cs.riubon.ac.th/pub/mirrors/CPAN', }
@@ -46,7 +49,7 @@
    { host => 'cpan.inode.at', location => 'Europe, Austria, Vienna',  http => 'http://cpan.inode.at',  ftp => 'ftp://cpan.inode.at', }
    { host => 'ftp.skynet.be', location => 'Europe, Belgium, Brussels',  http => 'http://cpan.skynet.be',  ftp => 'ftp://ftp.cpan.skynet.be/pub/CPAN', }
    { host => 'ftp.easynet.be', location => 'Europe, Belgium, Brussels',  http => 'http://ftp.easynet.be/pub/CPAN',  ftp => 'ftp://ftp.easynet.be/pub/CPAN', }
-   { host => 'ftp.scarlet.be', location => 'Europe, Belgium, Vilvoorde',  http => 'http://cpan.scarlet-internet.nl/pub/CPAN',  ftp => 'ftp://ftp.scarlet-internet.nl', }
+   { host => 'ftp.scarlet.be', location => 'Europe, Belgium, Vilvoorde',  http => 'http://cpan.scarlet.be',  ftp => 'ftp://ftp.scarlet.be/pub/cpan', }
    { host => 'ftp.kulnet.kuleuven.ac.be', location => 'Europe, Belgium, Vlaanderen, Leuven',  ftp => 'ftp://ftp.kulnet.kuleuven.ac.be/pub/mirror/CPAN', }
    { host => 'cpan.blic.net', location => 'Europe, Bosnia and Herzegovina, Banja Luka',  http => 'http://cpan.blic.net', }
    { host => 'cpan.online.bg', location => 'Europe, Bulgaria, Sofia',  http => 'http://cpan.online.bg',  ftp => 'ftp://cpan.online.bg/cpan', }
@@ -65,9 +68,9 @@
    { host => 'www.enstimac.fr', location => 'Europe, France, Albi',  http => 'http://www.enstimac.fr/Perl/CPAN', }
    { host => 'ftp.u-paris10.fr', location => 'Europe, France, Hauts de Seine, Nanterre',  http => 'http://ftp.u-paris10.fr/perl/CPAN',  ftp => 'ftp://ftp.u-paris10.fr/perl/CPAN', }
    { host => 'cpan.mirrors.easynet.fr', location => 'Europe, France, Ile-de-France, Paris',  http => 'http://cpan.mirrors.easynet.fr',  ftp => 'ftp://cpan.mirrors.easynet.fr/pub/ftp.cpan.org', }
-   { host => 'ftp.lip6.fr', location => 'Europe, France, Ile-de-France, Paris',  ftp => 'ftp://ftp.lip6.fr/pub/perl/CPAN', }
    { host => 'ftp.oleane.net', location => 'Europe, France, Ile-de-France, Paris',  ftp => 'ftp://ftp.oleane.net/pub/CPAN', }
    { host => 'mir2.ovh.net', location => 'Europe, France, Ile-de-France, Paris',  http => 'http://mir2.ovh.net/ftp.cpan.org',  ftp => 'ftp://mir1.ovh.net/ftp.cpan.org', }
+   { host => 'ftp.lip6.fr', location => 'Europe, France, Ile-de-France, Paris',  ftp => 'ftp://ftp.lip6.fr/pub/perl/CPAN', }
    { host => 'ftp.club-internet.fr', location => 'Europe, France, Ile-de-France, Paris',  ftp => 'ftp://ftp.club-internet.fr/pub/perl/CPAN', }
    { host => 'ftp.pasteur.fr', location => 'Europe, France, Ile-de-France, Paris',  ftp => 'ftp://ftp.pasteur.fr/pub/computing/CPAN', }
    { host => 'cpan.cict.fr', location => 'Europe, France, Midi-Pyrénées, Toulouse',  ftp => 'ftp://cpan.cict.fr/pub/CPAN', }
@@ -103,20 +106,21 @@
    { host => 'ftp.litnet.lt', location => 'Europe, Lithuania, Kaunas',  http => 'http://ftp.litnet.lt/pub/CPAN',  ftp => 'ftp://ftp.litnet.lt/pub/CPAN', }
    { host => 'ftp.unix.lt', location => 'Europe, Lithuania, Vilnius',  ftp => 'ftp://ftp.unix.lt/pub/CPAN', }
    { host => 'gnu.kookel.org', location => 'Europe, Netherlands, Amsterdam',  http => 'http://gnu.kookel.org/ftp/CPAN',  ftp => 'ftp://gnu.kookel.org/ftp/CPAN', }
-   { host => 'ftp.nl.uu.net', location => 'Europe, Netherlands, Amsterdam',  ftp => 'ftp://ftp.nl.uu.net/pub/CPAN', }
    { host => 'download.ip2.net', location => 'Europe, Netherlands, Amsterdam',  ftp => 'ftp://download.ip2.net/pub/mirror/CPAN', }
    { host => 'mirror.vuurwerk.nl', location => 'Europe, Netherlands, Amsterdam',  ftp => 'ftp://mirror.vuurwerk.nl/pub/CPAN', }
+   { host => 'ftp.nl.uu.net', location => 'Europe, Netherlands, Amsterdam',  ftp => 'ftp://ftp.nl.uu.net/pub/CPAN', }
    { host => 'ftp.cpan.nl', location => 'Europe, Netherlands, Hoofddorp',  ftp => 'ftp://ftp.cpan.nl/pub/CPAN', }
-   { host => 'ftp.nluug.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  ftp => 'ftp://ftp.nluug.nl/pub/languages/perl/CPAN', }
-   { host => 'cpan.scarlet-internet.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  http => 'http://cpan.scarlet-internet.nl',  ftp => 'ftp://ftp.scarlet-internet.nl.nl/pub/CPAN', }
-   { host => 'download.xs4all.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  ftp => 'ftp://download.xs4all.nl/pub/mirror/CPAN', }
    { host => 'mirror.cybercomm.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  http => 'http://cpan.cybercomm.nl',  ftp => 'ftp://mirror.cybercomm.nl/pub/CPAN', }
+   { host => 'ftp.nluug.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  ftp => 'ftp://ftp.nluug.nl/pub/languages/perl/CPAN', }
+   { host => 'cpan.scarlet-internet.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  http => 'http://cpan.scarlet-internet.nl',  ftp => 'ftp://ftp.scarlet-internet.nl/pub/CPAN', }
+   { host => 'download.xs4all.nl', location => 'Europe, Netherlands, Noord-Holland, Amsterdam',  ftp => 'ftp://download.xs4all.nl/pub/mirror/CPAN', }
    { host => 'ftp.easynet.nl', location => 'Europe, Netherlands, Rotterdam Zuid-Holland',  http => 'http://ftp.easynet.nl/mirror/CPAN',  ftp => 'ftp://ftp.easynet.nl/mirror/CPAN', }
    { host => 'ftp.cs.uu.nl', location => 'Europe, Netherlands, Utrecht',  http => 'http://archive.cs.uu.nl/mirror/CPAN',  ftp => 'ftp://ftp.cs.uu.nl/mirror/CPAN', }
    { host => 'ftp.uninett.no', location => 'Europe, Norway, Oslo',  ftp => 'ftp://ftp.uninett.no/pub/languages/perl/CPAN', }
    { host => 'ftp.uit.no', location => 'Europe, Norway, Troms, Tromsø',  ftp => 'ftp://ftp.uit.no/pub/languages/perl/cpan', }
    { host => 'ftp.man.torun.pl', location => 'Europe, Poland, Kujawsko-Pomorskie, Torun',  ftp => 'ftp://ftp.man.torun.pl/pub/doc/CPAN', }
    { host => 'sunsite.icm.edu.pl', location => 'Europe, Poland, Mazowieckie, Warsaw',  ftp => 'ftp://sunsite.icm.edu.pl/pub/CPAN', }
+   { host => 'ftp.man.poznan.pl', location => 'Europe, Poland, Poznan',  http => 'http://ftp.man.poznan.pl/pub/CPAN',  ftp => 'ftp://ftp.man.poznan.pl/pub/CPAN', }
    { host => 'ftp.man.szczecin.pl', location => 'Europe, Poland, Szczecin',  ftp => 'ftp://ftp.man.szczecin.pl/pub/perl/CPAN', }
    { host => 'ftp.mega.net.pl', location => 'Europe, Poland, Zachodniopomorskie, Swinoujscie',  ftp => 'ftp://ftp.mega.net.pl/CPAN', }
    { host => 'ftp.ua.pt', location => 'Europe, Portugal, Aveiro',  ftp => 'ftp://ftp.ua.pt/pub/CPAN', }
@@ -127,36 +131,39 @@
    { host => 'cpan.interacesso.pt', location => 'Europe, Portugal, Lisbon',  http => 'http://cpan.interacesso.pt',  ftp => 'ftp://cpan.interacesso.pt/pub/cpan', }
    { host => 'cpan.ip.pt', location => 'Europe, Portugal, Lisbon',  http => 'http://cpan.ip.pt',  ftp => 'ftp://cpan.ip.pt/pub/cpan', }
    { host => 'cpan.telepac.pt', location => 'Europe, Portugal, Lisbon',  http => 'http://cpan.telepac.pt',  ftp => 'ftp://ftp.telepac.pt/pub/cpan', }
-   { host => 'ftp.kappa.ro', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.kappa.ro/pub/mirrors/ftp.perl.org/pub/CPAN', }
    { host => 'ftp.bio-net.ro', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.bio-net.ro/pub/CPAN', }
-   { host => 'ftp.roedu.net', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.roedu.net/pub/CPAN', }
    { host => 'ftp.lug.ro', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.lug.ro/CPAN', }
+   { host => 'ftp.kappa.ro', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.kappa.ro/pub/mirrors/ftp.perl.org/pub/CPAN', }
+   { host => 'ftp.roedu.net', location => 'Europe, Romania, Bucharest',  ftp => 'ftp://ftp.roedu.net/pub/CPAN', }
    { host => 'ftp.craiova.roedu.net', location => 'Europe, Romania, Dolj, Craiova',  ftp => 'ftp://ftp.craiova.roedu.net/pub/mirrors/CPAN', }
-   { host => 'ftp.iasi.roedu.net', location => 'Europe, Romania, Iasi',  ftp => 'ftp://ftp.iasi.roedu.net/pub/mirrors/ftp.cpan.org', }
    { host => 'ftp.dntis.ro', location => 'Europe, Romania, Iasi',  ftp => 'ftp://ftp.dntis.ro/pub/cpan', }
+   { host => 'ftp.iasi.roedu.net', location => 'Europe, Romania, Iasi',  ftp => 'ftp://ftp.iasi.roedu.net/pub/mirrors/ftp.cpan.org', }
    { host => 'ftp.dnttm.ro', location => 'Europe, Romania, Timisoara',  ftp => 'ftp://ftp.dnttm.ro/pub/CPAN', }
    { host => 'ftp.chg.ru', location => 'Europe, Russia, Chernogolovka',  ftp => 'ftp://ftp.chg.ru/pub/lang/perl/CPAN', }
    { host => 'ftp.aha.ru', location => 'Europe, Russia, Moscow',  ftp => 'ftp://ftp.aha.ru/pub/CPAN', }
    { host => 'ftp.corbina.ru', location => 'Europe, Russia, Moscow',  ftp => 'ftp://ftp.corbina.ru/pub/CPAN', }
-   { host => 'ftp.sai.msu.su', location => 'Europe, Russia, Moscow',  http => 'http://cpan.sai.msu.ru',  ftp => 'ftp://ftp.sai.msu.su/pub/lang/perl/CPAN', }
    { host => 'cpan.rinet.ru', location => 'Europe, Russia, Moscow',  http => 'http://cpan.rinet.ru',  ftp => 'ftp://cpan.rinet.ru/pub/mirror/CPAN', }
+   { host => 'ftp.sai.msu.su', location => 'Europe, Russia, Moscow',  http => 'http://cpan.sai.msu.ru',  ftp => 'ftp://ftp.sai.msu.su/pub/lang/perl/CPAN', }
    { host => 'mirror.nodex.ru', location => 'Europe, Russia, St. Petersburg',  ftp => 'ftp://mirror.nodex.ru/CPAN', }
    { host => 'ftp.cvt.stuba.sk', location => 'Europe, Slovakia, Bratislava',  ftp => 'ftp://ftp.cvt.stuba.sk/pub/CPAN', }
+   { host => 'www.wsection.com', location => 'Europe, Slovenia, Ljubljana',  http => 'http://www.wsection.com/cpan', }
    { host => 'ftp.arnes.si', location => 'Europe, Slovenia, Ljubljana',  ftp => 'ftp://ftp.arnes.si/software/perl/CPAN', }
    { host => 'fastmirrors.org', location => 'Europe, Slovenia, Maribor',  http => 'http://www.fastmirrors.org/cpan', }
    { host => 'ftp.etse.urv.es', location => 'Europe, Spain, Catalonia, Tarragona',  ftp => 'ftp://ftp.etse.urv.es/pub/perl', }
+   { host => 'ftp.ri.telefonica-data.net', location => 'Europe, Spain, Madrid',  ftp => 'ftp://ftp.ri.telefonica-data.net/CPAN', }
    { host => 'cpan.imasd.elmundo.es', location => 'Europe, Spain, Madrid',  http => 'http://cpan.imasd.elmundo.es', }
    { host => 'ftp.rediris.es', location => 'Europe, Spain, Madrid',  ftp => 'ftp://ftp.rediris.es/mirror/CPAN', }
-   { host => 'ftp.ri.telefonica-data.net', location => 'Europe, Spain, Madrid',  ftp => 'ftp://ftp.ri.telefonica-data.net/CPAN', }
    { host => 'ftp.du.se', location => 'Europe, Sweden, Borlänge',  http => 'http://ftp.du.se/CPAN',  ftp => 'ftp://ftp.du.se/pub/CPAN', }
    { host => 'ftp.sunet.se', location => 'Europe, Sweden, Uppsala',  ftp => 'ftp://ftp.sunet.se/pub/lang/perl/CPAN', }
+   { host => 'cpan.mirror.fr', location => 'Europe, Switzerland, Neuchatel',  http => 'http://cpan.mirror.fr', }
    { host => 'ftp.solnet.ch', location => 'Europe, Switzerland, Solothurn',  http => 'http://cpan.mirror.solnet.ch',  ftp => 'ftp://ftp.solnet.ch/mirror/CPAN', }
    { host => 'sunsite.cnlab-switch.ch', location => 'Europe, Switzerland, Zürich',  ftp => 'ftp://sunsite.cnlab-switch.ch/mirror/CPAN', }
    { host => 'ftp.k-informatik.ch', location => 'Europe, Switzerland, Zürich',  ftp => 'ftp://ftp.k-informatik.ch/pub/CPAN', }
+   { host => 'ftp.quicknet.nl', location => 'Europe, The Netherlands, Alkmaar',  ftp => 'ftp://ftp.quicknet.nl/pub/CPAN', }
    { host => 'sunsite.bilkent.edu.tr', location => 'Europe, Turkey, Ankara',  ftp => 'ftp://sunsite.bilkent.edu.tr/pub/languages/CPAN', }
    { host => 'no-more.kiev.ua', location => 'Europe, Ukraine, Kiev',  http => 'http://no-more.kiev.ua/CPAN',  ftp => 'ftp://no-more.kiev.ua/pub/CPAN', }
    { host => 'cpan.org.ua', location => 'Europe, Ukraine, Kiev',  http => 'http://cpan.org.ua', }
-   { host => 'ftp.mirror.ac.uk', location => 'Europe, United Kingdom, England, Canterbury and Lancaster',  http => 'http://www.mirror.ac.uk/sites/ftp.funet.fi/pub/languages/perl/CPAN',  ftp => 'ftp://ftp.mirror.ac.uk/sites/ftp.funet.fi/pub/languages/perl/CPAN', }
+   { host => 'ftp.mirrorservice.org', location => 'Europe, United Kingdom, England, Canterbury and Lancaster',  http => 'http://www.mirrorservice.org/sites/ftp.funet.fi/pub/languages/perl/CPAN',  ftp => 'ftp://ftp.mirrorservice.org/sites/ftp.funet.fi/pub/languages/perl/CPAN', }
    { host => 'cont1.lhx.teleglobe.net', location => 'Europe, United Kingdom, England, London',  http => 'http://cpan.teleglobe.net',  ftp => 'ftp://cpan.teleglobe.net/pub/CPAN', }
    { host => 'ftp.plig.org', location => 'Europe, United Kingdom, England, London',  ftp => 'ftp://ftp.plig.org/pub/CPAN', }
    { host => 'cpan.crazygreek.co.uk', location => 'Europe, United Kingdom, England, London',  http => 'http://cpan.mirror.anlx.net',  ftp => 'ftp://ftp.mirror.anlx.net/CPAN', }
@@ -178,6 +185,7 @@
    { host => 'cpan.binarycompass.org', location => 'North America, United States, California, Los Angeles',  http => 'http://cpan.binarycompass.org', }
    { host => 'mirrors.gossamer-threads.com', location => 'North America, United States, California, Los Angeles',  http => 'http://mirrors.gossamer-threads.com/CPAN', }
    { host => 'cpan.nas.nasa.gov', location => 'North America, United States, California, Moffett Field',  ftp => 'ftp://cpan.nas.nasa.gov/pub/perl/CPAN', }
+   { host => 'mirror.aelix.com', location => 'North America, United States, California, Northridge',  http => 'http://mirror.aelix.com/pub/CPAN',  ftp => 'ftp://mirror.aelix.com/pub/CPAN', }
    { host => 'mirrors.kernel.org', location => 'North America, United States, California, Palo Alto',  http => 'http://mirrors.kernel.org/cpan',  ftp => 'ftp://mirrors.kernel.org/pub/CPAN', }
    { host => 'cpan.mirrors.redwire.net', location => 'North America, United States, California, San Diego',  http => 'http://cpan.mirrors.redwire.net',  ftp => 'ftp://cpan.mirrors.redwire.net/pub/CPAN', }
    { host => 'cpan.digisle.net', location => 'North America, United States, California, San Jose',  http => 'http://cpan.digisle.net',  ftp => 'ftp://cpan.digisle.net/pub/CPAN', }
@@ -191,6 +199,8 @@
    { host => 'mirror.csit.fsu.edu', location => 'North America, United States, Florida, Tallahassee',  http => 'http://mirror.csit.fsu.edu/pub/CPAN',  ftp => 'ftp://mirror.csit.fsu.edu/pub/CPAN', }
    { host => 'mirror.candidhosting.com', location => 'North America, United States, Florida, Tampa',  http => 'http://mirror.candidhosting.com/pub/CPAN',  ftp => 'ftp://mirror.candidhosting.com/pub/CPAN', }
    { host => 'shai.nks.net', location => 'North America, United States, Florida, Tampa',  http => 'http://cpan.mirrors.nks.net', }
+   { host => 'cpan.mirrors.hoobly.com', location => 'North America, United States, Illinois, Chicago',  http => 'http://cpan.mirrors.hoobly.com', }
+   { host => 'mirrors.playboy.com', location => 'North America, United States, Illinois, Chicago',  http => 'http://mirrors.playboy.com/CPAN', }
    { host => 'ftp.uwsg.iu.edu', location => 'North America, United States, Indiana, Bloomington',  ftp => 'ftp://ftp.uwsg.iu.edu/pub/perl/CPAN', }
    { host => 'cpan.netnitco.net', location => 'North America, United States, Indiana, Hebron',  http => 'http://cpan.netnitco.net',  ftp => 'ftp://cpan.netnitco.net/pub/mirrors/CPAN', }
    { host => 'archive.progeny.com', location => 'North America, United States, Indiana, Indianapolis',  http => 'http://archive.progeny.com/CPAN',  ftp => 'ftp://archive.progeny.com/CPAN', }
@@ -202,8 +212,8 @@
    { host => 'cpan.cse.msu.edu', location => 'North America, United States, Michigan, East Lansing',  ftp => 'ftp://cpan.cse.msu.edu', }
    { host => 'cpan.calvin.edu', location => 'North America, United States, Michigan, Grand Rapids',  http => 'http://cpan.calvin.edu/pub/CPAN',  ftp => 'ftp://cpan.calvin.edu/pub/CPAN', }
    { host => 'ftp.cpanel.net', location => 'North America, United States, New Jersey, Clifton',  http => 'http://ftp.cpanel.net/pub/CPAN',  ftp => 'ftp://ftp.cpanel.net/pub/CPAN', }
-   { host => 'cont1.njy.teleglobe.net', location => 'North America, United States, New Jersey, Newark',  http => 'http://cpan.teleglobe.net',  ftp => 'ftp://cpan.teleglobe.net/pub/CPAN', }
    { host => 'mirror.datapipe.net', location => 'North America, United States, New Jersey, Newark',  http => 'http://mirror.datapipe.net/CPAN',  ftp => 'ftp://mirror.datapipe.net/pub/CPAN', }
+   { host => 'cont1.njy.teleglobe.net', location => 'North America, United States, New Jersey, Newark',  http => 'http://cpan.teleglobe.net',  ftp => 'ftp://cpan.teleglobe.net/pub/CPAN', }
    { host => 'cpan.belfry.net', location => 'North America, United States, New York, New York',  http => 'http://cpan.belfry.net', }
    { host => 'cpan.thepirtgroup.com', location => 'North America, United States, New York, New York',  http => 'http://cpan.thepirtgroup.com',  ftp => 'ftp://cpan.thepirtgroup.com', }
    { host => 'cpan.erlbaum.net', location => 'North America, United States, New York, New York',  http => 'http://cpan.erlbaum.net',  ftp => 'ftp://cpan.erlbaum.net', }
@@ -219,6 +229,7 @@
    { host => 'carroll.cac.psu.edu', location => 'North America, United States, Pennsylvania, University Park',  ftp => 'ftp://carroll.cac.psu.edu/pub/CPAN', }
    { host => 'ftp.sunsite.utk.edu', location => 'North America, United States, Tennessee, Knoxville',  ftp => 'ftp://ftp.sunsite.utk.edu/pub/CPAN', }
    { host => 'ftp.sedl.org', location => 'North America, United States, Texas, Austin',  http => 'http://ftp.sedl.org/pub/mirrors/CPAN', }
+   { host => 'mirror.hyperian.net', location => 'North America, United States, Texas, Dallas',  http => 'http://mirror.hyperian.net/CPAN', }
    { host => 'www.unixsoft.org', location => 'North America, United States, Texas, Dallas',  http => 'http://www.unixsoft.org/cpan', }
    { host => 'mirror.telentente.com', location => 'North America, United States, Texas, Houston',  ftp => 'ftp://mirror.telentente.com/pub/CPAN', }
    { host => 'mirrrors.theonlinerecordstore.com', location => 'North America, United States, Texas, Houston',  http => 'http://mirrors.theonlinerecordstore.com/CPAN', }
@@ -228,8 +239,8 @@
    { host => 'cpan-du.viaverio.com', location => 'North America, United States, Virginia, Dulles',  http => 'http://cpan-du.viaverio.com',  ftp => 'ftp://cpan-du.viaverio.com/pub/CPAN', }
    { host => 'mirrors.rcn.net', location => 'North America, United States, Virginia, Fairfax',  http => 'http://mirrors.rcn.net/pub/lang/CPAN',  ftp => 'ftp://mirrors.rcn.net/pub/lang/CPAN', }
    { host => 'perl.secsup.org', location => 'North America, United States, Virginia, Fairfax',  http => 'http://perl.secsup.org',  ftp => 'ftp://perl.secsup.org/pub/perl', }
-   { host => 'cpan.llarian.net', location => 'North America, United States, Washington, Seattle',  http => 'http://cpan.llarian.net',  ftp => 'ftp://cpan.llarian.net/pub/CPAN', }
    { host => 'ftp-mirror.internap.com', location => 'North America, United States, Washington, Seattle',  ftp => 'ftp://ftp-mirror.internap.com/pub/CPAN', }
+   { host => 'cpan.llarian.net', location => 'North America, United States, Washington, Seattle',  http => 'http://cpan.llarian.net',  ftp => 'ftp://cpan.llarian.net/pub/CPAN', }
    { host => 'cpan.mirrors.tds.net', location => 'North America, United States, Wisconsin, Madison',  http => 'http://cpan.mirrors.tds.net',  ftp => 'ftp://cpan.mirrors.tds.net/pub/CPAN', }
    { host => 'mirror.doit.wisc.edu', location => 'North America, United States, Wisconsin, Madison',  http => 'http://mirror.sit.wisc.edu/pub/CPAN',  ftp => 'ftp://mirror.sit.wisc.edu/pub/CPAN', }
    { host => 'mirror.aphix.com', location => 'North America, United States, Wisconsin, Milwaukee',  http => 'http://mirror.aphix.com/CPAN',  ftp => 'ftp://mirror.aphix.com/pub/CPAN', }
@@ -244,8 +255,10 @@
    { host => 'cpan.pop-mg.com.br', location => 'South America, Brazil, Minas Gerais, Belo Horizonte',  ftp => 'ftp://cpan.pop-mg.com.br/pub/CPAN', }
    { host => 'cpan.hostsul.com.br', location => 'South America, Brazil, Rio de Janeiro',  http => 'http://cpan.hostsul.com.br',  ftp => 'ftp://cpan.hostsul.com.br', }
    { host => 'mirrors.uol.com.br', location => 'South America, Brazil, Sao Paulo',  http => 'http://mirrors.uol.com.br/pub/cpan', }
-   { host => 'mirrors.csol.org', location => 'South America, Chile, Santiago',  http => 'http://mirrors.csol.org/CPAN', }
    { host => 'cpan.netglobalis.net', location => 'South America, Chile, Santiago',  http => 'http://cpan.netglobalis.net',  ftp => 'ftp://cpan.netglobalis.net/pub/CPAN', }
+   { host => 'mirrors.csol.org', location => 'South America, Chile, Santiago',  http => 'http://mirrors.csol.org/CPAN', }
    { host => 'sunsite.dcc.uchile.cl', location => 'South America, Chile, Santiago',  http => 'http://sunsite.dcc.uchile.cl/cpan',  ftp => 'ftp://sunsite.dcc.uchile.cl/cpan', }
+   { host => 'ftp.telmexchile.cl', location => 'South America, Chile, Santiago',  ftp => 'ftp://ftp.telmexchile.cl/Linux/Perl/CPAN', }
+   { host => 'ftp.fciencias.unam.mx', location => 'South America, Mexico, Circuito Exterior',  ftp => 'ftp://ftp.fciencias.unam.mx/CPAN', }
   ]
 %]

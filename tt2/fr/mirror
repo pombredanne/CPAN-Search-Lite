@@ -1,15 +1,13 @@
 [% PROCESS mirror_list %]
-<div class=path><b>CPAN Miroirs</b></div>
-Avec cette forme vous pouvez indiquer d'o&ugrave; vous voulez 
-chercher des t&eacute;l&eacute;chargements 
-(ceci exige des biscuits d'&ecirc;tre permis). 
-Votre arrangement de courant est
+<div class=path><b>Miroirs CPAN</b></div>
+Choisissez votre serveur de t&eacute;l&eacute;chargement pr&eacute;f&eacute;r&eacute; &agrave; l'aide de ce formulaire
+(votre navigateur doit autoriser les cookies).
+Vos param&egrave;tres actuels sont
 [% host = mirror || download %]
 <a href="[% host %]">
-[% host %]</a>. Le lien de multiplexeur de 
+[% host %]</a>. Le lien par d&eacute;faut 
 <a href="[% download %]">[% download %]</a>
-essayera de vous r&eacute;orienter &agrave; un miroir voisin de CPAN, 
-bas&eacute; sur votre pays d'origine.<p />
+va vous rediriger sur le miroir CPAN le plus proche, selon votre pays d'origine.<p />
 <form action="[% home %][% path %]" method="post">
 [% IF save -%]
 [% FOREACH key = save.keys -%]
@@ -18,7 +16,7 @@ bas&eacute; sur votre pays d'origine.<p />
 [% END -%]
 <b>1. Miroir public</b><br />
 <select name="host">
-<option value="">Aucum - employez le URL de coutume</option>
+<option value="">Aucun - Utiliser une URL personnalis&eacute;e</option>
 [% FOREACH item = mirror_list -%]
 [% FOREACH protocol = ['http', 'ftp'] -%]
 [% IF item.$protocol %]
@@ -28,7 +26,7 @@ bas&eacute; sur votre pays d'origine.<p />
 [% END -%]
 [% END -%]
 </select><p />
-<b>or</b><p /><b>2. URL de coutume</b> (par exemple http://my.site/CPAN/)<br />
+<b>or</b><p /><b>2. Adresse URL personnalis&eacute;e</b> (ex= http://mon.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
 <br /><p />
 <input type=submit value=Submit>

@@ -23,14 +23,11 @@
 <td class=label>email</td>
 <td class=cell><a href="mailto:[% results.email %]">
 [% results.email %]</a></td>
-<tr><td class=label>Collegamenti</td>
+<tr><td class=label>Link</td>
 <td class=cell>
-<a href="[% searchcpan %]~[% results.cpanid | lower %]">
-search.cpan.org</a>&nbsp; | &nbsp; 
-<a href="[% mirror %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
-CPAN</a>&nbsp; | &nbsp; 
-<a href="[% backpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
-Archive</a>&nbsp;
+<a href="[% searchcpan %]~[% results.cpanid | lower %]">search.cpan.org</a>&nbsp; | &nbsp; 
+<a href="[% mirror %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">CPAN</a>&nbsp; | &nbsp; 
+<a href="[% backpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">Archivio</a>&nbsp;
 </td>
 </tr>
 </table>
@@ -48,7 +45,7 @@ Archive</a>&nbsp;
 [% item.dist_name %]-[% item.dist_vers %]</a>
 &nbsp;&nbsp;[&nbsp;<a
 href="[% host %]/authors/id/[% item.download %]">
-Download</a>&nbsp;]</td>
+Scarica</a>&nbsp;]</td>
 <td>[% item.dist_abs %]</td>
 <td align=right>[% item.birth %]</td></tr>
 [% END -%]

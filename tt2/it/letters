@@ -1,4 +1,4 @@
-<div class=t1>Passi in rassegna tramite [% pages.list.$mode %]</div><br />
+<div class=t1>Naviga per [% pages.list.$mode %]</div><br />
 <center>
 <table class=chmenu><tr>
 [% FOREACH letter = ['A' .. 'Z'] %]

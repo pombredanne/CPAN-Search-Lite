@@ -23,7 +23,7 @@
 <td class=label>email</td>
 <td class=cell><a href="mailto:[% results.email %]">
 [% results.email %]</a></td>
-<tr><td class=label>Verbindungen</td>
+<tr><td class=label>Links</td>
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid | lower %]">
 search.cpan.org</a>&nbsp; | &nbsp; 
@@ -38,7 +38,7 @@ Archive</a>&nbsp;
 [% IF results.dists %]
 [% host = mirror ? mirror : download %]
 <div class=box>
-<h2 class=t2>Verteilungen</h2>
+<h2 class=t2>Distributionen</h2>
 <table width=100% class=dists>
 [% class = 's' %]
 [% FOREACH item = results.dists %]

@@ -1,6 +1,6 @@
 use strict;
 use ExtUtils::MakeMaker;
-my @exe_files = map {"bin/$_"} qw(csl_index csl_query csl_soap perldocs);
+my @exe_files = map {"bin/$_"} qw(csl_index csl_query csl_soap);
 my %opts = (
 	    NAME => 'CPAN::Search::Lite',
             VERSION_FROM => 'lib/CPAN/Search/Lite.pm',
@@ -32,7 +32,9 @@ my %prereqs = ('Config::IniFiles' => 0,
                'SOAP::Lite' => 0,
                'CPAN::DistnameInfo' => 0,
                'Sort::Versions' => 0,
-               'Text::English' => 0,
+               'Lingua::Stem' => 0,
+               'AI::Categorizer' => 0,
+               'Lingua::StopWords' => 0,
 	       );
 
 WriteMakefile( %opts, PREREQ_PM => \%prereqs);

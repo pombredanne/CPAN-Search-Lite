@@ -1,9 +1,9 @@
 [% IF query %]
-Spiacente - nessun risultati per
+Siamo spiacenti - non è stato trovato alcun risultato per
 <b>&quot;[% query %]&quot;</b> 
-sono stati trovati di tipo <b>[% mode %]</b>.
-Provi prego un altro termine di ricerca.
+di tipo <b>[% mode %]</b>.
+Sei pregato di specificare altri termini per la ricerca.
 [% ELSE %]
-Spiacente - non potrei capire che cosa &egrave; stato chiesto. 
-Prego prova ancora.
+Siamo spiacenti - non abbiamo capito che cosa hai cercato. 
+Sei pregato di riprovare.
 [% END -%]

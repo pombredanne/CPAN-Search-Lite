@@ -145,6 +145,7 @@ sub search : method {
         
         (defined $mode and defined $query_term) and do {
             $mode = 'module' if $query_term =~ /::/;
+            $query_term =~ s{\.pm$}{} if ($mode eq 'module');
             $query->query(mode => $mode, query => $query_term);
             if ($results = $query->{results}) {
                 $page = ref($results) eq 'ARRAY' ?

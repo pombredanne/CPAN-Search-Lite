@@ -138,6 +138,7 @@ sub search : method {
     return $self->chapter($r) unless $query_term;
     my $mode = $self->{mode};
     $mode = 'module' if $query_term =~ /::/;
+    $query_term =~ s{\.pm$}{} if ($mode eq 'module');
     my ($results, $page, %extra_info);
     $query->query(mode => $mode, query => $query_term);
     if ($results = $query->{results}) {
@@ -322,6 +323,10 @@ sub dist : method {
     else {
         $page = 'letters';
     }
+    if ($letter and ref($results) eq 'ARRAY' and @$results == 1) {
+      $r->headers_out->set(Location => "/dist/$results->[0]->{dist_name}");
+      return Apache::REDIRECT;
+    }
     my %extra_info;
     unless (ref($results) eq 'ARRAY') {
         if (my $name = $results->{$mode_info->{$mode}->{name}}) {
@@ -385,6 +390,10 @@ sub module : method {
     else {
         $page = 'letters';
     }
+    if ($letter and ref($results) eq 'ARRAY' and @$results == 1) {
+      $r->headers_out->set(Location => "/module/$results->[0]->{mod_name}");
+      return Apache::REDIRECT;
+    }
     my %extra_info;
     unless (ref($results) eq 'ARRAY') {
         if (my $name = $results->{$mode_info->{$mode}->{name}}) {
@@ -393,6 +402,9 @@ sub module : method {
             }
             if ($name =~ /^([^:]+)::/) {
                 $extra_info{subletter} = $1;
+            }
+            if ($name =~ /^([^:]+).*/) {
+                $extra_info{subchapter} = $1;
             }
         }
     }
@@ -430,8 +442,18 @@ sub chapter : method {
         $results = $self->chap_results();
         $page = $results ? 'chapterid' : 'missing';
     }
-    elsif ($path_info =~ m!^/([^/]+)/?(.*)!) {
-        my ($chapter, $subchapter) = ($1, $2);
+    my ($chapter, $subchapter);
+    if ($path_info) {
+        if ($path_info =~ m!^/([^/]+)/?(.*)!) {
+            ($chapter, $subchapter) = ($1, $2);
+        }
+        $chapter = undef if (not defined $chaps_rev{$chapter});
+    }
+    if (not defined $chapter) {
+        $results = $self->chap_results();
+        $page = $results ? 'chapterid' : 'missing';
+    }
+    else {
         my %args;
         $args{mode} = $mode;
         $args{id} = $chaps_rev{$chapter};
@@ -448,6 +470,10 @@ sub chapter : method {
         $query->query(%args);
         $results = $query->{results};
         $page = 'missing' unless $results;
+        if ($subchapter and ref($results) eq 'ARRAY' and @$results == 1) {
+          $r->headers_out->set(Location => "/dist/$results->[0]->{dist_name}");
+          return Apache::REDIRECT;
+        }
     }
     if (my $error = $query->{error}) {
         $r->log->error($error);

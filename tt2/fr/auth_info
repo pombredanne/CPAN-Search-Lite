@@ -14,13 +14,13 @@
 <h2 class=t1>[% cpanid %]</h1>
 <table>
 <tr>
-<td class=label>CPAN id</td>
+<td class=label>Identifiant CPAN</td>
 <td class=cell>[% cpanid %]</td>
 </tr><tr>
-<td class=label>Nom er pr&eacute;noms</td>
+<td class=label>Nom et pr&eacute;nom</td>
 <td class=cell>[% results.fullname %]</td>
 </tr><tr>
-<td class=label>email</td>
+<td class=label>E-mail</td>
 <td class=cell><a href="mailto:[% results.email %]">
 [% results.email %]</a></td>
 <tr><td class=label>Liens</td>
@@ -30,7 +30,7 @@ search.cpan.org</a>&nbsp; | &nbsp;
 <a href="[% mirror %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
 CPAN</a>&nbsp; | &nbsp; 
 <a href="[% backpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
-Archive</a>&nbsp;
+Archives</a>&nbsp;
 </td>
 </tr>
 </table>
@@ -48,7 +48,7 @@ Archive</a>&nbsp;
 [% item.dist_name %]-[% item.dist_vers %]</a>
 &nbsp;&nbsp;[&nbsp;<a
 href="[% host %]/authors/id/[% item.download %]">
-T&eacute;l&eacute;chargement</a>&nbsp;]</td>
+T&eacute;l&eacute;charger</a>&nbsp;]</td>
 <td>[% item.dist_abs %]</td>
 <td align=right>[% item.birth %]</td></tr>
 [% END -%]
