@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: SOAP.pm,v 1.1 2004/04/09 04:33:42 rkobes Exp $
+# $Id: SOAP.pm,v 1.2 2004/12/19 04:36:34 rkobes Exp $
 #
 # ======================================================================
 

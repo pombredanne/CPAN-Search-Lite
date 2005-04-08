@@ -8,12 +8,17 @@ use Apache::TestRequest qw(GET);
 use CPAN::DistnameInfo;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-use TestCSL qw($expected make_soap download);
+use TestCSL qw($expected make_soap download load_cs);
+use File::Spec::Functions;
+
+use Cwd;
+my $cwd = getcwd;
+my $CPAN = catdir $cwd, '../lib/t/cpan';
 
 my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
 
-plan tests => 79;
+plan tests => 82;
 
 my $soap_uri = "http://$hostport/Apache/CPAN/SOAP";
 my $soap_proxy = "http://$hostport/soap";
@@ -36,7 +41,8 @@ for my $id (keys %$expected) {
     ok t_cmp(defined $results->{email}, 1);
 
     $dist = $expected->{$id}->{dist};
-    $fields = [qw(dist_name dist_abs dist_vers cpanid dist_file size birth)];
+    $fields = [qw(dist_name dist_abs dist_vers cpanid 
+                  md5 dist_file size birth)];
     $query = $soap->query(mode => 'dist', name => $dist, 
                           fields => $fields);
     eval{$query->fault};
@@ -53,6 +59,9 @@ for my $id (keys %$expected) {
     ok t_cmp($results->{dist_vers}, $d->version);
     ok t_cmp(defined $results->{size}, 1);
     ok t_cmp(defined $results->{birth}, 1);
+    my $cs = catfile $CPAN, download($id, 'CHECKSUMS');
+    my $cksum = load_cs($cs);
+    ok t_cmp($results->{md5}, $cksum->{$dist_file}->{md5});
 
     $module = $expected->{$id}->{mod};
     $fields = [qw(mod_name mod_abs mod_vers dist_name cpanid dist_file)];

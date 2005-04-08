@@ -8,10 +8,10 @@ use File::Path;
 use CPAN::DistnameInfo;
 use FindBin;
 use lib "$FindBin::Bin/../../Apache2/t/lib";
-use TestCSL qw($expected download);
+use TestCSL qw($expected download %has_doc);
 use CPAN::Search::Lite::Info;
 
-plan tests => 85;
+plan tests => 100;
 
 my $cwd = getcwd;
 my $CPAN = catdir $cwd, 't', 'cpan';
@@ -22,7 +22,6 @@ $info->fetch_info();
 ok(defined $info->{dists});
 ok(defined $info->{mods});
 ok(defined $info->{auths});
-
 foreach my $id (keys %$expected) {
   my $mod = $expected->{$id}->{mod};
   my $dist = $expected->{$id}->{dist};
@@ -79,6 +78,7 @@ my $extract = CPAN::Search::Lite::Extract->new(CPAN => $CPAN,
                                                index => $index,
                                                pod_root => $pod_root,
                                                html_root => $html_root,
+                                               split_pod => 1,
                                               );
 ok(defined $extract);
 ok(ref($extract) eq 'CPAN::Search::Lite::Extract');
@@ -104,6 +104,21 @@ foreach my $id (keys %$expected) {
     ok(-f $f && -s _ > 0, 1);
 }
 
+my $dist = 'libnet';
+
+foreach my $mod (keys %has_doc) {
+    my $d = catdir $pod_root, $dist;
+    my $f = (catfile($d, split /::/, $mod)) . '.pm';
+    ok(-f $f && -s _ > 0, 1);
+    $d = catdir $html_root, $dist;
+    if ($has_doc{$mod}) {
+        $f = (catfile($d, split /::/, $mod)) . '.html';
+        ok(-f $f && -s _ > 0, 1);
+    }
+    $f = (catfile($d, split /::/, $mod)) . '.pm.html';
+    ok(-f $f && -s _ > 0, 1);
+}
+
 use CPAN::Search::Lite::Populate;
 my ($db, $user, $passwd) = ('test', 'test', '');
 my $pop = CPAN::Search::Lite::Populate->new(db => $db, user => $user,
@@ -114,3 +129,4 @@ ok(defined $pop);
 ok(ref($pop) eq 'CPAN::Search::Lite::Populate');
 $pop->populate();
 ok(1);
+

@@ -1,5 +1,0 @@
-[% IF request %]
-Lo siento - no se encontraron resultados por <b>&quot;[% request %]&quot;</b>. Por favor int&eacute;ntelo con otro t&eacute;rmino.
-[% ELSE %]
-Lo siento - No entiendo lo que quiso buscar. Por favor int&eacute;ntelo de nuevo.
-[% END -%]

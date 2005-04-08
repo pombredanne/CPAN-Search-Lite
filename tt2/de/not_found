@@ -1,7 +1,0 @@
-[% IF request %]
-Es wurden leider keine Ergebnisse f&uuml;r <b>&quot;[% request %]&quot;</b> gefunden.
-Bitte versuchen Sie es mit einem anderen Suchbegriff.
-[% ELSE %]
-Unbekannte Anfrage. Bitte versuchen Sie es 
-nocheinmal.
-[% END -%]

@@ -12,18 +12,50 @@ use File::Basename;
 use File::Path;
 use LWP::Simple qw(getstore is_success);
 use Locale::Country;
+use CPAN::Search::Lite::DBI qw($tables);
 
 our ($oldout, $VERSION);
-
-$VERSION = 0.47;
+$VERSION = 0.64;
 
 sub new {
     my ($class, %args) = @_;
 
-    die "Please supply a path to the configuration file"
-        unless ($args{config} and -f $args{config});
+    my $env_cfg = $ENV{CSL_CONFIG_FILE};
+    if ($env_cfg and not -f $env_cfg) {
+      die qq{\$ENV{CSL_CONFIG_FILE} = "$env_cfg" not found};
+    }
+    my $opt_cfg = $args{config};
+    if ($opt_cfg and not -f $opt_cfg) {
+      die qq{Config file "$opt_cfg" not found};
+    }
+    if ($env_cfg) {
+      if (not $opt_cfg) {
+        print qq{Using config file "$env_cfg"\n};
+        $args{config} = $env_cfg;
+      }
+      else {
+        print qq{Using config file "$opt_cfg"\n};        
+      }
+    }
+    elsif ($opt_cfg) {
+      print qq{Using config file "$opt_cfg"\n};
+    }
+    else {
+      die <<"DEATH";
+
+No configuration file found. Please specify one
+either by the "config" option or by setting the
+environment variable CSL_CONFIG_FILE.
+
+DEATH
+    }
+
+    if ($args{setup} and $args{reindex}) {
+      die "Reindexing must be done on an exisiting database";
+    }
 
     read_config(\%args);
+    $args{no_ppm} = 1 if ($args{reindex});
     foreach (qw(CPAN db user passwd) ) {
         die "Must supply a '$_' argument" unless $args{$_};
     }
@@ -40,20 +72,40 @@ sub new {
     bless $self, $class;
 }
 
+
 sub read_config {
     my $args = shift;
     my $cfg = Config::IniFiles->new(-file => $args->{config});
     my $section = 'CPAN';
-    foreach (qw(CPAN pod_root html_root no_mirror no_cat
-                cat_threshold no_ppm remote_mirror multiplex) ) {
+    my @wanted = qw(CPAN pod_root html_root no_mirror no_cat pod_only split_pod
+                cat_threshold no_ppm remote_mirror multiplex);
+    my %has = map {$_ => 1} (@wanted, 'ignore');
+    foreach ($cfg->Parameters($section)) {
+        die "Invalid parameter: $_, in section $section" unless $has{$_};
+    }
+    foreach (@wanted) {
         $args->{$_} = $cfg->val($section, $_) if $cfg->val($section, $_);
     }
+    if ($cfg->val($section, 'ignore')) {
+        my @values = $cfg->val($section, 'ignore');
+        $args->{ignore} = \@values;
+    }
     $section = 'DB';
-    foreach (qw(db user passwd) ) {
+    @wanted = qw(db user passwd);
+    %has = map {$_ => 1} @wanted;
+    foreach ($cfg->Parameters($section)) {
+        die "Invalid parameter: $_, in section $section" unless $has{$_};
+    }
+    foreach (@wanted) {
         $args->{$_} = $cfg->val($section, $_) if $cfg->val($section, $_);
     }
     $section = 'WWW';
-    foreach (qw(tt2 css geoip up_img)) {
+    @wanted = qw(tt2 css geoip up_img);
+    %has = map {$_ => 1} @wanted;
+    foreach ($cfg->Parameters($section)) {
+        die "Invalid parameter: $_, in section $section" unless $has{$_};
+    }
+    foreach (@wanted) {
         $args->{$_} = $cfg->val($section, $_) if $cfg->val($section, $_);
     }
 }
@@ -64,6 +116,9 @@ sub index {
     my $log_file = $args{log} || 'cpan_search_log.' . time;
     my $log = catfile $log_dir, $log_file;
     $oldout = error_fh($log);
+    if ($self->{rebuild_info}) {
+      return $self->rebuild_info();
+    }
     if ($self->{no_mirror}) {
         my %wanted = map{$_ => $self->{$_}} qw(remote_mirror);
         $self->no_mirror(%wanted);
@@ -80,6 +135,20 @@ sub index {
     }
     $self->populate or return;
     return 1;
+}
+
+sub rebuild_info {
+  my $self = shift;
+  my %wanted = map {$_ => $self->{$_}} qw(db user passwd);
+  my $cdbi = CPAN::Search::Lite::DBI::Index->new(%wanted) or return;
+  foreach my $table(qw(chapters reps)) {
+    my $obj = $cdbi->{objs}->{$table};
+    next unless my $schema = $obj->schema($tables->{$table});
+    $obj->drop_table or die "Dropping table $table failed";
+    $obj->create_table($schema) or die "Creating table $table failed";
+    $obj->populate or die "Populating $table failed";
+  }
+  return 1;
 }
 
 sub no_mirror {
@@ -109,7 +178,8 @@ sub no_mirror {
 sub fetch_info {
     my $self = shift;
     my $CPAN = $self->{CPAN};
-    my $info = CPAN::Search::Lite::Info->new(CPAN => $CPAN);
+    my $info = CPAN::Search::Lite::Info->new(CPAN => $CPAN,
+                                            ignore => $self->{ignore});
     $info->fetch_info() or return;
 
     my @tables = qw(dists mods auths);
@@ -135,7 +205,8 @@ sub fetch_info {
 sub extract {
     my $self = shift;
     my %wanted = map {$_ => $self->{$_}}
-        qw(CPAN state index pod_root html_root css up_img setup);
+        qw(CPAN state index pod_root html_root css up_img setup 
+           split_pod pod_only);
     my $obj = CPAN::Search::Lite::Extract->new(%wanted);
     $obj->extract() or return;
     return 1;
@@ -144,7 +215,7 @@ sub extract {
 sub state {
     my $self = shift;
     my %wanted = map {$_ => $self->{$_}} 
-        qw(db user passwd index setup no_ppm);
+        qw(db user passwd index setup no_ppm reindex);
     my $state = CPAN::Search::Lite::State->new(%wanted);
     $state->state(%wanted) or return;
     $self->{state} = $state;
@@ -293,19 +364,28 @@ CPAN and ppm indices. The creation of the object
 
  my $index = CPAN::Search::Lite::Index->new(%args);
 
-accepts two arguments:
+accepts three arguments:
 
 =over 3
 
 =item * config =E<gt> /path/to/config.conf
 
-This (required) argument specifies where to find the configuration file 
-used to determine the remaining options. 
+This argument specifies where to find the configuration file 
+used to determine the remaining options. In lieu of this
+option, the environment variable C<CSL_CONFIG_FILE> pointing
+to the configuration file may be specified.
 
 =item * setup =E<gt> 1
 
 This (optional) argument specifies that the database is being set up.
 Any existing tables will be dropped.
+
+=item * reindex =E<gt> value
+
+This (optional) argument specifies distribution names that
+one would like to reindex in an existing database. These may
+be specified as either a scalar, for a single distribution,
+or as an array reference for a list of distributions.
 
 =back
 
@@ -355,11 +435,49 @@ This specifies where the extracted pod files from a distribution
 will be kept. A subdirectory C<dist_name> under this directory
 will be created corresponding to the name of the distribution.
 
+=item * pod_only = 1
+
+This specifies that, if the module files are to be extracted,
+fetch only those that contain pod.
+
+=item * split_pod = 1
+
+This specifies that, if the module files are to be extracted,
+when generating the html pages create two pages for each
+module: one containing just the documentation, and the other
+containing the code run through C<Perl::Tidy>. For a module
+such as C<Foo::Bar>, the documentation will be saved as a
+file F<Foo/Bar.html>, while the sources will be saved
+as F<Foo/Bar.pm.html>.
+
 =item * html_root = /usr/local/httpd/htdocs/CPAN
 
 This specifies where the html files created from the pod files 
 will be kept. A subdirectory C<dist_name> under this directory
 will be created corresponding to the name of the distribution.
+
+=item * ignore = some_dist_name_to_ignore
+
+This specifies a name of a distribution (without a version
+number) to ignore in indexing. This option may be given
+a number of times to specify an array of values, or may
+be specified as
+
+  ignore = <<EOL
+  Module-CPANTS-asHash
+  CORBA-IDL
+  EOL
+
+This array of values (which may include regular expressions)
+is joined together as
+
+  $pat = join '|', @ignore_dists
+
+and if the distribution name matches
+
+  $dist_name =~ /^($pat)$/
+
+the distribution is ignored.
 
 =item * no_mirror = 1
 

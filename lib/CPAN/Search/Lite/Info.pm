@@ -3,19 +3,21 @@ use strict;
 use warnings;
 use Storable;
 use CPAN::DistnameInfo;
-use Sort::Versions;
 use File::Spec::Functions;
 use Compress::Zlib;
 use File::Listing;
 use File::Basename;
 use Safe;
+use CPAN::Search::Lite::Util qw(vcmp);
 our ($ext);
 $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
+our ($VERSION);
+$VERSION = 0.64;
 
 sub new {
     my ($class, %args) = @_;
     die "Must supply the top-level CPAN directory" unless $args{CPAN};
-    my $self = {CPAN => $args{CPAN},
+    my $self = {CPAN => $args{CPAN}, ignore => $args{ignore},
                 dists => {}, auths => {}, mods => {}};
     bless $self, $class;
 }
@@ -33,6 +35,11 @@ sub dists_and_mods {
     my ($packages, $cpan_files) = $self->packages();
 
     my ($dists, $mods);
+    my $ignore = $self->{ignore};
+    my $pat;
+    if ($ignore and ref($ignore) eq 'ARRAY') {
+      $pat = join '|', @$ignore;
+    }
     foreach my $cpan_file (keys %$cpan_files) {
         my $d = CPAN::DistnameInfo->new($cpan_file);
         next unless ($d->maturity eq 'released');
@@ -45,13 +52,14 @@ sub dists_and_mods {
             delete $cpan_files->{$cpan_file};
             next;
         }
-        # ignore huge Module-CPANTS-asHash of all CPAN data
-        if ($filename =~ /Module-CPANTS-asHash/) {
-            delete $cpan_files->{$cpan_file};
-            next;
+        # ignore specified dists
+        if ($pat and ($dist =~ /^($pat)$/)) {
+             delete $cpan_files->{$cpan_file};
+             print "Ignoring $dist\n";
+             next;
         }
         if (not $dists->{$dist} or 
-            versioncmp($version, $dists->{$dist}->{version}) > 0) {
+            vcmp($version, $dists->{$dist}->{version}) > 0) {
             $dists->{$dist}->{version} = $version;
             $dists->{$dist}->{filename} = $filename;
             $dists->{$dist}->{cpanid} = $cpanid;
@@ -278,6 +286,8 @@ hash reference with keys of
 =item C<size> - the size of the file
 
 =item C<date> - the last modified date (I<YYYY/MM/DD>) of the file
+
+=item C<md5> - the CPAN md5 checksum of the file
 
 =item C<modules> - specifies the modules present in the distribution:
 

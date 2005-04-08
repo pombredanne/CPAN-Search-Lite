@@ -4,15 +4,20 @@ use strict;
 use warnings;
 use Archive::Zip;
 use Archive::Tar;
-use Pod::Select;
 use File::Temp qw(tempfile);
 use File::Basename;
 use File::Path;
-use File::Spec::Functions qw(splitdir catfile catdir splitpath);
+use File::Spec::Functions qw(splitdir catfile catdir splitpath canonpath);
 use YAML qw(LoadFile);
 use File::Copy;
 use Pod::Html;
+use Pod::Select;
+use Perl::Tidy;
 use HTML::TextToHTML;
+use File::Find;
+use Safe;
+our ($VERSION);
+$VERSION = 0.64;
 
 my $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
 my $DEBUG = 1;
@@ -38,6 +43,9 @@ sub new {
         die "Please supply a CPAN::Search::Lite::State object"
             unless ($state and ref($state) eq 'CPAN::Search::Lite::State');
     }
+    if ($args{pod_only} and $args{split_pod}) {
+        die qq{Please specify only one of "split_pod" or "pod_only"};
+    }
 
     my $self = {pod_root => $args{pod_root},
                 html_root => $args{html_root},
@@ -47,6 +55,8 @@ sub new {
                 state => $state,
                 css => $args{css},
                 up_img => $args{up_img},
+                pod_only => $args{pod_only},
+                split_pod => $args{split_pod},
             };
     bless $self, $class;
 }
@@ -58,6 +68,8 @@ sub extract {
     my $mods = $self->{mods};
     my $CPAN = $self->{CPAN};
     my $pod_root = $self->{pod_root};
+    my $pod_only = $self->{pod_only};
+    my $split_pod = $self->{split_pod};
     my $pat = qr!^[^/]+/change|^[^/]+/install|\.pod$|\.pm$!i;
     my @dist_names = ();
     if ($setup) {
@@ -90,6 +102,16 @@ sub extract {
             next;
         }
         print "Extracting files within $download ...\n";
+
+        my $cs = catfile $CPAN, $self->download($cpanid, 'CHECKSUMS');
+        if (-f $cs) {
+            my $cksum = $self->load_cs($cs);
+            my $md5;
+            if ($cksum and ($md5 = $cksum->{$filename}->{md5})) {
+                $dists->{$dist}->{md5} = $md5;
+            }
+        }
+
         (my $yaml = $fulldist) =~ s/$ext/.meta/;
         if (-f $yaml) {
             eval {$props->{$dist} = LoadFile($yaml);};
@@ -128,7 +150,7 @@ sub extract {
                 next;
             };
             while (<$fh>) {
-                if (/^head1/) {
+                if (/^=head1/) {
                     $contains_pod = 1;
                     last;
                 }
@@ -179,9 +201,33 @@ sub extract {
             };
         }
         
+        my $ignore;
+        push @{$ignore->{directory}}, qw(t blib);
+        if (defined $props->{$dist}) {
+          foreach my $key (qw(no_index ignore)) {
+            foreach my $type(qw(directory file package)) {
+              my $value = $props->{$dist}->{$key}->{$type};
+              next unless (defined $value and ref($value) eq 'ARRAY');
+              push @{$ignore->{$type}}, @$value;
+            }
+          }
+        }
+        my $ignore_pat = join '|', @{$ignore->{directory}};
+        @files = grep {not m!$dist/($ignore_pat)/!} @files;
+        my $entry = $ignore->{file};
+        if ($entry and ref($entry) eq 'ARRAY') {
+          $ignore_pat = join '|', @$entry;
+          @files = grep {not m!$dist/($ignore_pat)$!} @files;
+        }
+        my %ignore_packs = ();
+        $entry = $ignore->{package};
+        if (defined $entry and ref($entry) eq 'ARRAY') {
+          %ignore_packs = map {$_ => 1} @$entry;
+        }
+
         unless ($files[0] =~ /\Q$dist/) {
-            warn "Strange unpacked directory structure for $dist";
-            # next;
+          warn "Strange unpacked directory structure for $dist";
+          # next;
         }
 
         foreach my $file (@files) {
@@ -194,9 +240,18 @@ sub extract {
                            };
             $content =~ s!\r!!g;
             my $is_pod = ($file =~ /\.(pod|pm)$/);
-            next if ($is_pod and $content !~ /^=head/m);
+            my $has_pod = ($is_pod and $content =~ /^=head/m);
+            next if ($pod_only and $is_pod and not $has_pod);
             my ($module, $description);
-            ($module, $description) = $self->abstract($content) if $is_pod;
+            if ($has_pod) {
+                ($module, $description) = $self->abstract($content);
+            }
+            else {
+                $module = $self->package_name($content);
+            }
+
+            next if ($module and $ignore_packs{$module});
+
             my $rel_root;
             if ($module and $dists->{$dist}->{modules}->{$module}) {
                 my @dirs = split /::/, $module;
@@ -228,39 +283,43 @@ sub extract {
             my $rel_file = $rel_root ?
                 catfile $rel_root, $doc : $doc; 
             my $abs_file = catfile $abs_root, $doc;
-            if ($is_pod) {
-                my ($tmpfh, $tmpfn) = tempfile(UNLINK => 1) or do {
-                    warn "Cannot create tempfile: $!";
-                    next;
-                };
-                print $tmpfh $content;
-                seek($tmpfh,0,1);
-                my $parser = Pod::Select->new();
-                $parser->parse_from_file($tmpfn, $abs_file);
-                close $tmpfh;
-                my $name;
-                if ($module) {
-                    $name = $module;
-                }
-                else {
-                    ($name = $doc) =~ s/\.(pm|pod)$//;
-                }
-                $docs->{files}->{$rel_file} = {name => $name, 
-                                               desc => $description};
+            if ($pod_only and $is_pod) {
+              my ($tmpfh, $tmpfn) = tempfile(UNLINK => 1) or do {
+                warn "Cannot create tempfile: $!";
+                next;
+              };
+              print $tmpfh $content;
+              seek($tmpfh,0,1);
+              my $parser = Pod::Select->new();
+              $parser->parse_from_file($tmpfn, $abs_file);
+              close $tmpfh;
             }
             else {
-                open(my $fh, '>', $abs_file) or do {
-                    warn "Cannot write to $abs_file: $!";
-                    next;
-                };
-                print $fh $content;
-                close $fh;
+              open(my $fh, '>', $abs_file) or do {
+                warn "Cannot write to $abs_file: $!";
+                next;
+              };
+              print $fh $content;
+              close $fh;
+            }
+            if ($is_pod) {
+              my $name;
+              if ($module) {
+                $name = $module;
+              }
+              else {
+                ($name = $doc) =~ s/\.(pm|pod)$//;
+              }
+              my $desc = $description || "$name documentation";
+              $docs->{files}->{$rel_file} = {name => $name, 
+                                             desc => $desc};
             }
             if ($is_pod and $module) {
                 if ($dists->{$dist}->{modules}->{$module}) {
                     $mods->{$module}->{description} = $description
                         if ($description and !$mods->{$module}->{description});
-                    $mods->{$module}->{doc} = 1;
+                    $mods->{$module}->{doc} = 1 if $has_pod;
+                    $mods->{$module}->{src} = 1 unless $pod_only;
                 }
                 unless ($dists->{$dist}->{description} or ! $description) {
                     (my $trial_dist = $module) =~ s/::/-/g;
@@ -342,11 +401,26 @@ sub abstract {
     }
 }
 
+sub package_name {
+    my ($self, $content) = @_;
+    my @lines = split /\n/, $content;
+    my $module;
+    foreach (@lines) {
+        if (/^package\s+(\S+)\s*;/) {
+            return $1;
+        }
+    }
+    return;
+}
+
 sub make_html {
     my ($self, $dist, $docs) = @_;
+    my $mods = $self->{mods};
     my $in_root = $docs->{dist_root};
     my $out_root = catdir $self->{html_root}, $dist;
     my $css_file = $self->{css};
+    my $pod_only = $self->{pod_only};
+    my $split_pod = $self->{split_pod};
     my $back_link = '__top';
     my $up_img = $self->{up_img};
     if (-d $out_root) {
@@ -406,45 +480,153 @@ END
         my $css = $css_file ? $root . $css_file : '';
         print "Creating $outfile\n";
         my $title;
+        $html_file = unix_path($html_file);
         if ($is_text) {
             my $c = HTML::TextToHTML->new();
-            my %args;
+            my %args = ();
             $title = "$dist - $file";
             $args{infile} = [$infile];
             $args{outfile} = $outfile;
             $args{title} = $title;
             $args{style_url} = $css if $css;
+            $args{preformat_trigger_lines} = 0 if ($file eq 'META.yml');
             eval{ $c->txt2html(%args); };
             warn $@ if $@;
+            print $fh qq{<LI><A HREF="$html_file">$title</A></LI>\n};
         }
         else {
             my $html_root = $root . $dist;
             my $name = $docs->{files}->{$file}->{name};
             my $desc = $docs->{files}->{$file}->{desc};
             $title = $desc ? "$name - $desc" : $name;
-            my @opts = (
-                        '--header',
-                        '--flush',
-                        "--backlink=$back_link",
-                        "--title=$title",
-                        "--infile=$infile",
-                        "--outfile=$outfile",
-                        "--podroot=$in_root",
-                        "--htmlroot=$html_root",
-                        "--quiet",
-                        );
-            push @opts, "--css=$css" if $css;
-            eval{ pod2html(@opts); };
-            warn $@ if $@;
+            if ($pod_only) {
+                my @opts = (
+                            "--header", "--flush",
+                            "--backlink=$back_link",
+                            "--title=$title",
+                            "--infile=$infile",
+                            "--outfile=$outfile",
+                            "--podroot=$in_root",
+                            "--htmlroot=$html_root",
+                            "--quiet",
+                           );
+                push @opts, "--css=$css" if $css;
+                eval{ pod2html(@opts); };
+                if ($@) {
+                    warn $@;
+                    next;
+                }
+                insert_up(file => $outfile, root => $root, 
+                          dist => $dist, back_link => $back_link,
+                          up_img => $up_img);
+                print $fh qq{<LI><A HREF="$html_file">$title</A></LI>\n};
+            }
+            else {
+                my $contains_pod = '';
+                if ($split_pod) {
+                    my ($tmpfh, $tmpfn) = tempfile(UNLINK => 1) or do {
+                        warn "Cannot create tempfile: $!";
+                        next;
+                    };
+                    my $parser = Pod::Select->new();
+                    $parser->parse_from_file($infile, $tmpfn);
+                    while (<$tmpfh>) {
+                        if (/^=head1/) {
+                            $contains_pod = 1;
+                            last;
+                        }
+                    }
+                    if ($contains_pod) {
+                        my @opts = (
+                                    "--header", "--flush",
+                                    "--backlink=$back_link",
+                                    "--title=$title",
+                                    "--infile=$tmpfn",
+                                    "--outfile=$outfile",
+                                    "--podroot=$in_root",
+                                    "--htmlroot=$html_root",
+                                    "--quiet",
+                                   );
+                        push @opts, "--css=$css" if $css;
+                        eval{ pod2html(@opts); };
+                        if ($@) {
+                            warn $@;
+                            next;
+                        }
+                        insert_up(file => $outfile, root => $root, 
+                                  dist => $dist, back_link => $back_link, 
+                                  up_img => $up_img, pty => 1);
+                    }
+                }
+                unless ($contains_pod) {
+                    $title = $name;
+                }
+                my @opts = (
+                            "--backlink=$back_link",
+                            "--title=$title",
+                            "--podroot=$in_root",
+                            "--htmlroot=$html_root",
+                            "--quiet", "--html", "--podflush",
+                           );
+                push @opts, "--css=$css" if $css;
+                my $dest = $outfile;
+                $dest =~ s{\.html$}{.pm.html} if $split_pod;
+                my %args = (source => $infile, destination => $dest,
+                            argv => \@opts);
+                chdir($abs_dir) or do {
+                    print STDERR "Could not chdir to $abs_dir: $!";
+                    next;
+                };
+                eval{ Perl::Tidy::perltidy(%args); };
+                if ($@) {
+                    warn $@;
+                    next;
+                }
+                insert_up(file => $dest, root => $root,
+                          dist => $dist, back_link => $back_link,
+                          up_img => $up_img, title => $title,
+                          source => $infile);
+                if ($split_pod) {
+                    (my $src_file = $html_file) =~ s{\.html$}{.pm.html};
+                    if ($contains_pod) {
+                        print $fh <<"EOL";
+<li><a href="$html_file">$title</a>
+&nbsp; [<a href="$src_file">view source</a>]</li>
+EOL
+                    }
+                    else {
+                        print $fh <<"EOL";
+<li>$name &nbsp; [<a href="$src_file">view source</a>]</li>
+EOL
+                    }
+                }
+                else {
+                    print $fh qq{<LI><A HREF="$html_file">$title</A></LI>\n};
+                }
+            }
         }
-        insert_up(file => $outfile, root => $root, 
-                  dist => $dist, back_link => $back_link, up_img => $up_img);
-        $html_file = unix_path($html_file);
-        print $fh qq{<LI><A HREF="$html_file">$title</A></LI>\n};
     }
     my $up = qq{\n<hr />Back to <a href="../">home page</a>.<hr />\n};
     print $fh qq{</UL>$up</BODY></HTML>\n};
     close $fh;
+    chdir $out_root;
+    clean_pod($out_root);
+}
+
+sub clean_pod {
+    my $dir = shift;
+    return unless ($dir and -d $dir);
+    my @goners;
+    finddepth(sub { push @goners, $File::Find::name
+                      if $File::Find::name =~ /(pod2h|perltidy).*\.tmp$/i;},
+              $dir);
+    if (@goners) {
+        foreach my $f(@goners) {
+            $f = canonpath($f);
+            next unless -e $f;
+            unlink $f;
+        }
+    }
 }
 
 sub insert_up {
@@ -454,6 +636,9 @@ sub insert_up {
     my $dist = $args{dist};
     my $up_img = $args{up_img};
     my $back_link = $args{back_link};
+    my $title = $args{title};
+    my $source = $args{source};
+    my $pty = $args{pty};
     my $copy = $file . '.orig';
     rename ($file, $copy) or do {
         warn "Could not rename $file to $copy: $!";
@@ -467,12 +652,21 @@ sub insert_up {
         warn "Could not open $file for writing: $!";
         return;
     };
-    my $up = qq{\n<hr />Back to <a href="$root$dist/">$dist documentation</a>.<hr />\n};
+    my $src = '';
+    if ($pty) {
+        ($src = $file) =~ s{.*(/|\\)(.*)(\.html)}{$2.pm$3};
+        $src = qq{&nbsp;|&nbsp;<a href="$src">view source</a>};
+    }
+
+    my $up = qq{\n<hr /><a href="$root$dist/">$dist documentation</a>$src<hr />\n};
     my $up_link = $up_img ? 
         qq{<img src="$root$up_img" alt="$back_link" border="0" />} : '';
     while (<$old>) {
-        s!^(<body.*)!$1$up!;
-        s!^(</body.*)!$up$1!;
+        if ($source and $title) {
+            s!\Q$source\E!$title!;# bug in Perl::Tidy which ignore --title option
+        }
+        s!(<body[^>]*>)!$1$up!;
+        s!(</body[^>]*>)!$up$1!;
         s!<small>$back_link</small>!$up_link!i if $up_link;
         print $new $_;
     }
@@ -503,6 +697,28 @@ sub download {
     (my $fullid = $cpanid) =~ s!^(\w)(\w)(.*)!$1/$1$2/$1$2$3!;
     my $download = catfile 'authors/id', $fullid, $dist_file;
     return $download;
+}
+
+# routine to verify the CHECKSUMS for a file
+# adapted from the MD5 check of CPAN.pm
+sub load_cs {
+    my ($self, $cs) = @_;
+    my ($cksum, $fh);
+    unless (open $fh, $cs) {
+        warn "Could not open $cs: $!";
+        return;
+    }
+    local($/);
+    my $eval = <$fh>;
+    $eval =~ s/\015?\012/\n/g;
+    close $fh;
+    my $comp = Safe->new();
+    $cksum = $comp->reval($eval);
+    if ($@) {
+        warn $@;
+        return;
+    }
+    return $cksum;
 }
 
 1;

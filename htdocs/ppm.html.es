@@ -22,6 +22,9 @@ lista de dep&oacute;sitos:
 crazyinsomniac</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, para <i>el dep&oacute;sito del Perl 5.8 del 
 crazyinsomniac</i></li>
+<li><b>http://www.bribes.org/perl/ppm</b>, para <i>el dep&oacute;sito
+del Perl 5.8/5.6 del 
+www.bribes.org</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, para <i>el dep&oacute;sito del Perl 5.6 del 
 uwinnipeg</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, para <i>el dep&oacute;sito del Perl 5.8 del 

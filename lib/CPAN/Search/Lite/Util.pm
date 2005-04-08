@@ -1,29 +1,36 @@
 package CPAN::Search::Lite::Util;
 use strict;
 use warnings;
+use Sort::Versions;
+our ($VERSION);
+$VERSION = 0.64;
 
 use base qw(Exporter);
 our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, %modes,
      $table_id, $query_info, $mode_info, $full_id, $tt2_pages);
 @EXPORT_OK = qw(%chaps %chaps_rev $repositories $tt2_pages %modes
-                $table_id $query_info $mode_info $full_id);
+                vcmp $table_id $query_info $mode_info $full_id);
 
 make_ids();
 
 $mode_info = {
               module => {id => 'mod_id',
+                         table => 'mods',
                          name => 'mod_name',
                          text => 'mod_abs',
                         },
               dist => {id => 'dist_id',
+                       table => 'dists',
                        name => 'dist_name',
                        text => 'dist_abs',
                       },
               author => {id => 'auth_id',
+                         table => 'auths',
                          name => 'cpanid',
                          text => 'fullname',
                         },
               chapter => {id => 'chapterid',
+                          table => 'chaps',
                           name => 'subchapter',
                          },
              };
@@ -141,15 +148,46 @@ $repositories = {
                        build => '6xx',
                        PerlV         => 5.6,
                       },
+                 7 => {
+                       alias => 'bribes56',
+                       LOCATION  => 
+                       'http://www.bribes.org/cgi-bin',
+                       SUMMARYFILE  => 'summary.cgi',
+                       browse => 'http://www.bribes.org/perl/ppm',
+                       desc => 'www.bribes.org Perl 5.6 repository',
+                       build => '6xx',
+                       PerlV         => 5.6,
+                      },
+                 8 => {
+                       alias => 'bribes58',
+                       LOCATION  => 
+                       'http://www.bribes.org/cgi-bin',
+                       SUMMARYFILE  => 'summary.cgi',
+                       browse => 'http://www.bribes.org/perl/ppm',
+                       desc => 'www.bribes.org Perl 5.8 repository',
+                       build => '8xx',
+                       PerlV         => 5.8,
+                      },
                 };
 
 sub make_ids {
-    my @tables = qw(mods dists auths);
+    my @tables = qw(mods dists auths reps);
     foreach my $table (@tables) {
         (my $id = $table) =~ s!(\w+)s$!$1_id!;
         $table_id->{$table} = $id;
         $full_id->{$id} = $table . '.' . $id;
     }
+#    $full_id->{chapterid} = 'chaps.chapterid';
+}
+
+my $num_re = qr{^0*\.\d+$};
+sub vcmp {
+    my ($v1, $v2) = @_;
+    return unless (defined $v1 and defined $v2);
+    if ($v1 =~ /$num_re/ and $v2 =~ /$num_re/) {
+        return $v1 <=> $v2;
+    }
+    return Sort::Versions::versioncmp($v1, $v2);
 }
 
 1;
@@ -234,6 +272,18 @@ This is a hash reference whose keys are the modes
 used in I<CPAN::Search::Lite::Query> and whose values are hash
 references (with keys I<search>, I<info>, and I<letter>) specifying
 what Template-Toolkit page to use for the specific result.
+
+=item * C<vcmp>
+
+This routine, used as
+
+  if (vcmp($v1, $v2) > 0) {
+    print "$v1 is higher than $v2\n";
+  }
+
+is used to compare two versions, and returns 1/0/-1 if
+the first argument is considered higher/equal/lower than
+the second. It uses C<Sort::Versions>.
 
 =back
 

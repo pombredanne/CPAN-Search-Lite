@@ -1,5 +1,0 @@
-[% IF query %]
-Lo siento - Ning&uacute;n resultado por <b>&quot;[% query %]&quot;</b> se encontr&oacute; del tipo <b>[% mode %]</b>. Int&eacute;ntelo por favor con otro t&eacute;rmino de b&uacute;squeda. 
-[% ELSE %]
-Lo siento - No entiendo lo que se intent&oacute; buscar. Por favor int&eacute;ntelo otra vez.
-[% END -%]

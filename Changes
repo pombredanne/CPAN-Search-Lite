@@ -1,4 +1,53 @@
-Sept 22, 2005 - 0.59
+April 7, 2005 - 0.64
+    - when extracting files from a distribution, honor
+      the file, directory, and package entries of the no_index
+      field in a META.yml file to ignore indexing
+    - introduce the environment variable CSL_CONFIG_FILE as
+      an optional means to specify the configuration file
+    - when reindexing, set no_ppm = 1, so as to not index ppm
+    - die when reading the configuration file unless only the
+      expected parameters are specified
+    - introduce an "ignore" field in the configuration file
+      to specify distribution(s) to ignore when indexing
+    - add a "src" field to the module table to specify if the
+      source of the module is available
+    - introduce a pod_split option that allows one to write 2 sets
+      of html docs; once containing just the pod (from pod2html), and
+      the other containing the complete source as generated through
+      Perl::Tidy (which is usually quite large) (suggested by
+      Sebastian Aperghis-Tramoni)
+    - enclose all of META.yml files in <PRE> tags, as the
+      html formatting is often off (suggested by Sebastian Aperghis-Tramoni)
+    - use Perl::Tidy to generate html documentation; this includes
+      formatting of the actual code at the bottom of the html page,
+      and thus we extract all of the module from the archive, and
+      not just the pod as before (suggested by Sebastian Aperghis-Tramoni)
+    - rather than have some of the translations done in separate tt2
+      pages, move all the translations into C::S::L::Lang::*.pm, and
+      pass a language-specific data structure into one set of
+      tt2 pages (suggested by Sebastian Aperghis-Tramoni)
+    - add module, distribution, author, or chapter name in title
+      of tt2 page, when specified (suggested by Sebastian Aperghis-Tramoni)
+    - start split of DBI functionality into separate modules:
+      C::S::L::DBI and C::S::L::DBI::*
+    - add option to reindex a distribution
+    - have search results for modules and distributions return
+      their chapter information
+    - have search results for modules and distributions ordered 
+      also by their score when matching the abstract
+    - add a md5 column to the dists table to record the MD5
+      checksum from the CPAN CHECKSUMS file (suggested by Chris Dolan)
+    - add auto-incrementing primary keys to the ppms, chaps, and
+      reqs tables
+    - add two new tables, reps and chapters, to record respectively
+      the chapter names and repository names
+    - add a script, build/fix_db.pl, to alter the tables based on
+      previous versions of C::S::L to agree with the current version
+    - change the way custom Apache directives are invoked so as to
+      work with the current RC1 of mod_perl 2 
+    - add a build/rss.pl script to generate an rss feed
+
+Sept 22, 2004 - 0.59
     - various translation improvements
          French: Isabelle Hernandez <isa at panix.com>
          German: Florian Greb <greb at inf.fu-berlin.de>

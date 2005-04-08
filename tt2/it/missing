@@ -1,9 +1,0 @@
-[% IF query %]
-Siamo spiacenti - non è stato trovato alcun risultato per
-<b>&quot;[% query %]&quot;</b> 
-di tipo <b>[% mode %]</b>.
-Sei pregato di specificare altri termini per la ricerca.
-[% ELSE %]
-Siamo spiacenti - non abbiamo capito che cosa hai cercato. 
-Sei pregato di riprovare.
-[% END -%]

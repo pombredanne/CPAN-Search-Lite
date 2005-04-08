@@ -39,8 +39,8 @@ for my $id (keys %$expected) {
     ok t_cmp($search->fault, undef);
     $results = $search->result();
     ok t_cmp(defined $results, 1);
-    ok t_cmp(ref($results), 'HASH');
-    ok t_cmp($results->{dist_name}, $dist);
+    ok t_cmp(ref($results), 'HASH', $dist);
+    ok t_cmp($results->{dist_name}, $dist, "Searching for $dist");
 
     $module = $expected->{$id}->{mod};
     $search = $soap->search(mode => 'module', query => "^$module\$");

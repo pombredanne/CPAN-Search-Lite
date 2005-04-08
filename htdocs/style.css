@@ -108,25 +108,50 @@ kbd
     }
    
 /* default links */
+a.button {
+	margin: 0;
+	font-size: 100%;
+	background-color: #ccc;
+	padding: 1px 0;
+}
+a.button:link {
+	color: #333;
+        background-color: transparent;
+	text-decoration: underline;
+	}
+a.button:visited {
+	color: #A52A2A;
+	background-color: transparent;
+	text-decoration: underline;
+	}
+a.button:hover { 
+	color: #fff;
+	background-color: #333;
+	}
+a.button:active { 
+	color: #fff;
+	background-color: #333;
+	}
+
 a:link 
 	{ 
 	color: #B82619;
-    text-decoration: underline;
+        text-decoration: underline;
 	}
 a:visited 
 	{ 
 	color: #80764F;
-    text-decoration: underline;
+        text-decoration: underline;
 	}
 a:hover
 	{
 	color: #000000;
-    text-decoration: underline;
+        text-decoration: underline;
 	}
 a:active 
 	{ 
 	color: #B82619;
-    text-decoration: underline;
+        text-decoration: underline;
 	}
 
 
@@ -140,10 +165,6 @@ TABLE {
 IMG { border: 0; }
 FORM { margin: 0; }
 input { margin: 2px; }
-
-A.fred {
-  text-decoration: none;
-}
 
 
 A:link {
@@ -183,7 +204,7 @@ DT {
 }
 
 .s {
-  background: #dddddd;
+  background: transparent;
   color: inherit;
 }
 
@@ -225,7 +246,7 @@ TH A:link, TH A:visited {
 
 .t1, .t2, .t3, .t4  {
   /* background: #00E0E0; */
-  background: #FFA07A;
+  background: #F5DEB3; /* #E6E8FA;  #BCD2EE; #E5EAF0;  #FFA07A; */
   color: black;
 }
 .t4 {
@@ -277,7 +298,7 @@ TH A:link, TH A:visited {
 }
 
 .label {
-  background: #B0C4DE;
+  background: #FEE5AC; /* #E5EAF0;  #B0C4DE; */
   color: black;
   font-weight: bold;
   padding: 0.2ex 1ex;
@@ -320,7 +341,7 @@ TH A:link, TH A:visited {
 }
 
 .path {
-  background: #F5DAB9;
+  background: #F5DEB3; /* #E6E8FA;  #BCD2EE;  #E5EAF0; #F5DAB9; */
   border-bottom: 1px solid #006699;
   color: black;
   font-weight: bold;
@@ -367,7 +388,7 @@ A.o:link, A.o:visited {
   background: #006699;
   color: #ccffcc;
   font: bold 10pt Arial,Helvetica,sans-serif;
-text-decoration: none;
+  text-decoration: none;
 }
 
 A.o:hover {
@@ -383,32 +404,32 @@ A.m:hover {
 }
 
 table.dslip     {
-  background: #FAF0E6;
-  border: 0.4ex solid #FAF0E6;
+  background: #FDF5E6; /* #FAF0E6; */
+  border: 0.4ex solid #FDF5E6;
   font-size: 95%;
 }
 
 table.ppm     {
-  background: #FAF0E6;
-  border: 0.4ex solid #FAF0E6;
+  background: #FDF5E6;
+  border: 0.4ex solid #FDF5E6;
   font-size: 95%;
 }
 
 table.cats     {
-  background: #FAF0E6;
-  border: 0.4ex solid #FAF0E6;
+  background: #FDF5E6;
+  border: 0.4ex solid #FDF5E6;
   font-size: 95%;
 }
 
 table.mods     {
-  background: #FAF0E6;
-  border: 0.4ex solid #FAF0E6;
+  background: #FDF5E6; /* #E5EAF0; #FFCCFF; */
+  border: 0.4ex solid #FDF5E6; /* #FFCCFF; */
   font-size: 95%;
 }
 
 table.dists     {
-  background: #FFFAF0;
-  border: 0.4ex solid #FFFAF0;
+  background: #FDF5E6; /*#FFFAF0; */
+  border: 0.4ex solid #FDF5E6; /* #FFFAF0; */
   font-size: 95%;
 }
 

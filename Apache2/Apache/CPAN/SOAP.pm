@@ -7,41 +7,45 @@ use mod_perl 1.99_11;     # sanity check for a recent version
 use Apache::Const -compile => qw(TAKE1 RSRC_CONF ACCESS_CONF);
 use Apache::Module ();
 use Apache::RequestRec ();
+our ($VERSION);
+$VERSION = 0.64;
 
-our @APACHE_MODULE_COMMANDS = (
-                               {name      => 'CSL_soap_db',
-                                errmsg    => 'database name',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_soap_user',
-                                errmsg    => 'user to log in as',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_soap_passwd',
-                                errmsg    => 'password for user',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_soap_max_results',
-                                errmsg    => 'maximum number of results',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-);
+my @directives = (
+                  {name      => 'CSL_soap_db',
+                   errmsg    => 'database name',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_soap_user',
+                   errmsg    => 'user to log in as',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_soap_passwd',
+                   errmsg    => 'password for user',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_soap_max_results',
+                   errmsg    => 'maximum number of results',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                 );
+
+Apache::Module::add(__PACKAGE__, \@directives);
 
 my ($r, $cfg, $max_results, $query);
 
 sub query  {
   my ($self, %args) = @_;
   return unless ($args{mode} and $args{name});
-  $r ||= Apache->request;
+  $r = Apache->request;
 
-  $cfg ||= Apache::Module->get_config(__PACKAGE__,
-                                     $r->server,
-                                     $r->per_dir_config) || { };
-  
+  $cfg = Apache::Module::get_config(__PACKAGE__,
+                                    $r->server,
+                                    $r->per_dir_config) || { };
+
   $max_results ||= $cfg->{max_results} || 200;
   my $passwd = $cfg->{passwd} || '';
   $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},

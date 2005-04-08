@@ -2,8 +2,8 @@
 <table width="100%">
 <tr>
 <td align=left>
-<font size="-2">[% pages.Problems %]
-<A HREF="mailto:[% maintainer_email %]"> [% maintainer %]</A>.</font>
+<font size="-2">
+[% pages.Problems %] <A HREF="mailto:[% maintainer_email %]">[% maintainer %]</A>.</font>
 </td><td align=right>
 <font size="-2">[% pages.Questions %]</font>
 <a href="[% faq %]"><font size="-1">FAQ</font></a>.

@@ -8,7 +8,10 @@ use Apache::Const -compile => qw(OK REDIRECT SERVER_ERROR
 use CPAN::Search::Lite::Query;
 use CPAN::Search::Lite::Util qw($mode_info $query_info %modes
                                 %chaps_rev %chaps $tt2_pages);
-use CPAN::Search::Lite::Lang qw(%langs $chaps_desc $pages);
+our $chaps_desc = {};
+our $pages = {};
+
+use CPAN::Search::Lite::Lang qw(%langs load);
 use Template;
 use File::Spec::Functions qw(catfile catdir);
 use Apache::Request;
@@ -20,51 +23,53 @@ use Apache::Log ();
 use APR::Date;
 use APR::URI;
 use Apache::URI;
+our ($VERSION);
+$VERSION = 0.64;
 
-our @APACHE_MODULE_COMMANDS = (
-                               {name      => 'CSL_db',
-                                errmsg    => 'database name',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_user',
-                                errmsg    => 'user to log in as',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_passwd',
-                                errmsg    => 'password for user',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_tt2',
-                                errmsg    => 'location of tt2 pages',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_dl',
-                                errmsg    => 'default download location',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_max_results',
-                                errmsg    => 'maximum number of results',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_html_root',
-                                errmsg    => 'root directory of html files',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_html_uri',
-                                errmsg    => 'root uri of html files',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-);
+my @directives = (
+                  {name      => 'CSL_db',
+                   errmsg    => 'database name',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_user',
+                   errmsg    => 'user to log in as',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_passwd',
+                   errmsg    => 'password for user',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_tt2',
+                   errmsg    => 'location of tt2 pages',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_dl',
+                   errmsg    => 'default download location',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_max_results',
+                   errmsg    => 'maximum number of results',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_html_root',
+                   errmsg    => 'root directory of html files',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_html_uri',
+                   errmsg    => 'root uri of html files',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                 );
+Apache::Module::add(__PACKAGE__, \@directives);
 
-our $VERSION = 0.59;
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
 
@@ -72,15 +77,13 @@ sub new {
     my ($class, $r) = @_;
     my $lang = lang_wanted($r);
     my $req = Apache::Request->new($r);
-    $cfg ||= Apache::Module->get_config(__PACKAGE__, 
-                                       $r->server,
-                                       $r->per_dir_config) || { };
+    $cfg = Apache::Module::get_config(__PACKAGE__, 
+                                      $r->server,
+                                      $r->per_dir_config) || { };
 
     $dl ||= $cfg->{dl} || 'http://www.cpan.org';
     $max_results ||= $cfg->{max_results} || 200;
     my $passwd = $cfg->{passwd} || '';
-    my $lang_dir = catdir $cfg->{tt2}, $lang;
-    my $tt2_rel_dir = (-d $lang_dir) ? $lang : '';
 
     $template ||= Template->new({
                                  INCLUDE_PATH => [$cfg->{tt2},
@@ -97,7 +100,14 @@ sub new {
                                               passwd => $passwd,
                                               max_results => $max_results);
     $CPAN::Search::Lite::Query::lang = $lang;
-    my $mode = $req->param('mode');
+    unless ($pages->{$lang}) {
+      my $rc = load(lang => $lang, pages => $pages, chaps_desc => $chaps_desc);
+      unless ($rc == 1) {
+        $r->log_error($rc);
+        return;
+      }
+    }
+    my $mode = $req->param('mode') || 'dist';
     unless ($r->location eq '/mirror') {
         if ($r->protocol =~ /(\d\.\d)/ && $1 >= 1.1) {
             $r->headers_out->{'Cache-Control'} = 'max-age=36000';
@@ -126,7 +136,8 @@ sub new {
 
     my $self = {mode => $mode, mirror => $mirror, req => $req,
                 html_root => $cfg->{html_root}, lang => $lang,
-                html_uri => $cfg->{html_uri}, tt2_rel_dir => $tt2_rel_dir};
+                html_uri => $cfg->{html_uri},
+                title => $pages->{$lang}->{title}};
     bless $self, $class;
 }
 
@@ -164,6 +175,9 @@ sub search : method {
             if ($mode eq 'dist' and $name =~ /^([^-]+)-/) {
                 $extra_info{subletter} = $1;
             }
+            if ($mode eq 'module' and $name =~ /^([^:]+)::/) {
+              $extra_info{subletter} = $1;
+            }
         }
     }
     if (my $error = $query->{error}) {
@@ -177,8 +191,9 @@ sub search : method {
                 mirror => $self->{mirror},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
+                title => $self->{title},
                };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -215,18 +230,28 @@ sub cpanid : method {
                 my ($a, $b) = (uc($1), uc($2));
                 $extra_info{letter} = $a;
                 $extra_info{cpan_letter} = "$a/$a$b";
+                $extra_info{title} = sprintf("%s : %s",
+                                             $self->{title},
+                                             $name);
             }
             if ($mode eq 'dist' and $name =~ /^([^-]+)-/) {
                 $extra_info{subletter} = $1;
+                $extra_info{title} = sprintf("%s : %s",
+                                             $self->{title},
+                                             $name);
             }
             if ($mode eq 'module' and $name =~ /^([^:]+)::/) {
                 $extra_info{subletter} = $1;
+                $extra_info{title} = sprintf("%s : %s",
+                                             $self->{title},
+                                             $name);
             }
         }
     }
     my $vars = {results => $results,
                 mode => $mode,
                 mirror => $self->{mirror},
+                title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
@@ -235,7 +260,7 @@ sub cpanid : method {
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -278,9 +303,15 @@ sub author : method {
                 my ($a, $b) = (uc($1), uc($2));
                 $extra_info{letter} = $a;
                 $extra_info{cpan_letter} = "$a/$a$b";
+                $extra_info{title} = sprintf("%s : %s",
+                                             $self->{title},
+                                             $name);
             }
             if ($mode eq 'dist' and $name =~ /^([^-]+)-/) {
                 $extra_info{subletter} = $1;
+                $extra_info{title} = sprintf("%s : %s",
+                                             $self->{title},
+                                             $name);
             }
         }
     }
@@ -288,6 +319,7 @@ sub author : method {
                 mode => $mode,
                 mirror => $self->{mirror},
                 letter => $letter,
+                title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
@@ -296,7 +328,7 @@ sub author : method {
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -345,6 +377,9 @@ sub dist : method {
             if ($name =~ /^([^-]+)-/) {
                 $extra_info{subletter} = $1;
             }
+            $extra_info{title} = sprintf("%s : %s",
+                                         $self->{title},
+                                         $name);
         }
     }
     unless ($letter and $letter =~ /^\w$/) {
@@ -360,10 +395,11 @@ sub dist : method {
                 mode => $mode,
                 mirror => $self->{mirror},
                 letter => $letter,
+                title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -412,9 +448,9 @@ sub module : method {
             if ($name =~ /^([^:]+)::/) {
                 $extra_info{subletter} = $1;
             }
-            if ($name =~ /^([^:]+).*/) {
-                $extra_info{subchapter} = $1;
-            }
+            $extra_info{title} = sprintf("%s : %s",
+                                         $self->{title},
+                                         $name);
         }
     }
      unless ($letter and $letter =~ /^\w$/) {
@@ -430,10 +466,11 @@ sub module : method {
                 mode => $mode,
                 mirror => $self->{mirror},
                 letter => $letter,
+                title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($self->rel_page($page), $vars)or do {
+    $template->process($page, $vars)or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -467,7 +504,11 @@ sub chapter : method {
         $args{mode} = $mode;
         $args{id} = $chaps_rev{$chapter};
         $extra_info{chapter} = $chapter;
-        $extra_info{chapter_desc} = $chaps_desc->{$self->{lang}}->{$args{id}};
+        my $chapter_desc = $chaps_desc->{$self->{lang}}->{$args{id}};
+        $extra_info{chapter_desc} = $chapter_desc;
+        $extra_info{title} = sprintf("%s : %s",
+                                     $self->{title},
+                                     $chapter_desc);
         if ($subchapter) {
             $args{subchapter} = $subchapter;
             $extra_info{subchapter} = $subchapter;
@@ -492,10 +533,11 @@ sub chapter : method {
     my $vars = {results => $results,
                 mode => $mode,
                 mirror => $self->{mirror},
+                title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -523,13 +565,15 @@ sub mirror : method {
         $query->{error} = undef;
         $page = 'error';
     }
+    my $title = sprintf("%s : %s", $self->{title}, 'mirror');
     my $vars = {mode => $mode,
                 mirror => $self->{mirror},
                 path => $path,
+                title => $title,
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -552,13 +596,15 @@ sub recent : method {
         $query->{error} = undef;
         $page = 'error';
     }
+    my $title = sprintf("%s : %s", $self->{title}, 'recent uploads');
     my $vars = {results => $results,
                 mode => $mode,
                 mirror => $self->{mirror},
                 age => $age,
+                title => $title,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -590,8 +636,9 @@ sub perldoc : method {
     $vars = {results => $results,
              mirror => $self->{mirror},
              pages => $pages->{$self->{lang}},
+             title => $self->{title},
              };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -626,8 +673,9 @@ sub perldoc : method {
     $vars = {request => $request,
              mirror => $self->{mirror},
              pages => $pages->{$self->{lang}},
+             mode => 'perldoc',
              };
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -695,12 +743,6 @@ sub lang_wanted {
     return $wanted{$_} if $langs{$wanted{$_}};
   }
   return 'en';
-}
-
-sub rel_page {
-  my ($self, $page) = @_;
-  return $self->{tt2_rel_dir} ? 
-    catfile($self->{tt2_rel_dir}, $page) : $page; 
 }
 
 sub CSL_db {
@@ -785,15 +827,7 @@ is required for the user specified in C<CSL_user>.]
 
 =item C<CSL_tt2 /path/to/tt2>
 
-the path to the tt2 pages [required]. If a subdirectory
-C<lang> exists under C</path/to/tt2> (eg, C<en> or C<fr>), 
-where C<lang> is the first available language specified in the
-C<Accept-Language> header sent by the browser (if sent), then this
-subdirectory will be used for the path to the tt2 pages.
-See the C<%langs> hash in L<CPAN::Search::Lite::Util>
-for a list of available languages. If the language
-specified by the browser isn't available, C<en> (English)
-will be used.
+the path to the tt2 pages [required].
 
 =item C<CSL_dl http://www.cpan.org>
 

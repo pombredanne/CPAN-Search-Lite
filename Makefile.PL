@@ -10,6 +10,7 @@ my %opts = (
             PMLIBDIRS => [qw(lib Apache2)],
             EXE_FILES => \@exe_files,
             DIR => [qw(lib Apache2)],
+            NO_META => 1,
 	    dist   => {
 			 SUFFIX   => 'gz',
 			 COMPRESS => 'gzip -9f',
@@ -40,6 +41,7 @@ my %prereqs = ('Config::IniFiles' => 0,
                'Lingua::Stem' => 0,
                'AI::Categorizer' => 0,
                'Lingua::StopWords' => 0,
+               'Perl::Tidy' => 0,
 	       );
 
 eval {require Apache2;};
@@ -123,6 +125,7 @@ my $config = catfile 'build', 'gen_conf.pl';
 
 print <<"END";
 
+***************************************************************
 You can now execute
    $make
    $make test
@@ -131,5 +134,28 @@ After this, you can optionally run
    $^X $config
 to set up some basic configuration details for your system.
 Please read the INSTALL file for further installation instructions.
+***************************************************************
 
 END
+
+eval {require CPAN::Search::Lite};
+unless ($@) {
+    my $version = $CPAN::Search::Lite::VERSION;
+    if ($version < 0.64) {
+  print <<"END";
+
+***************************************************************
+You seem to be running an older version ($version) of CPAN::Search::Lite.
+There are some changes to the database schema that occur with
+this version - addition of primary keys to the ppms, chaps, and
+reqs tables, increasing the size of mod_name in the modules
+table, adding a src field to the mods table to indicate the
+presence of the module's source, and addition of a md5 field in
+the dists table to specify the CPAN checksum. A script
+fix_db.pl is included in the build subdirectory which you can
+run to alter an exisiting table to include these changes.
+***************************************************************
+
+END
+}
+}

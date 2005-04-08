@@ -23,6 +23,8 @@ ajouter l'endroit indiqu&eacute; &agrave; votre liste de d&eacute;p&ocirc;ts :
 crazyinsomniac</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.8 de 
 crazyinsomniac</i></li>
+<li><b>http://www.bribes.org/perl/ppm</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.8/5.6 de 
+www.bribes.org</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.6 
 d'uwinnipeg</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, pour <i>le d&eacute;p&ocirc;t de Perl 5.8 

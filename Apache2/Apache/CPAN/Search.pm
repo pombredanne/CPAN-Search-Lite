@@ -7,7 +7,9 @@ use Apache::Const -compile => qw(OK SERVER_ERROR TAKE1 RSRC_CONF ACCESS_CONF);
 use CPAN::Search::Lite::Query;
 use CPAN::Search::Lite::Util qw($mode_info $query_info %chaps 
                                 %modes $tt2_pages);
-use CPAN::Search::Lite::Lang qw( %langs  $chaps_desc $pages);
+our $chaps_desc = {};
+our $pages = {};
+use CPAN::Search::Lite::Lang qw(%langs load);
 use Template;
 use File::Spec::Functions qw(catfile catdir);
 use Apache::Request;
@@ -19,49 +21,52 @@ use APR::URI;
 use Apache::URI;
 use Apache::Module ();
 use Apache::Log ();
+our ($VERSION);
+$VERSION = 0.64;
 
-our @APACHE_MODULE_COMMANDS = (
-                               {name      => 'CSL_db',
-                                errmsg    => 'database name',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_user',
-                                errmsg    => 'user to log in as',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_passwd',
-                                errmsg    => 'password for user',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_tt2',
-                                errmsg    => 'location of tt2 pages',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_dl',
-                                errmsg    => 'default download location',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_max_results',
-                                errmsg    => 'maximum number of results',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_html_root',
-                                errmsg    => 'root directory of html files',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'CSL_html_uri',
-                                errmsg    => 'root uri of html files',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-);
+my @directives = (
+                  {name      => 'CSL_db',
+                   errmsg    => 'database name',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_user',
+                   errmsg    => 'user to log in as',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_passwd',
+                   errmsg    => 'password for user',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_tt2',
+                   errmsg    => 'location of tt2 pages',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_dl',
+                   errmsg    => 'default download location',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_max_results',
+                   errmsg    => 'maximum number of results',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_html_root',
+                   errmsg    => 'root directory of html files',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'CSL_html_uri',
+                   errmsg    => 'root uri of html files',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                 );
+Apache::Module::add(__PACKAGE__, \@directives);
 
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
@@ -70,15 +75,12 @@ sub new {
     my ($class, $r) = @_;
     my $lang = lang_wanted($r);
     my $req = Apache::Request->new($r);
-    $cfg = Apache::Module->get_config(__PACKAGE__,
+    $cfg = Apache::Module::get_config(__PACKAGE__,
                                       $r->server,
                                       $r->per_dir_config) || { };
     $dl = $cfg->{dl} || 'http://www.cpan.org';
     $max_results ||= $cfg->{max_results} || 200;
     my $passwd = $cfg->{passwd} || '';
-
-    my $lang_dir = catdir $cfg->{tt2}, $lang;
-    my $tt2_dir = (-d $lang_dir) ? $lang_dir : $cfg->{tt2};
 
     $template ||= Template->new({
                                  INCLUDE_PATH => [$cfg->{tt2},
@@ -95,8 +97,14 @@ sub new {
                                               user => $cfg->{user},
                                               passwd => $passwd,
                                               max_results => $max_results);
-);
     $CPAN::Search::Lite::Query::lang = $lang;
+    unless ($pages->{$lang}) {
+      my $rc = load(lang => $lang, pages => $pages, chaps_desc => $chaps_desc);
+      unless ($rc == 1) {
+        $r->log_error($rc);
+        return;
+      }
+    }
     my $mode = $req->param('mode');
     unless ($mode && $mode eq 'mirror') {
         if ($r->protocol =~ /(\d\.\d)/ && $1 >= 1.1) {
@@ -123,7 +131,7 @@ sub new {
     $mirror ||= $dl;
     $r->content_type('text/html');
 
-    my $self = {mode => $mode, tt2_rel_dir => $tt2_rel_dir
+    my $self = {mode => $mode,
                 mirror => $mirror, req => $req, lang => $lang};
     bless $self, $class;
 }
@@ -267,14 +275,14 @@ sub search : method {
                 age => $age,
                 mirror => $self->{mirror},
                 pages => $pages->{$self->{lang}},
-                 %extra_info,
+                %extra_info,
                };
     if (my $error = $query->{error}) {
         $r->log->error($error);
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($self->rel_page($page), $vars) or do {
+    $template->process($page, $vars) or do {
       $r->log_error(Template->error());
       return Apache::SERVER_ERROR;
     };
@@ -334,12 +342,6 @@ sub lang_wanted {
     return $wanted{$_} if $langs{$wanted{$_}};
   }
   return 'en';
-}
-
-sub rel_page {
-  my ($self, $page) = @_;
-  return $self->{tt2_rel_dir} ? 
-    catfile($self->{tt2_rel_dir}, $page) : $page; 
 }
 
 sub CSL_db {
@@ -422,15 +424,7 @@ is required for the user specified in C<CSL_user>.]
 
 =item C<CSL_tt2 /path/to/tt2>
 
-the path to the tt2 pages [required]. If a subdirectory
-C<lang> exists under C</path/to/tt2> (eg, C<en> or C<fr>), 
-where C<lang> is the first available language specified in the
-C<Accept-Language> header sent by the browser (if sent), then this
-subdirectory will be used for the path to the tt2 pages.
-See the C<%langs> hash in L<CPAN::Search::Lite::Util>
-for a list of available languages. If the language
-specified by the browser isn't available, C<en> (English)
-will be used.
+the path to the tt2 pages [required]. 
 
 =item C<CSL_dl http://www.cpan.org>
 

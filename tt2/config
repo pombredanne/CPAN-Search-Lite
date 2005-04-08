@@ -1,6 +1,5 @@
 [% home = 'http://localhost' %]
 [%
-   PROCESS splash/config;
    search = "$home/search"
    download = "$home/cpan"
    doc = "$home/htdocs"
@@ -8,15 +7,10 @@
    testers = 'http://testers.cpan.org/show/'
    searchcpan = 'http://search.cpan.org/'
    rt = 'http://rt.cpan.org/NoAuth/Bugs.html?Dist='
-   splash.images = "$home/tt2/images/splash"
    cpan = 'http://www.cpan.org'
+   forum = 'http://www.cpanforum.com/dist/'
+   rate = 'http://cpanratings.perl.org/d/'
    backpan = 'http://backpan.cpan.org'
-   splash.style.default.col.fore = 'grey75'
-   splash.style.default.col.text = 'black'
-   splash.style.select.col.fore = 'sky'
-   splash.style.select.col.text = 'black'
-   splash.style.select.font.bold = 1
-   splash.style.select.font.size = '+1'
    maintainer = 'Randy Kobes'
    maintainer_email = 'randy@theoryx5.uwinnipeg.ca'
    faq =  "$home/htdocs/faq.html"

@@ -3,7 +3,7 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
-  <title>Recherche et navigation sur CPAN</title>
+  <title>Recherche et navigation sur le CPAN</title>
  </head>
 <table width="100%">
 <tr>
@@ -11,178 +11,32 @@
 <a href="http://www.cpan.org/">
 <img src="http://cpan.uwinnipeg.ca/htdocs/cpan.jpg" alt="CPAN" /></a></td>
 <td align=center>
-<!-- tt2.splash.menu -->
-<table border="0" width="60%"><tr><td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html"><font color="#000000">Accueil</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://theoryx5.uwinnipeg.ca/cgi-bin/docperl"><font color="#000000">Documentation</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/recent"><font color="#000000">Nouveaut&eacute;s</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/mirror"><font color="#000000">Miroir</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/module"><font color="#000000">Modules</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/dist"><font color="#000000">Distributions</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
-<td><!-- tt2.splash.button -->  
-<table bgcolor="#c0c0c0" width="100%"       border="0" cellpadding="0" cellspacing="0">
-  <tr valign="top">
-    <td width="8"><img
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tl.gif"
-        width="8" height="8" alt=""></td>
-    <td rowspan="2" valign="middle" align="center" width="100%"><a href="http://cpan.uwinnipeg.ca/author"><font color="#000000">Auteurs</font></a></td>
-    <td width="8" align="right"><img 
-        src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/tr.gif" 
-        width="8" height="8" alt=""></td>
-  </tr>
-  <tr valign="bottom">
-     <td width="8" align="left"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/bl.gif" 
-         width="8" height="8" alt=""></td>
-     <td width="8" align="right"><img 
-         src="http://theoryx5.uwinnipeg.ca/tt2/images/splash/white/br.gif" 
-         width="8" height="8" alt=""></td>
-  </tr>
-</table>
-<!-- /tt2.splash.button -->
-
-</td>
+<table width="60%" border="0" cellpadding="0" cellspacing="0">
+<tr valign="top">
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Accueil</a></td>
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentation</a></td>
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/recent">Nouveaut&eacute;s</a></td>
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Miroir</a></td>
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/module">Modules</a></td>
+<td valign="top" align="center">
+<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distributions</a></td>
+<td valign="top" align="center">
+<a class="button" href="/author">Auteurs</a></td>
 </tr>
-</table><!-- /tt2.splash.menu -->
-</td></tr><tr><td colspan=2></td></tr><tr><td colspan=2 align=center>
+</table>
+</td></tr><tr><tr><td colspan=2 align=center>
 <form method=get action="http://cpan.uwinnipeg.ca/search" name=f>
 <table><tr><td>
 <font size="-1">Rechercher</font> &nbsp; 
 <input type="text" name="query" value="" size=20 ></td>
 <td align=left>&nbsp;<font size="-1">dans</font>&nbsp; 
 <select name="mode">&nbsp; &nbsp;
- <option value="dist">Distributions</option> chapter <option value="module">Modules</option> chapter <option value="author">Auteurs</option> chapter</select>&nbsp;&nbsp; &nbsp;
+ <option value="dist">distributions</option> chapter <option value="module">modules</option> chapter <option value="author">auteurs</option> chapter</select>&nbsp;&nbsp; &nbsp;
 <input type="submit" value="Recherche">
 </td></tr></table>
 </form>
@@ -195,7 +49,7 @@
 <table width="99%">
 <tr valign="top" class="r">
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Perl_Core_Modules"> 
-<b>Modules du noyau Perl</b></a> 
+<b>Modules int&eacute;gr&eacute; &agrave; Perl</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Development_Support"> 
 <b>Aide au d&eacute;veloppement</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Operating_System_Interfaces"> 
@@ -263,8 +117,8 @@
 <table width="100%">
 <tr>
 <td align=left>
-<font size="-2">Envoyez vos probl&egrave;mes, suggestions ou commentaires &agrave;<A HREF="mailto:randy@theoryx5.uwinnipeg.ca">
-Randy Kobes</A>.</font>
+<font size="-2">
+Envoyez vos probl&egrave;mes, suggestions ou commentaires &agrave; <A HREF="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</A>.</font>
 </td><td align=right>
 <font size="-2">Des questions&nbsp;? Lisez d'abord la</font>
 <a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html"><font size="-1">FAQ</font></a>.

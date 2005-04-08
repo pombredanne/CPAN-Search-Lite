@@ -9,11 +9,13 @@ use CPAN::Search::Lite::Util qw(%chaps);
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use TestCSL qw($expected);
+use CPAN::Search::Lite::Lang qw(%langs);
 
 my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
+my @langs = keys %langs;
 
-plan tests => 43;
+plan tests => 36 + 7 * scalar @langs;
 
 my $result;
 
@@ -47,9 +49,12 @@ for my $id (keys %$expected) {
   ok t_cmp($result->code, 200, "fetching /chapter/$chapter/$subchapter");
 }
 
-for (qw(dist module author recent mirror chapter search)) {
-  $result = GET "/$_";
-  ok t_cmp($result->code, 200, "fetching /$_");
+for my $lang (@langs) {
+    for (qw(dist module author recent mirror chapter search)) {
+        $result = GET "/$_", 'Accept-Language' => $lang;
+        ok t_cmp($result->code, 200, 
+                 "fetching /$_ in language $lang");
+    }
 }
 
 my $no_such = 'XXX';

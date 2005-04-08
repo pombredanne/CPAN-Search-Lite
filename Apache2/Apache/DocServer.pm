@@ -10,33 +10,37 @@ use Apache::Const -compile => qw(OK REDIRECT SERVER_ERROR
                                  TAKE1 RSRC_CONF ACCESS_CONF);
 use Apache::Module ();
 use Apache::RequestRec ();
-our @APACHE_MODULE_COMMANDS = (
-                               {name      => 'DocServer_db',
-                                errmsg    => 'database name',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'DocServer_user',
-                                errmsg    => 'user to log in as',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'DocServer_pod_root',
-                                errmsg    => 'root directory of pod files',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'DocServer_passwd',
-                                errmsg    => 'password for user',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-                               {name      => 'DocServer_max_results',
-                                errmsg    => 'maximum number of results',
-                                args_how  => Apache::TAKE1,
-                                req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
-                               },
-);
+our ($VERSION);
+$VERSION = 0.64;
+
+my @directives = (
+                  {name      => 'DocServer_db',
+                   errmsg    => 'database name',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'DocServer_user',
+                   errmsg    => 'user to log in as',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'DocServer_pod_root',
+                   errmsg    => 'root directory of pod files',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'DocServer_passwd',
+                   errmsg    => 'password for user',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                  {name      => 'DocServer_max_results',
+                   errmsg    => 'maximum number of results',
+                   args_how  => Apache::TAKE1,
+                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                  },
+                 );
+Apache::Module::add(__PACKAGE__, \@directives);
 
 my ($query, $cfg, $r, $max_results);
 
@@ -44,11 +48,11 @@ sub get_doc {
   my ($class, $mod) = @_;
   $mod =~ s!(\.pm|\.pod)$!!;
   return unless ($mod =~ m!^[\w:\.\-]+$!);
-  $r ||= Apache->request;
-  $cfg ||= Apache::Module->get_config(__PACKAGE__, 
-                                      $r->server,
-                                      $r->per_dir_config) || { };
-  
+  $r = Apache->request;
+  $cfg = Apache::Module::get_config(__PACKAGE__, 
+                                    $r->server,
+                                    $r->per_dir_config) || { };
+
   $max_results ||= $cfg->{max_results} || 200;
   $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
                                             user => $cfg->{user},

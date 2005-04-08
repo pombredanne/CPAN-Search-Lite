@@ -4,16 +4,22 @@ use warnings;
 no warnings qw(redefine);
 use CPAN::Search::Lite::Util qw($repositories %chaps
                                 $full_id $mode_info);
-use CPAN::Search::Lite::Lang qw($dslip $chaps_desc %na $months %bytes);
-use DBI;
+our $months = {};
+our $chaps_desc = {};
+our $pages = {};
+our $dslip = {};
+use CPAN::Search::Lite::Lang qw(load);
+use CPAN::Search::Lite::DBI::Query;
+use CPAN::Search::Lite::DBI qw($dbh);
 use Lingua::Stem qw(:stem);
 use constant GB => 1024 * 1024 * 1024;
 use constant MB => 1024 * 1024;
 use constant KB => 1024;
 
-our ($dbh, $lang);
+our ($lang);
 our $max_results = 200;
-our $VERSION = 0.59;
+our $VERSION = 0.64;
+my $cdbi_query;
 
 my %mode2obj;
 $mode2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -24,9 +30,7 @@ sub new {
     foreach (qw(db user passwd)) {
         die "Please supply a '$_' argument" unless defined $args{$_};
     }
-    $dbh = DBI->connect("DBI:mysql:$args{db}", $args{user}, $args{passwd},
-                        {RaiseError => 1, AutoCommit => 0})
-        or die "Cannot connect to $args{db}";
+    $cdbi_query = CPAN::Search::Lite::DBI::Query->new(%args);
 
     $max_results = $args{max_results} if $args{max_results};
     $lang = 'en' unless $lang;
@@ -36,10 +40,30 @@ sub new {
 
 sub query {
     my ($self, %args) = @_;
-    my $mode = $args{mode};
+    unless ($months->{$lang}) {
+      my $rc = load(lang => $lang, dslip => $dslip, pages => $pages,
+                    months => $months, chaps_desc => $chaps_desc);
+      unless ($rc == 1) {
+        $self->{error} = $rc;
+        return;
+      }
+    }
+    my $mode = $args{mode} || 'module';
     unless ($mode) {
         $self->{error} = q{Please specify a 'mode' argument};
         return;
+    }
+    my $info = $mode_info->{$mode};
+    my $table = $info->{table};
+    unless ($table) {
+      $self->{error} = qq{No table exists for '$mode'};
+      return;
+    }
+    my $cdbi = $cdbi_query->{objs}->{$table};
+    my $class = 'CPAN::Search::Lite::DBI::Query::' . $table;
+    unless ($cdbi and ref($cdbi) eq $class) {
+      $self->{error} = qq{No cdbi object exists for '$table'};
+      return;
     }
     my $fields = $args{fields};
     if ($fields and ref($fields) ne 'ARRAY') {
@@ -47,12 +71,11 @@ sub query {
       return;
     }
     my $obj;
-    eval {$obj = $mode2obj{$mode}->new();};
+    eval {$obj = $mode2obj{$mode}->make(table => $table, cdbi => $cdbi);};
     if ($@) {
         $self->{error} = qq{Mode '$mode' is not known};
         return;
     }
-    my $info = $mode_info->{$mode};
     my ($value, $method);
   METHOD: {
         ($mode eq 'dist' and exists $args{recent}) and do {
@@ -117,14 +140,19 @@ sub query {
     return 1;
 }
 
+sub make {
+  my ($class, %args) = @_;
+  for (qw(table cdbi)) {
+    die qq{Must supply an '$_' arg} unless defined $args{$_};
+  }
+  my $self = {results => undef, error => '',
+              table => $args{table}, cdbi => $args{cdbi}};
+  bless $self, $class;
+}
+
 package CPAN::Search::Lite::Query::author;
 use base qw(CPAN::Search::Lite::Query);
-
-sub new {
-    my $class = shift;
-    my $self = {results => undef, error => ''};
-    bless $self, $class;
-}
+use CPAN::Search::Lite::DBI qw($dbh);
 
 sub info {
     my ($self, %args) = @_;
@@ -185,19 +213,15 @@ sub letter {
 
 package CPAN::Search::Lite::Query::module;
 use base qw(CPAN::Search::Lite::Query);
-
-sub new {
-    my $class = shift;
-    my $self = {results => undef, error => ''};
-    bless $self, $class;
-}
+use CPAN::Search::Lite::Util qw(%chaps);
+use CPAN::Search::Lite::DBI qw($dbh);
 
 sub info {
     my ($self, %args) = @_;
     return unless $args{search};
     
     $args{fields} = $args{user_fields} ||
-      [ qw(mod_id mod_name mod_abs doc mod_vers 
+      [ qw(mod_id mod_name mod_abs doc src mod_vers 
            dslip chapterid dist_id dist_name dist_file
            auth_id cpanid fullname) ];
     $args{table} = 'dists';
@@ -208,12 +232,20 @@ sub info {
     return unless ($self->{results} = $self->fetch(%args, distinct => 1,
                                                    case_sensitive => 1));
     return 1 if $args{user_fields};
+    my $mod_name = $self->{results}->{mod_name};
 
     if ($self->{results}->{doc}) {
-        (my $modname = $self->{results}->{mod_name}) =~ s!::!/!g;
+        (my $mod_link = $mod_name) =~ s{::}{/}g;
         my $html = $self->{results}->{dist_name} . '/' .
-            $modname . '.html';
+            $mod_link . '.html';
         $self->{results}->{html} = $html;
+    }
+
+    if ($self->{results}->{src}) {
+        (my $mod_link = $mod_name) =~ s{::}{/}g;
+        my $html = $self->{results}->{dist_name} . '/' .
+            $mod_link . '.pm.html';
+        $self->{results}->{htmlsrc} = $html;
     }
 
     $self->{results}->{download} = 
@@ -223,20 +255,19 @@ sub info {
     if (my $chapterid = $self->{results}->{chapterid}) {
         $self->{results}->{chap_link} = $self->chap_link($chapterid);
         $self->{results}->{chap_desc} = $self->chap_desc($chapterid);
+        $self->{results}->{subchapter} = $self->mod_subchapter($mod_name);
     }
 
     if (my $what = $self->{results}->{dslip}) {
         $self->{results}->{dslip_info} = $self->expand_dslip($what);
     }
     
-    $args{fields} = [ qw(rep_id ppm_vers)];
+    $args{fields} = [ qw(rep_id ppm_vers browse abs)];
     $args{table} = 'ppms';
-    $args{join} = undef;
-    $args{search} = {field => 'dist_id', 
+    $args{join} = {reps => 'rep_id'};
+    $args{search} = {field => 'dist_id',
                      value => $self->{results}->{dist_id}};
-    if ($self->{results}->{ppms} = $self->fetch(%args, wantarray => 1)) {
-        $self->expand_ppms($self->{results}->{ppms});
-    }
+    $self->{results}->{ppms} = $self->fetch(%args, wantarray => 1);
     return 1;
 }
 
@@ -244,14 +275,28 @@ sub search {
   my ($self, %args) = @_;
   return unless $args{search};
   
-  $args{fields} = [ qw(mod_id mod_name mod_abs) ];
+  $args{fields} = [ qw(mod_id mod_name mod_abs chapterid) ];
   $args{table} = 'mods';
   $args{order_by} = 'mod_name';
   $args{limit} = $max_results;
   return unless $self->{results} = $self->fetch(%args);
-  if (ref($self->{results}) ne 'ARRAY') {
+  my $results = $self->{results};
+  if (ref($results) ne 'ARRAY') {
     return $self->query(mode => 'module',
                         id => $self->{results}->{mod_id});
+  }
+  else {
+    foreach my $result (@$results) {
+      next unless my $id = $result->{chapterid};
+      next unless my $chap = $chaps{$id};
+      next unless my $mod_name = $result->{mod_name};
+      my $sub_chapter = $self->mod_subchapter($mod_name);      
+      $result->{chapter} = $chap . '/' . $sub_chapter;
+    }
+  }
+  if (scalar @$results == 1) {
+    return $self->query(mode => 'module',
+                        id => $self->{results}->[0]->{mod_id});
   }
   return 1;
 }
@@ -302,19 +347,15 @@ sub letter {
 
 package CPAN::Search::Lite::Query::dist;
 use base qw(CPAN::Search::Lite::Query);
-
-sub new {
-    my $class = shift;
-    my $self = {results => undef, error => ''};
-    bless $self, $class;
-}
+use CPAN::Search::Lite::Util qw(%chaps);
+use CPAN::Search::Lite::DBI qw($dbh);
 
 sub info {
     my ($self, %args) = @_;
     return unless $args{search};
     
     $args{fields} = $args{user_fields} ||
-      [ qw(dist_id dist_name dist_abs dist_vers 
+      [ qw(dist_id dist_name dist_abs dist_vers md5
            dist_file size birth readme changes meta install
            auth_id cpanid fullname) ];
     $args{table} = 'dists';
@@ -329,31 +370,37 @@ sub info {
     $self->{results}->{download} = 
         $self->download($self->{results}->{cpanid}, $self->{results}->{dist_file});
 
-    $args{join} = undef;
+    $args{join} = {reps => 'rep_id'};
     $args{table} = 'ppms';
-    $args{fields} = [ qw(rep_id ppm_vers) ];
+    $args{fields} = [ qw(rep_id ppm_vers browse abs) ];
     $args{search} = {field => 'dist_id', 
                      value => $self->{results}->{dist_id}
                     };
-    if ($self->{results}->{ppms} = $self->fetch(%args, wantarray => 1)) {
-        $self->expand_ppms($self->{results}->{ppms});
-    }
+    $self->{results}->{ppms} = $self->fetch(%args, wantarray => 1);
 
+    $args{join} = undef;
     $args{table} = 'mods';
-    $args{fields} = [ qw(mod_id mod_name mod_abs mod_vers doc dslip) ];
+    $args{fields} = [ qw(mod_id mod_name mod_abs mod_vers doc dslip src) ];
     $args{order_by} = 'mod_name';
     $self->{results}->{mods} = $self->fetch(%args, wantarray => 1);
     my $mod_dslip;
+    my $distname = $self->{results}->{dist_name};
     if (my $mods = $self->{results}->{mods}) {
-        my $distname = $self->{results}->{dist_name};
         foreach my $mod (@$mods) {
             my $mod_name = $mod->{mod_name};
             (my $trial_dist = $mod_name) =~ s!::!-!g;
             $mod_dslip = $mod->{dslip}
                 if ($trial_dist eq $distname and $mod->{dslip});
-            next unless $mod->{doc};
-            (my $docpath = $mod_name) =~ s!::!/!g;
-            $mod->{html} = $distname . '/' . $docpath . '.html';
+            if ($mod->{doc}) {
+                (my $docpath = $mod_name) =~ s!::!/!g;
+                $mod->{html} = $distname . '/' . $docpath . '.html';
+            }
+            if ($mod->{src}) {
+                (my $mod_link = $mod_name) =~ s{::}{/}g;
+                my $html = $self->{results}->{dist_name} . '/' .
+                    $mod_link . '.pm.html';
+                $mod->{htmlsrc} = $html;
+            }
         }
     }
     if ($mod_dslip) {
@@ -362,12 +409,14 @@ sub info {
     }
 
     $args{table} = 'chaps';
-    $args{fields} = [ qw(chapterid subchapter) ];
+    $args{fields} = [ qw(chaps.chapterid subchapter chap_link) ];
+    $args{join} = {chapters => 'chapterid'};
     $args{order_by} = 'chapterid';
     if ($self->{results}->{chaps} = $self->fetch(%args, wantarray => 1)) {
         foreach my $chap (@{$self->{results}->{chaps}}) {
-            $chap->{chap_desc} = $self->chap_desc($chap->{chapterid});
-            $chap->{chap_link} = $self->chap_link($chap->{chapterid});
+            my $chapterid = $chap->{'chaps.chapterid'} + 0;
+            next unless $chapterid;
+            $chap->{chap_desc} = $self->chap_desc($chapterid);
         }
     }
   
@@ -383,19 +432,49 @@ sub info {
 }
 
 sub search {
-    my ($self, %args) = @_;
-    return unless $args{search};
-    
-    $args{fields} = [ qw(dist_id dist_name dist_abs) ];
-    $args{table} = 'dists';
-    $args{order_by} = 'dist_name';
-    $args{limit} = $max_results;
-    return unless $self->{results} = $self->fetch(%args);
-    if (ref($self->{results}) ne 'ARRAY') {
-        return $self->query(mode => 'dist',
-                            id => $self->{results}->{dist_id});
+  my ($self, %args) = @_;
+  return unless $args{search};
+  
+  $args{fields} = [ qw(dist_id dist_name dist_abs chapterid subchapter) ];
+  $args{table} = 'dists';
+  $args{order_by} = 'dist_name';
+  $args{limit} = $max_results;
+  $args{left_join} = {chaps => 'dist_id'};
+  return unless $self->{results} = $self->fetch(%args);
+  my $results = $self->{results};
+  if (ref($results) ne 'ARRAY') {
+    return $self->query(mode => 'dist',
+                        id => $self->{results}->{dist_id});
+  }
+  else {
+    foreach my $result (@$results) {
+      next unless my $id = $result->{chapterid};
+      next unless my $subchapter = $result->{subchapter};
+      next unless my $chap = $chaps{$id};
+      $result->{chapter} = $chap . '/' . $subchapter;
     }
-    return 1;
+  }
+  my ($tmp, $chapters);
+  foreach my $result (@$results) {
+    my $dist_name = $result->{dist_name};
+    $tmp->{$dist_name} = {dist_id => $result->{dist_id},
+                        dist_abs => $result->{dist_abs}};
+    next unless $result->{chapter};
+    push @{$chapters->{$dist_name}}, $result->{chapter};
+  }
+  my $pruned;
+  foreach my $dist_name(sort keys %$tmp) {
+    push @$pruned, {dist_name => $dist_name,
+                   %{$tmp->{$dist_name}},
+                   chapters => $chapters->{$dist_name},
+                   };
+  }
+  if (scalar @$pruned == 1) {
+    return $self->query(mode => 'dist',
+                        id => $pruned->[0]->{dist_id});
+  }
+  $self->{results} = $pruned;
+  return 1;
 }
 
 sub letter {
@@ -466,12 +545,7 @@ sub recent {
 
 package CPAN::Search::Lite::Query::chapter;
 use base qw(CPAN::Search::Lite::Query);
-
-sub new {
-    my $class = shift;
-    my $self = {results => undef, error => ''};
-    bless $self, $class;
-}
+use CPAN::Search::Lite::DBI qw($dbh);
 
 sub info {
     my ($self, %args) = @_;
@@ -594,19 +668,21 @@ sub sql_statement {
             q/' IN BOOLEAN MODE )/;
     }
 
+    my $table = $args{table};
+    my @tables = ($table);
+
     my $fields = $args{fields};
     my @fields = ref($fields) eq 'ARRAY' ? 
         @{$fields} : ($fields);
     for (@fields) {
         $_ = $full_id->{$_} if $full_id->{$_};
+#        $_ = $table . '.chapterid' if $_ eq 'chapterid';
 #        $_ = qq{DATE_FORMAT($_, '%e %b %Y')} if $_ eq 'birth';
 #        $_ = qq{FORMAT($_, 0)} if $_ eq 'size';
     }
-    push @fields, $match if defined $match;
+    push @fields, "$match as score" if defined $match;
     my $sql = qq{SELECT $distinct } . join(',', @fields);
 
-    my $table = $args{table};
-    my @tables = ($table);
 
     my $where;
   QUERY: {
@@ -647,15 +723,27 @@ sub sql_statement {
     }
 
     my $join;
-    if (defined $args{join}) {
-        my @join = ();
-        while (my ($join, $id) = each %{$args{join}}) {
-            push @tables, $join;
-            push @join, ($table.'.'.$id. ' = ' . $join.'.'.$id); 
+#    if (defined $args{join}) {
+#        my @join = ();
+#        while (my ($join, $id) = each %{$args{join}}) {
+#            push @tables, $join;
+#            push @join, ($table.'.'.$id. ' = ' . $join.'.'.$id); 
+#        }
+#        $join = join ' AND ', @join;
+#    }
+#    $sql .= ' FROM ' . join ',', @tables;
+
+    $sql .= ' FROM ' . $table;
+    my $left_join = $args{join} || $args{left_join};
+    if ($left_join) {
+      if (ref($left_join) eq 'HASH') {
+        foreach my $key(keys %$left_join) {
+#          $sql .= " LEFT JOIN $key using ($left_join->{$key}) ";
+            my $id = $left_join->{$key};
+          $sql .= " LEFT JOIN $key ON $table.$id=$key.$id ";
         }
-        $join = join ' AND ', @join;
+      }
     }
-    $sql .= ' FROM ' . join ',', @tables;
 
     if ($text_search and not $not) {
         $sql .= ' WHERE ( ( ' . $where . ' ) OR ( ' . $match . ' ) )';
@@ -665,9 +753,17 @@ sub sql_statement {
     }
     $sql .= ' AND (' . $join . ')' if $join;
 
-    if (my $order_by = $args{order_by}) {
-        $sql .= qq{ ORDER BY $order_by };
+    my $order_by = '';
+    if ($text_search and not $not) {
+      $order_by = 'score';
     }
+    if (my $user_order_by = $args{order_by}) {
+      $order_by = $order_by ? "$order_by,$user_order_by" : $user_order_by;
+    }
+    if ($order_by) {
+      $sql .= qq{ ORDER BY $order_by };
+    }
+
     if (my $limit = $args{limit}) {
         my ($min, $max) = ref($limit) eq 'HASH' ?
             ( $limit->{min} || 0, $limit->{max} ) :
@@ -688,19 +784,10 @@ sub expand_dslip {
         my $info = $info[$_];
         $entry->{desc} = $dslip->{$lang}->{$given}->{desc};
         $entry->{what} = (not $info or $info eq '?') ?
-            $na{$lang} : $dslip->{$lang}->{$given}->{$info};
+            $pages->{$lang}->{na} : $dslip->{$lang}->{$given}->{$info};
         push @$entries, $entry;
     }
     return $entries;
-}
-
-sub expand_ppms {
-    my ($self, $ppms) = @_;
-    foreach my $ppm (@$ppms) {
-        my $id = $ppm->{rep_id};
-        $ppm->{browse} = $repositories->{$id}->{browse};
-        $ppm->{desc} = $repositories->{$id}->{desc};
-    }
 }
 
 sub download {
@@ -718,6 +805,18 @@ sub chap_link {
 sub chap_desc {
     my ($self, $id) = @_;
     return $chaps_desc->{$lang}->{$id};
+}
+
+sub mod_subchapter {
+  my ($self, $mod_name) = @_;
+  (my $sc = $mod_name) =~ s{^([^:]+).*}{$1};
+  return $sc;
+}
+
+sub dist_subchapter {
+  my ($self, $dist_name) = @_;
+  (my $sc = $dist_name) =~ s{^([^-]+).*}{$1};
+  return $sc;
 }
 
 sub db_error {
@@ -749,7 +848,7 @@ sub size_format {
             $string = sprintf('%.1f KB', $test);
             last SWITCH;
         };
-        $string = sprintf("%d $bytes{$lang}", $size);
+        $string = sprintf("%d $pages->{$lang}->{bytes}", $size);
     }
     $string =~ s{\.}{,} unless ($lang eq 'en');
     return $string;

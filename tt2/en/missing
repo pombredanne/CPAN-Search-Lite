@@ -1,8 +1,0 @@
-[% IF query %]
-Sorry - no results for <b>&quot;[% query %]&quot;</b> were found
-of type <b>[% mode %]</b>. Please
-try another search term.
-[% ELSE %]
-Sorry - I could not understand what was asked for. Please
-try again.
-[% END -%]

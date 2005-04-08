@@ -1,9 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+[% heading = title ? title : pages.title %]
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="/style.css" type="text/css">
-  <title>[% pages.title %]</title>
+  <title>[% title %]</title>
  </head>
 <table width="100%">
 <tr>
@@ -11,21 +12,25 @@
 <a href="http://www.cpan.org/">
 <img src="[% cpanimg %]" alt="CPAN" /></a></td>
 <td align=center>
-[% buttons = [
- {text => "$pages.buttons.Home", link => "$main"}
- {text => "$pages.buttons.Documentation", link => 'http://theoryx5.uwinnipeg.ca/cgi-bin/docperl'}
- {text => "$pages.buttons.Recent", link => "$home/recent"}
- {text => "$pages.buttons.Mirror", link => "$home/mirror"}
- {text => "$pages.buttons.Modules", link => "$home/module"}
- {text => "$pages.buttons.Distributions", link => "$home/dist"}
- {text => "$pages.buttons.Authors", link => "$home/author"}
-  ]
-%]
-[% INCLUDE splash/menu
-     width   = "60%"
-     style=splash.style.select
-%]
-</td></tr><tr><td colspan=2></td></tr><tr><td colspan=2 align=center>
+<table width="60%" border="0" cellpadding="0" cellspacing="0">
+<tr valign="top">
+<td valign="top" align="center">
+<a class="button" href="[% home %]/chapter">[% pages.buttons.Home %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% home %]/cgi-bin/docperl">[% pages.buttons.Documentation %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% home %]/recent">[% pages.buttons.Recent %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% home %]/mirror">[% pages.buttons.Mirror %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% home %]/module">[% pages.buttons.Modules %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% home %]/dist">[% pages.buttons.Distributions %]</a></td>
+<td valign="top" align="center">
+<a class="button" href="[% $home %]/author">[% pages.buttons.Authors %]</a></td>
+</tr>
+</table>
+</td></tr><tr><tr><td colspan=2 align=center>
 <form method=get action="[% search %]" name=f>
 <table><tr><td>
 <font size="-1">[% pages.form.Find %]</font> &nbsp; 

@@ -1,9 +1,0 @@
-[% IF query %]
-Es konnten keine Ergebnisse f&uuml;r
-<b>&quot;[% query %]&quot;</b> 
-in der Rubrik <b>[% mode %]</b> gefunden werden.
-Versuchen Sie bitte einen anderen Suchbegriff. 
-[% ELSE %]
-Es ist leider ein Fehler aufgetreten - Ihre Anfrage konnte nicht beantwortet werden. 
-Bitte versuchen Sie es später noch einmal.
-[% END -%]

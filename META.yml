@@ -1,9 +1,12 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         CPAN-Search-Lite
-version:      0.59
-version_from: lib/CPAN/Search/Lite.pm
+version:      0.64
 installdirs:  site
+license:      perl
+abstract:     set up and maintain a searchable CPAN database
+authored_by:
+    - Randy Kobes <r.kobes@uwinnipeg.ca>
 requires:
     AI::Categorizer:               0
     Archive::Tar:                  1.08
@@ -19,10 +22,15 @@ requires:
     Lingua::StopWords:             0
     Locale::Country:               0
     LWP:                           0
+    Perl::Tidy:                    0
     Pod::Select:                   0
     Sort::Versions:                0
     XML::Parser:                   2
     YAML:                          0
-
 distribution_type: module
+no_index:
+    file:
+        - Apache2/t/lib/TestCSL.pm
+        - Apache2/t/lib/TestCSL/search.pm
+        - Apache2/t/response/TestCSL/lang.pm
 generated_by: ExtUtils::MakeMaker version 6.17

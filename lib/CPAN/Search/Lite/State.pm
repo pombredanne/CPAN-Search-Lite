@@ -2,10 +2,9 @@ package CPAN::Search::Lite::State;
 use strict;
 use warnings;
 no warnings qw(redefine);
-use DBI;
-require Sort::Versions;
-
-our ($dbh);
+use CPAN::Search::Lite::DBI::Index;
+our ($VERSION);
+$VERSION = 0.64;
 
 my $no_ppm;
 my %tbl2obj;
@@ -33,12 +32,12 @@ sub new {
       die "Please supply a CPAN::Search::Lite::Index::$table object"
           unless ($obj and ref($obj) eq "CPAN::Search::Lite::Index::$table");
   }
-  $dbh = DBI->connect("DBI:mysql:$args{db}", $args{user}, $args{passwd},
-                      {RaiseError => 1, AutoCommit => 0})
-    or die "Cannot connect to $args{db}";
+  my $cdbi = CPAN::Search::Lite::DBI::Index->new(%args);
 
   my $self = {index => $index,
               obj => {},
+              cdbi => $cdbi,
+              reindex => $args{reindex},
              };
   bless $self, $class;
 }
@@ -68,13 +67,18 @@ sub create_objs {
         if ($index and ref($index) eq "CPAN::Search::Lite::Index::$table") {
             my $info = $index->{info};
             return unless $self->has_data($info);
-            $obj = $pack->new(info => $info);
+            $obj = $pack->new(info => $info, 
+                              cdbi => $self->{cdbi}->{objs}->{$table});
         }
         else {
             $obj = $pack->new();
         }
         $self->{obj}->{$table} = $obj;
     }
+
+    $self->{obj}->{dists}->{reindex} = 
+      $self->{reindex} if defined $self->{reindex};
+
     foreach my $table (@tables) {
         my $obj = $self->{obj}->{$table};
         foreach (@tables) {
@@ -89,7 +93,7 @@ sub state_info {
     my $self = shift;
     my @methods = qw(ids state);
     my @tables = qw(dists auths mods);
-    push @tables, 'ppms' unless $no_ppm;
+    push @tables, 'ppms' unless ($no_ppm or defined $self->{reindex});
 
     for my $method (@methods) {
         for my $table (@tables) {
@@ -116,6 +120,9 @@ sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
   die "No author info available" unless $class->has_data($info);
+  my $cdbi = $args{cdbi};
+  die "No dbi object available"
+    unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::auths');
   my $self = {
               info => $info,
               insert => {},
@@ -123,6 +130,7 @@ sub new {
               delete => {},
               ids => {},
               obj => {},
+              cdbi => $cdbi,
               error_msg => '',
               info_msg => '',
              };
@@ -131,8 +139,11 @@ sub new {
 
 sub ids {
   my $self = shift;
-  my $fields = [qw(auth_id cpanid)];
-  $self->fetch_ids($fields) or return;
+  my $cdbi = $self->{cdbi};
+  $self->{ids} = $cdbi->fetch_ids() or do {
+    $self->{error_msg} = $cdbi->{error_msg};
+    return;
+  };
   return 1;
 }
 
@@ -173,11 +184,15 @@ sub state {
 
 package CPAN::Search::Lite::State::dists;
 use base qw(CPAN::Search::Lite::State);
+use CPAN::Search::Lite::Util qw(vcmp);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
   die "No dist info available" unless $class->has_data($info);
+  my $cdbi = $args{cdbi};
+  die "No dbi object available"
+    unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::dists');
   my $self = {
               info => $info,
               insert => {},
@@ -186,16 +201,21 @@ sub new {
               ids => {},
               versions => {},
               obj => {},
+              cdbi => $cdbi,
               error_msg => '',
               info_msg => '',
+              reindex => undef,
   };
   bless $self, $class;
 }
 
 sub ids {
   my $self = shift;
-  my $fields = [qw(dist_id dist_name dist_vers)];
-  $self->fetch_ids($fields) or return;
+  my $cdbi = $self->{cdbi};
+  ($self->{ids}, $self->{versions}) = $cdbi->fetch_ids() or do {
+    $self->{error_msg} = $cdbi->{error_msg};
+    return;
+  };
   return 1;
 }
 
@@ -205,11 +225,27 @@ sub state {
   my $dists = $self->{info};
   my $dist_ids = $self->{ids};
   my ($insert, $update, $delete);
+
+  my $reindex = $self->{reindex};
+  if (defined $reindex) {
+    my @dists = ref($reindex) eq 'ARRAY' ? @$reindex : ($reindex);
+    foreach my $distname(@dists) {
+      my $id = $dist_ids->{$distname};
+      if (not defined $id) {
+        print STDERR qq{"$distname" does not have an id: reindexing ignored\n};
+        next;
+      }
+      $update->{$distname} = $id;
+    }
+    $self->{update} = $update;
+    return 1;
+  }
+
   foreach my $distname (keys %$dists) {
     if (not defined $dist_versions->{$distname}) {
       $insert->{$distname}++;
     }
-    elsif ($self->vcmp($dists->{$distname}->{version}, 
+    elsif (vcmp($dists->{$distname}->{version}, 
                        $dist_versions->{$distname}) > 0) {
       $update->{$distname} = $dist_ids->{$distname};
     }
@@ -232,6 +268,9 @@ sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
   die "No module info available" unless $class->has_data($info);
+  my $cdbi = $args{cdbi};
+  die "No dbi object available"
+    unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::mods');
   my $self = {
               info => $info,
               insert => {},
@@ -239,6 +278,7 @@ sub new {
               delete => {},
               ids => {},
               obj => {},
+              cdbi => $cdbi,
               error_msg => '',
               info_msg => '',
              };
@@ -247,8 +287,11 @@ sub new {
 
 sub ids {
   my $self = shift;
-  my $fields = [qw(mod_id mod_name)];
-  $self->fetch_ids($fields) or return;
+  my $cdbi = $self->{cdbi};
+  $self->{ids} = $cdbi->fetch_ids() or do {
+    $self->{error_msg} = $cdbi->{error_msg};
+    return;
+  };
   return 1;
 }
 
@@ -288,11 +331,15 @@ sub state {
 
 package CPAN::Search::Lite::State::ppms;
 use base qw(CPAN::Search::Lite::State);
+use CPAN::Search::Lite::Util qw(vcmp);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
   die "No ppm info available" unless $class->has_data($info);
+  my $cdbi = $args{cdbi};
+  die "No dbi object available"
+    unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::ppms');
   my $self = {
               info => $info,
               insert => {},
@@ -301,6 +348,7 @@ sub new {
               ids => {},
               versions => {},
               obj => {},
+              cdbi => $cdbi,
               error_msg => '',
               info_msg => '',
              };
@@ -309,30 +357,11 @@ sub new {
 
 sub ids {
   my $self = shift;
-  unless ($dbh) {
-    $self->{error_msg} = q{No db handle available};
-    return;
-  }
-  my ($ppm_ids, $ppm_versions);
-  my $sql = q{SELECT rep_id,dist_name,dists.dist_id,ppm_vers} .
-    q{ FROM dists,ppms} .
-      q{ WHERE ppms.dist_id = dists.dist_id};
-  my $sth = $dbh->prepare($sql) or do {
-    db_error($self, $dbh);
+  my $cdbi = $self->{cdbi};
+  ($self->{ids}, $self->{versions}) = $cdbi->fetch_ids() or do {
+    $self->{error_msg} = $cdbi->{error_msg};
     return;
   };
-  $sth->execute() or do {
-    db_error($self, $dbh, $sth);
-    return;
-  };
-  while (my ($rep_id, $distname, $dist_id, $ppm_vers) = 
-         $sth->fetchrow_array()) {
-    $ppm_ids->{$rep_id}->{$distname} = $dist_id;
-    $ppm_versions->{$rep_id}->{$distname} = $ppm_vers;
-  }
-  $sth->finish();
-  $self->{ids} = $ppm_ids;
-  $self->{versions} = $ppm_versions;
   return 1;
 }
 
@@ -350,7 +379,7 @@ sub state {
               $insert->{$id}->{$package}->{version} =
                   $ppms->{$id}->{$package}->{version};
           }
-          elsif ($self->vcmp($ppms->{$id}->{$package}->{version}, 
+          elsif (vcmp($ppms->{$id}->{$package}->{version}, 
                              $ppm_versions->{$id}->{$package}) > 0) {
               $update->{$id}->{$package} = 
               {dist_id => $ppm_ids->{$id}->{$package},
@@ -375,64 +404,10 @@ sub state {
 
 package CPAN::Search::Lite::State;
 
-sub fetch_ids {
-    my ($self, $fields) = @_;
-    unless ($dbh) {
-        $self->{error_msg} = q{No db handle available};
-        return;
-    }
-    my @fields = @$fields;
-    my ($ids, $versions);
-    my $sql = q{SELECT } . join(',', @fields) .
-        q{ FROM } . $obj2tbl{ref($self)};
-    my $sth = $dbh->prepare($sql) or do {
-        $self->db_error();
-        return;
-    };
-    $sth->execute() or do {
-        $self->db_error($sth);
-        return;
-    };
-    if (scalar @fields == 2) {
-        while (my ($id, $key) = $sth->fetchrow_array()) {
-            $ids->{$key} = $id;
-        }
-        $sth->finish;
-        $self->{ids} = $ids;
-    }
-    else {
-        while (my ($id, $key, $vers) = $sth->fetchrow_array()) {
-            $ids->{$key} = $id;
-            $versions->{$key} = $vers;
-        }
-        $sth->finish;
-        $self->{ids} = $ids;
-        $self->{versions} = $versions;        
-    }
-    return 1;
-}
-
-sub db_error {
-    my ($obj, $sth) = @_;
-    return unless $dbh;
-    $sth->finish if $sth;
-    $obj->{error_msg} = q{Database error: } . $dbh->errstr;
-}
-
 sub has_data {
   my ($self, $data) = @_;
   return unless (defined $data and ref($data) eq 'HASH');
   return (scalar keys %$data > 0) ? 1 : 0;
-}
-
-sub vcmp {
-    my ($self, $v1, $v2) = @_;
-    return unless (defined $v1 and defined $v2);
-    return Sort::Versions::versioncmp($v1, $v2);
-}
-
-sub DESTROY {
-    $dbh->disconnect;
 }
 
 1;

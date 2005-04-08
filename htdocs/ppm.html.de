@@ -24,6 +24,9 @@ Ihrer Liste der Beh&auml;lter hinzuf&uuml;gen m&uuml;ssen:
 Beh&auml;lter</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, f&uuml;r den <i>crazyinsomniac Perl 5.8 
 Beh&auml;lter</i></li>
+<li><b></b><b>http://www.bribes.org/perl/ppm</b>, f&uuml;r den
+<i>www.bribes.org Perl 5.6 and 5.8
+Beh&auml;lter</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer</b>, f&uuml;r den <i>uwinnipeg Perl 5.6 Beh&auml;lter</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer58</b>, f&uuml;r den <i>uwinnipeg Perl 5.8 Beh&auml;lter</i></li>
 </ul>
