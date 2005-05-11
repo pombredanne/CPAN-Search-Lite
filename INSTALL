@@ -16,7 +16,8 @@ Creating, and subsequently updating the database, is controlled
 through the use of the csl_index script in the bin/ subdirectory.
 The various options needed to set up the database, including the
 name, password, and database name to be used, are specified through
-a configuration file. Once this is set up,
+a configuration file - run the script build/gen_conf.pl to
+create a minimal such file. Once this is set up,
    perl csl_index --config /path/to/csl_config.conf --setup
 will initially create and populate the needed tables, after which
    perl csl_index --config /path/to/csl_config.conf
@@ -31,12 +32,12 @@ A number of example interfaces for querying the database are included:
                     as cgi-bin/docserver.cgi, and the required
                     module as lib/Pod/Perldocs.pm (requires Pod::Perldoc).
 - cgi-bin/search  - a cgi script
-- mod_perl        - two mod_perl-2 modules, Apache::CPAN::Search and
-                    Apache::CPAN::Query, for a mod_perl interface
+- mod_perl        - two mod_perl-2 modules, Apache2::CPAN::Search and
+                    Apache2::CPAN::Query, for a mod_perl interface
 
 For the cgi-bin and mod_perl interfaces, example Template-Toolkit
-pages are included in the tt2/ and tt2-alt/ subdirectories. Note
-that these scripts, the mod_perl modules, and the tt2 pages will
+pages are included in the tt2/ subdirectory. Note
+that some of these scripts and the tt2 config file will
 require manual editing for urls reflecting the local server, the 
 location of the tt2 pages, and the username, password, and name of 
 the database to be used when connecting to the database for 
@@ -48,20 +49,8 @@ information for packages, style.css, a css style file, and ppm.html,
 for some information on using ppm on Win32.
 
 Support is available for different languages (based on the
-preference set in the browser). Translations of some terms
-occurs within CPAN::Search::Lite::Lang, while the remainder
-occurs within the tt2 pages. The structure of these pages is
-  tt2/config
-  tt2/header
-  tt2/footer
-  tt2/mirror_list
-which are files common to all languages (translation occurs
-via data structures passed in through CPAN::Search::Lite::Lang),
-while the langage specific pages are under
-  tt2/fr/mirror
-  ...
-  tt2/de/mirror
-  ...
-and so on. The default language used is "en" (English), if
-the user's preference isn't available.
+preference set in the browser). Translations occurs within 
+the language-specific modules of CPAN::Search::Lite::Lang::*.
+The default language used is "en" (English), if the user's 
+preference isn't available.
 

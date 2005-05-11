@@ -1,3 +1,15 @@
+May 4, 2005 - 0.66
+    - honor 'provides' field in META.yml file to provide
+      list of packages/files the distribution supplies.
+    - when updating a distribution, check that the existing
+      modules in the dists table are present in the updated
+      distribution, and delete them if they're not.
+    - add Portugese translations (thanks to Alberto Simoes)
+    - fix mod_perl handlers to use new namespace introduced
+      in RC5 of mp2. Note that all Apache::* modules are
+      now named Apache2::*.
+    - assume utf-8 data in mod_perl handlers
+
 April 7, 2005 - 0.64
     - when extracting files from a distribution, honor
       the file, directory, and package entries of the no_index

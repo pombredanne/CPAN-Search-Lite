@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: HTTP2.pm,v 1.3 2004/09/19 19:24:53 rkobes Exp $
+# $Id: HTTP2.pm,v 1.4 2005/05/01 23:26:25 rkobes Exp $
 #
 # ======================================================================
 
@@ -62,12 +62,12 @@ use constant MP2 => $mod_perl::VERSION < 1.99 ? 0 : 1;
 
 BEGIN {
   if (MP2) {
-    require Apache::RequestRec;
-    require Apache::RequestIO;
+    require Apache2::RequestRec;
+    require Apache2::RequestIO;
     require APR::Table;
-    require Apache::RequestUtil;
-    require Apache::Const;
-    Apache::Const->import(-compile => 'OK');
+    require Apache2::RequestUtil;
+    require Apache2::Const;
+    Apache2::Const->import(-compile => 'OK');
   }
   else {
     require Apache;
@@ -116,7 +116,7 @@ sub handler {
     $r->send_http_header(join '; ', $self->response->content_type);    
   }
   $r->print($self->response->content);
-  return MP2 ? Apache::OK : &Apache::Constants::OK;
+  return MP2 ? Apache2::Const::OK : &Apache::Constants::OK;
 }
 
 sub configure {
@@ -207,11 +207,11 @@ See F<examples/server/Apache.pm> and L</"EXAMPLES"> section for more information
 =item mod_soap server (.htaccess, directory-based access)
 
   SetHandler perl-script
-  PerlHandler Apache::SOAP
+  PerlHandler Apache2::SOAP
   PerlSetVar dispatch_to "/Your/Path/To/Deployed/Modules, Module::Name, Module::method"
   PerlSetVar options "compress_threshold => 10000"
 
-See L<Apache::SOAP> for more information.
+See L<Apache2::SOAP> for more information.
 
 =back
 
@@ -440,14 +440,14 @@ Apache.pm:
 
   1;
 
-=item Apache::Registry:
+=item Apache2::Registry:
 
 httpd.conf:
 
   Alias /mod_perl/ "/Apache/mod_perl/"
   <Location /mod_perl>
     SetHandler perl-script
-    PerlHandler Apache::Registry
+    PerlHandler Apache2::Registry
     PerlSendHeader On
     Options +ExecCGI
   </Location>
@@ -463,7 +463,7 @@ soap.mod_cgi (put it in /Apache/mod_perl/ directory mentioned above)
 
 =back
 
-WARNING: dynamic deployment with Apache::Registry will fail, because 
+WARNING: dynamic deployment with Apache2::Registry will fail, because 
 module will be loaded dynamically only for the first time. After that 
 it is already in the memory, that will bypass dynamic deployment and 
 produces error about denied access. Specify both PATH/ and MODULE name 

@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Apache2;
 use Apache::Test;
 use Apache::TestUtil qw(t_cmp t_write_perl_script);
 use Apache::TestRequest qw(GET);
@@ -20,7 +19,7 @@ my $hostport = Apache::TestRequest::hostport($config) || '';
 
 plan tests => 82;
 
-my $soap_uri = "http://$hostport/Apache/CPAN/SOAP";
+my $soap_uri = "http://$hostport/Apache2/CPAN/SOAP";
 my $soap_proxy = "http://$hostport/soap";
 my $soap = make_soap($soap_uri, $soap_proxy) or die "SOAP::Lite setup failed";
 ok t_cmp(defined $soap, 1);

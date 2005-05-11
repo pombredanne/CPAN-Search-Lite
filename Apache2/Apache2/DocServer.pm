@@ -1,46 +1,45 @@
-package Apache::DocServer;
+package Apache2::DocServer;
 use strict;
 use warnings;
 use DBI;
 use File::Spec::Functions;
 use CPAN::Search::Lite::Query;
-use Apache2;
-use mod_perl 1.99_11;     # sanity check for a recent version
-use Apache::Const -compile => qw(OK REDIRECT SERVER_ERROR 
+use mod_perl 1.999022;     # sanity check for a recent version
+use Apache2::Const -compile => qw(OK REDIRECT SERVER_ERROR 
                                  TAKE1 RSRC_CONF ACCESS_CONF);
-use Apache::Module ();
-use Apache::RequestRec ();
+use Apache2::Module ();
+use Apache2::RequestRec ();
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my @directives = (
                   {name      => 'DocServer_db',
                    errmsg    => 'database name',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'DocServer_user',
                    errmsg    => 'user to log in as',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'DocServer_pod_root',
                    errmsg    => 'root directory of pod files',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'DocServer_passwd',
                    errmsg    => 'password for user',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'DocServer_max_results',
                    errmsg    => 'maximum number of results',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                  );
-Apache::Module::add(__PACKAGE__, \@directives);
+Apache2::Module::add(__PACKAGE__, \@directives);
 
 my ($query, $cfg, $r, $max_results);
 
@@ -49,7 +48,7 @@ sub get_doc {
   $mod =~ s!(\.pm|\.pod)$!!;
   return unless ($mod =~ m!^[\w:\.\-]+$!);
   $r = Apache->request;
-  $cfg = Apache::Module::get_config(__PACKAGE__, 
+  $cfg = Apache2::Module::get_config(__PACKAGE__, 
                                     $r->server,
                                     $r->per_dir_config) || { };
 
@@ -85,7 +84,7 @@ sub get_readme {
   my ($class, $dist) = @_;
   return unless ($dist =~ m!^[\w:\.\-]+$!);
   $r ||= Apache->request;
-  $cfg ||= Apache::Module->get_config(__PACKAGE__, 
+  $cfg ||= Apache2::Module->get_config(__PACKAGE__, 
                                       $r->server,
                                       $r->per_dir_config) || { };
   
@@ -139,14 +138,14 @@ __END__
 
 =head1 NAME
 
-Apache::DocServer - mod_perl 2 soap server for soap-enhanced perldoc
+Apache2::DocServer - mod_perl 2 soap server for soap-enhanced perldoc
 
 =head1 DESCRIPTION
 
 This module provides a mod_perl 2 soap-based service to
 C<Pod::Perldocs>. The necessary Apache2 directives are
 
- PerlLoadModule Apache::DocServer
+ PerlLoadModule Apache2::DocServer
 
  DocServer_db database_name
  DocServer_user user_name
@@ -156,11 +155,11 @@ C<Pod::Perldocs>. The necessary Apache2 directives are
  <Location /docserver>
    SetHandler perl-script
    PerlResponseHandler Apache2::SOAP
-   PerlSetVar dispatch_to "D:/Perl/site/lib/Apache2, Apache::DocServer"
+   PerlSetVar dispatch_to "D:/Perl/site/lib/Apache2, Apache2::DocServer"
  </Location>
 
 where the C<Apache2::SOAP> module, included in this distribution,
-is a mod_perl 2 aware version of C<Apache::SOAP> of the
+is a mod_perl 2 aware version of C<Apache2::SOAP> of the
 C<SOAP::Lite> distribution. See the C<perldocs> script in
 this distribution for an example of it's use.
 

@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Lang::en;
 use strict;
 use warnings;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);

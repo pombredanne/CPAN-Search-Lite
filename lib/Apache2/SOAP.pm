@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: SOAP.pm,v 1.2 2004/12/19 04:36:34 rkobes Exp $
+# $Id: SOAP.pm,v 1.3 2005/05/01 23:26:24 rkobes Exp $
 #
 # ======================================================================
 
@@ -32,7 +32,7 @@ __END__
 
 =head1 NAME
 
-Apache::SOAP - mod_perl-based SOAP server with minimum configuration
+Apache2::SOAP - mod_perl-based SOAP server with minimum configuration
 
 =head1 SYNOPSIS
 
@@ -42,7 +42,7 @@ Apache::SOAP - mod_perl-based SOAP server with minimum configuration
 
   <Location /mod_soap>
     SetHandler perl-script
-    PerlHandler Apache::SOAP
+    PerlHandler Apache2::SOAP
     PerlSetVar dispatch_to "/Your/Path/To/Deployed/Modules, Module::Name, Module::method"
     PerlSetVar options "compress_threshold => 10000"
   </Location>
@@ -51,7 +51,7 @@ Apache::SOAP - mod_perl-based SOAP server with minimum configuration
 
   <FilesMatch "\.soap$">
     SetHandler perl-script
-    PerlHandler Apache::SOAP
+    PerlHandler Apache2::SOAP
     PerlSetVar dispatch_to "/Your/Path/To/Deployed/Modules, Module::Name, Module::method"
     PerlSetVar options "compress_threshold => 10000"
   </FilesMatch>
@@ -59,7 +59,7 @@ Apache::SOAP - mod_perl-based SOAP server with minimum configuration
 =item .htaccess, directory-based access
 
   SetHandler perl-script
-  PerlHandler Apache::SOAP
+  PerlHandler Apache2::SOAP
   PerlSetVar dispatch_to "/Your/Path/To/Deployed/Modules, Module::Name, Module::method"
   PerlSetVar options "compress_threshold => 10000"
 

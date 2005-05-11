@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Apache2;
 use Apache::Test;
 use Apache::TestUtil qw(t_cmp t_write_perl_script);
 use Apache::TestRequest qw(GET);
@@ -31,14 +30,16 @@ for my $lang (@langs) {
         my $query = "wanted=$chap;data=chaps_desc";
         my $result = GET "/TestCSL__lang?$query",
             'Accept-Language' => $lang;
-        ok t_cmp($result->content, $chaps_desc->{$lang}->{$chap}, 
+        my $content = $result->content;
+        ok t_cmp($content, $chaps_desc->{$lang}->{$chap}, 
                  "testing $lang for chaps_desc -> $chap");
     }
     for my $text (qw(title Problems)) {
         my $query = "wanted=$text;data=pages";
         my $result = GET "/TestCSL__lang?$query",
             'Accept-Language' => $lang;
-        ok t_cmp($result->content, $pages->{$lang}->{$text}, 
+        my $content = $result->content;
+        ok t_cmp($content, $pages->{$lang}->{$text}, 
                  "testing $lang for pages -> $text");
     }
     my $hash_element = 'list';
@@ -46,7 +47,8 @@ for my $lang (@langs) {
         my $query = "wanted=$text;data=pages;hash_element=$hash_element";
         my $result = GET "/TestCSL__lang?$query",
             'Accept-Language' => $lang;
-        ok t_cmp($result->content, $pages->{$lang}->{$hash_element}->{$text},
+        my $content = $result->content;
+        ok t_cmp($content, $pages->{$lang}->{$hash_element}->{$text},
                  "testing $lang for pages -> $hash_element -> $text");
     }
 }

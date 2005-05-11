@@ -70,43 +70,28 @@ END
     $prereqs{'SOAP::Lite'} = 0 if ($ans =~ /^y/i);
 }
 
-eval {require mod_perl;};
+eval {require mod_perl2;};
 if ($@) {
     print <<'END';
 
 mod_perl is required to run the part of the test suite,
 and also to use the included Apache handlers. You will
-need mod_perl 1.99_xx (which is the development version of
-mod_perl 2, used for Apache 2.0). See
+need at least mod_perl 1.999022 (which is RC5 of mod_perl 2
+on CPAN, used for Apache 2.0). See
    http://perl.apache.org/
 for details on mod_perl, including links on how to install it.
 
+I can add this to the list of prerequisites, if you like.
 END
-
-}
-else {
-    my $mpv = $mod_perl::VERSION;
-    if ($mpv < 1.99) {
-        print <<'END';
-
-Part of the test suite, as well as the included Apache handlers,
-require a later version of mod_perl 1.99 (which is the development
-version of mod_perl 2.0, based on Apache 2.0). This is not
-compatible with mod_perl 1.2x (based on Apache 1.3), but you
-can in principle have mod_perl 1.2x and mod_perl 1.99_xx
-coexisting. See
-   http://perl.apache.org/
-for details on mod_perl, including links on how to install it.
-
-END
-    }
+    my $ans = prompt("Add mod_perl2 to prerequsites?", 'yes');
+    $prereqs{'mod_perl2'} = 1.999022 if ($ans =~ /^y/i);
 }
 
-eval {require Apache::Upload;};
+eval {require APR::Request;};
 if ($@) {
     print <<'END';
 
-Apache::Request and Apache::Cookie from the libapreq2
+Apache2::Request and Apache2::Cookie from the latest libapreq2
 distribution (based on Apache 2.0) is required to run part
 of the test suite and to use the included Apache handlers
 (this is not compatible with Apache::Request and
@@ -116,7 +101,27 @@ based on Apache 1.3). See
 for details on the libapreq2 library, including links
 on how to install it.
 
+I can add this to the list of prerequisites, if you like.
 END
+    my $ans = prompt("Add Apache2::Request to prerequisites?", 'yes');
+    $prereqs{'Apache2::Request'} = 0 if ($ans =~ /^y/i);
+}
+
+eval {require Template;};
+if ($@ or $Template::VERSION < 2.14) {
+    print <<'END';
+
+The template toolkit (version 2.14 or later) is required to 
+run part of the test suite and to use the included Apache 
+handlers. See
+   http://www.template-toolkit.org/
+for details on using this, including links
+on how to install it.
+
+I can add this to the list of prerequisites, if you like.
+END
+    my $ans = prompt("Add Template to prerequisites?", 'yes');
+    $prereqs{'Template'} = 2.14 if ($ans =~ /^y/i);
 }
 
 WriteMakefile( %opts, PREREQ_PM => \%prereqs);

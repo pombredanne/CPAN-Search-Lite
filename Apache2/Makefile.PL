@@ -1,15 +1,14 @@
 use strict;
 my %opts = (
 	    NAME => 'CSL_Apache',
-            VERSION_FROM => 'Apache/CPAN/Query.pm',
-            PMLIBDIRS => [qw(Apache)],
+            VERSION_FROM => 'Apache2/CPAN/Query.pm',
+            PMLIBDIRS => [qw(Apache2)],
 	    dist   => {
 			 SUFFIX   => 'gz',
 			 COMPRESS => 'gzip -9f',
 			},
 	   );
 
-eval{require Apache2};
 require ModPerl::MM;
 ModPerl::MM::WriteMakefile( %opts);
 # use Apache::Test to test things, but if not available,

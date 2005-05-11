@@ -1,9 +1,9 @@
-package Apache::CPAN::Search;
+package Apache2::CPAN::Search;
 use strict;
 use warnings;
-use Apache2;
-use mod_perl 1.99_11;     # sanity check for a recent version
-use Apache::Const -compile => qw(OK SERVER_ERROR TAKE1 RSRC_CONF ACCESS_CONF);
+use utf8;
+use mod_perl2 1.999022;     # sanity check for a recent version
+use Apache2::Const -compile => qw(OK SERVER_ERROR TAKE1 RSRC_CONF ACCESS_CONF);
 use CPAN::Search::Lite::Query;
 use CPAN::Search::Lite::Util qw($mode_info $query_info %chaps 
                                 %modes $tt2_pages);
@@ -12,61 +12,61 @@ our $pages = {};
 use CPAN::Search::Lite::Lang qw(%langs load);
 use Template;
 use File::Spec::Functions qw(catfile catdir);
-use Apache::Request;
-use Apache::Cookie;
-use Apache::RequestRec;
-use Apache::RequestUtil;
+use Apache2::Request;
+use Apache2::Cookie;
+use Apache2::RequestRec ();
+use Apache2::RequestIO ();
 use APR::Date;
 use APR::URI;
-use Apache::URI;
-use Apache::Module ();
-use Apache::Log ();
+use Apache2::URI;
+use Apache2::Module ();
+use Apache2::Log ();
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my @directives = (
                   {name      => 'CSL_db',
                    errmsg    => 'database name',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_user',
                    errmsg    => 'user to log in as',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_passwd',
                    errmsg    => 'password for user',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_tt2',
                    errmsg    => 'location of tt2 pages',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_dl',
                    errmsg    => 'default download location',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_max_results',
                    errmsg    => 'maximum number of results',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_html_root',
                    errmsg    => 'root directory of html files',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_html_uri',
                    errmsg    => 'root uri of html files',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                  );
-Apache::Module::add(__PACKAGE__, \@directives);
+Apache2::Module::add(__PACKAGE__, \@directives);
 
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
@@ -74,8 +74,8 @@ my ($template, $query, $cfg, $dl, $max_results);
 sub new {
     my ($class, $r) = @_;
     my $lang = lang_wanted($r);
-    my $req = Apache::Request->new($r);
-    $cfg = Apache::Module::get_config(__PACKAGE__,
+    my $req = Apache2::Request->new($r);
+    $cfg = Apache2::Module::get_config(__PACKAGE__,
                                       $r->server,
                                       $r->per_dir_config) || { };
     $dl = $cfg->{dl} || 'http://www.cpan.org';
@@ -90,7 +90,7 @@ sub new {
                                  POST_CHOMP => 1,
                                 }) || do {
                                   $r->log_error(Template->error());
-                                  return Apache::SERVER_ERROR;
+                                  return Apache2::Const::SERVER_ERROR;
                                 };
 
     $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
@@ -117,19 +117,19 @@ sub new {
 
     my $mirror;
     if (my $host = ($req->param('host') || $req->param('url') )) {
-        my $cookie = Apache::Cookie->new($r, name => $cookie_name,
+        my $cookie = Apache2::Cookie->new($r, name => $cookie_name,
                                          value => $host, expires => '+1y');
         $cookie->bake;
         $mirror = $host;
    }
     else {
-        my %cookies = Apache::Cookie->fetch($r);
+        my %cookies = Apache2::Cookie->fetch($r);
         if (my $c = $cookies{$cookie_name}) {
             $mirror = $c->value; 
         }
     }
     $mirror ||= $dl;
-    $r->content_type('text/html');
+    $r->content_type('text/html; charset=UTF-8');
 
     my $self = {mode => $mode,
                 mirror => $mirror, req => $req, lang => $lang};
@@ -282,11 +282,11 @@ sub search : method {
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub chap_results {
@@ -392,16 +392,16 @@ __END__
 
 =head1 NAME
 
-Apache::CPAN::Search - mod_perl interface to CPAN::Search::Lite::Query
+Apache2::CPAN::Search - mod_perl interface to CPAN::Search::Lite::Query
 
 =head1 DESCRIPTION
 
 This module provides a mod_perl (2) interface to CPAN::Search::Lite::Query.
-The modules C<Apache::Request>
-and C<Apache::Cookie> of the C<libapreq2> distribution
+The modules C<Apache2::Request>
+and C<Apache2::Cookie> of the C<libapreq2> distribution
 are required. A directive
 
-    PerlLoadModule Apache::CPAN::Search
+    PerlLoadModule Apache2::CPAN::Search
 
 should appear before any of the C<Location> directives
 using the module. As well, the following directives should
@@ -442,7 +442,7 @@ The response handler can then be specified as
 
  <Location "/search">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Search->search
+   PerlResponseHandler Apache2::CPAN::Search->search
  </Location>
 
 A request for C<http://localhost/search> without any
@@ -532,7 +532,7 @@ C<$passwd>, and C<$tt2> at the top of this file.
 
 =head1 SEE ALSO
 
-L<Apache::CPAN::Query>, L<CPAN::Search::Lite::Query>, and L<mod_perl>.
+L<Apache2::CPAN::Query>, L<CPAN::Search::Lite::Query>, and L<mod_perl>.
 
 =cut
 

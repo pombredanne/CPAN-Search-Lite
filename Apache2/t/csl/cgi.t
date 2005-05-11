@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Apache2;
 use Apache::Test;
 use Apache::TestUtil qw(t_cmp t_write_perl_script);
 use Apache::TestRequest qw(GET);

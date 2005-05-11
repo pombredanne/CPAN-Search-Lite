@@ -5,7 +5,7 @@ use base qw(CPAN::Search::Lite::DBI);
 use strict;
 use warnings;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 package CPAN::Search::Lite::DBI::Index::reps;
 use base qw(CPAN::Search::Lite::DBI::Index);
@@ -245,9 +245,9 @@ sub sth_update {
 }
 
 sub sth_delete {
-  my ($self, $rep_id) = @_;
-  my $sql = sprintf(qq{DELETE LOW_PRIORITY FROM %s where dist_id = ?},
-                    $self->{table});
+  my ($self, $table_id, $rep_id) = @_;
+  my $sql = sprintf(qq{DELETE LOW_PRIORITY FROM %s where %s = ?},
+                    $self->{table}, $table_id);
   $sql .= qq { AND rep_id = $rep_id } if ($rep_id);
   my $sth = $dbh->prepare($sql) or do {
     $self->db_error();

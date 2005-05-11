@@ -1,10 +1,10 @@
-package Apache::CPAN::Query;
+package Apache2::CPAN::Query;
 use strict;
 use warnings;
-use Apache2;
-use mod_perl 1.99_11;     # sanity check for a recent version
-use Apache::Const -compile => qw(OK REDIRECT SERVER_ERROR 
-                                 TAKE1 RSRC_CONF ACCESS_CONF);
+use utf8;
+use mod_perl2 1.999022;     # sanity check for a recent version
+use Apache2::Const -compile => qw(OK REDIRECT SERVER_ERROR 
+                                  TAKE1 RSRC_CONF ACCESS_CONF);
 use CPAN::Search::Lite::Query;
 use CPAN::Search::Lite::Util qw($mode_info $query_info %modes
                                 %chaps_rev %chaps $tt2_pages);
@@ -14,61 +14,61 @@ our $pages = {};
 use CPAN::Search::Lite::Lang qw(%langs load);
 use Template;
 use File::Spec::Functions qw(catfile catdir);
-use Apache::Request;
-use Apache::Cookie;
-use Apache::RequestRec;
-use Apache::RequestUtil;
-use Apache::Module ();
-use Apache::Log ();
+use Apache2::Request;
+use Apache2::Cookie;
+use Apache2::RequestRec ();
+use Apache2::RequestIO ();
+use Apache2::Module ();
+use Apache2::Log ();
 use APR::Date;
 use APR::URI;
-use Apache::URI;
+use Apache2::URI;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my @directives = (
                   {name      => 'CSL_db',
                    errmsg    => 'database name',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_user',
                    errmsg    => 'user to log in as',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_passwd',
                    errmsg    => 'password for user',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_tt2',
                    errmsg    => 'location of tt2 pages',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_dl',
                    errmsg    => 'default download location',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_max_results',
                    errmsg    => 'maximum number of results',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_html_root',
                    errmsg    => 'root directory of html files',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_html_uri',
                    errmsg    => 'root uri of html files',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                  );
-Apache::Module::add(__PACKAGE__, \@directives);
+Apache2::Module::add(__PACKAGE__, \@directives);
 
 my $cookie_name = 'cslmirror';
 my ($template, $query, $cfg, $dl, $max_results);
@@ -76,8 +76,8 @@ my ($template, $query, $cfg, $dl, $max_results);
 sub new {
     my ($class, $r) = @_;
     my $lang = lang_wanted($r);
-    my $req = Apache::Request->new($r);
-    $cfg = Apache::Module::get_config(__PACKAGE__, 
+    my $req = Apache2::Request->new($r);
+    $cfg = Apache2::Module::get_config(__PACKAGE__, 
                                       $r->server,
                                       $r->per_dir_config) || { };
 
@@ -93,7 +93,7 @@ sub new {
                                  POST_CHOMP => 1,
                                 })  || do {
                                   $r->log_error(Template->error());
-                                  return Apache::SERVER_ERROR;
+                                  return Apache2::Const::SERVER_ERROR;
                                 };
     $query ||= CPAN::Search::Lite::Query->new(db => $cfg->{db},
                                               user => $cfg->{user},
@@ -119,20 +119,20 @@ sub new {
 
     my $mirror;
     if (my $host = ($req->param('host') || $req->param('url') )) {
-        my $cookie = Apache::Cookie->new($r, name => $cookie_name, path => '/',
+        my $cookie = Apache2::Cookie->new($r, name => $cookie_name, path => '/',
                                          value => $host, expires => '+1y');
         $cookie->bake;
         $mirror = $host;
 
    }
     else {
-        my %cookies = Apache::Cookie->fetch($r);
+        my %cookies = Apache2::Cookie->fetch($r);
         if (my $c = $cookies{$cookie_name}) {
             $mirror = $c->value; 
         }
     }
     $mirror ||= $dl;
-    $r->content_type('text/html');
+    $r->content_type('text/html; charset=UTF-8');
 
     my $self = {mode => $mode, mirror => $mirror, req => $req,
                 html_root => $cfg->{html_root}, lang => $lang,
@@ -193,11 +193,11 @@ sub search : method {
                 pages => $pages->{$self->{lang}},
                 title => $self->{title},
                };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub cpanid : method {
@@ -260,11 +260,11 @@ sub cpanid : method {
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub author : method {
@@ -328,11 +328,11 @@ sub author : method {
         $query->{error} = undef;
         $page = 'error';
     }
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub dist : method {
@@ -366,7 +366,7 @@ sub dist : method {
     }
     if ($letter and ref($results) eq 'ARRAY' and @$results == 1) {
       $r->headers_out->set(Location => "/dist/$results->[0]->{dist_name}");
-      return Apache::REDIRECT;
+      return Apache2::Const::REDIRECT;
     }
     my %extra_info;
     unless (ref($results) eq 'ARRAY') {
@@ -399,11 +399,11 @@ sub dist : method {
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub module : method {
@@ -437,7 +437,7 @@ sub module : method {
     }
     if ($letter and ref($results) eq 'ARRAY' and @$results == 1) {
       $r->headers_out->set(Location => "/module/$results->[0]->{mod_name}");
-      return Apache::REDIRECT;
+      return Apache2::Const::REDIRECT;
     }
     my %extra_info;
     unless (ref($results) eq 'ARRAY') {
@@ -470,11 +470,11 @@ sub module : method {
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($page, $vars)or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8')or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
   }
 
 sub chapter : method {
@@ -522,7 +522,7 @@ sub chapter : method {
         $page = 'missing' unless $results;
         if ($subchapter and ref($results) eq 'ARRAY' and @$results == 1) {
           $r->headers_out->set(Location => "/dist/$results->[0]->{dist_name}");
-          return Apache::REDIRECT;
+          return Apache2::Const::REDIRECT;
         }
     }
     if (my $error = $query->{error}) {
@@ -537,11 +537,11 @@ sub chapter : method {
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub mirror : method {
@@ -573,11 +573,11 @@ sub mirror : method {
                 %extra_info,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub recent : method {
@@ -604,11 +604,11 @@ sub recent : method {
                 title => $title,
                 pages => $pages->{$self->{lang}},
                 };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 sub perldoc : method {
@@ -638,11 +638,11 @@ sub perldoc : method {
              pages => $pages->{$self->{lang}},
              title => $self->{title},
              };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
   }
   
   my $parsed = $r->parsed_uri();
@@ -660,7 +660,7 @@ sub perldoc : method {
     $path = File::Spec::Unix->catfile($path, 'perl', $request);
     $parsed->path($path . '.html');
     $r->headers_out->set(Location => $parsed->unparse());
-    return Apache::REDIRECT;
+    return Apache2::Const::REDIRECT;
   }
   
   $query->query(mode => 'module', name => $request);
@@ -675,17 +675,17 @@ sub perldoc : method {
              pages => $pages->{$self->{lang}},
              mode => 'perldoc',
              };
-    $template->process($page, $vars) or do {
-      $r->log_error(Template->error());
-      return Apache::SERVER_ERROR;
+    $template->process($page, $vars, $r, binmode => ':utf8') or do {
+      $r->log_error($template->error());
+      return Apache2::Const::SERVER_ERROR;
     };
-    return Apache::OK;
+    return Apache2::Const::OK;
   }
 
   $path = File::Spec::Unix->catfile($path, $dist_name, split(/::/, $request));
   $parsed->path($path . '.html');
   $r->headers_out->set(Location => $parsed->unparse());
-  return Apache::REDIRECT;
+  return Apache2::Const::REDIRECT;
 }
 
 sub chap_results {
@@ -795,16 +795,16 @@ __END__
 
 =head1 NAME
 
-Apache::CPAN::Query - mod_perl interface to CPAN::Search::Lite::Query
+Apache2::CPAN::Query - mod_perl interface to CPAN::Search::Lite::Query
 
 =head1 DESCRIPTION
 
 This module provides a mod_perl (2) interface to CPAN::Search::Lite::Query.
-The modules C<Apache::Request>
-and C<Apache::Cookie> of the C<libapreq2> distribution
+The modules C<Apache2::Request>
+and C<Apache2::Cookie> of the C<libapreq2> distribution
 are required. A directive
 
-    PerlLoadModule Apache::CPAN::Query
+    PerlLoadModule Apache2::CPAN::Query
 
 should appear before any of the C<Location> directives
 using the module. As well, the following directives should
@@ -857,7 +857,7 @@ Available response handlers are as follows.
 
  <Location "/search">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->search
+   PerlResponseHandler Apache2::CPAN::Query->search
  </Location>
 
 This handles search queries such as for
@@ -871,7 +871,7 @@ module names and abstracts, and CPAN ids and full names.
 
  <LocationMatch "/~[A-Za-z0-9-]+">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->cpanid
+   PerlResponseHandler Apache2::CPAN::Query->cpanid
  </LocationMatch>
 
 There are two levels:
@@ -894,7 +894,7 @@ C<Dist-Name> of cpanid C<CPANID>.
 
  <Location "/author">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->author
+   PerlResponseHandler Apache2::CPAN::Query->author
  </Location>
 
 There are 3 levels:
@@ -922,7 +922,7 @@ with C<A>.
 
  <Location "/dist">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->dist
+   PerlResponseHandler Apache2::CPAN::Query->dist
  </Location>
 
 There are 4 levels:
@@ -955,7 +955,7 @@ C<ABC-*>.
 
  <Location "/module">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->module
+   PerlResponseHandler Apache2::CPAN::Query->module
  </Location>
 
 There are 4 levels:
@@ -988,7 +988,7 @@ C<ABC::*>.
 
  <Location "/chapter">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->chapter
+   PerlResponseHandler Apache2::CPAN::Query->chapter
  </Location>
 
 There are 3 levels:
@@ -1017,7 +1017,7 @@ C<Tie> subchapter of the C<Data Type Utilities> chapter.
 
  <Location "/recent">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->recent
+   PerlResponseHandler Apache2::CPAN::Query->recent
  </Location>
 
 With this, a request for I<http://localhost/recent> will
@@ -1027,7 +1027,7 @@ list all distributions uploaded in the last 7 days.
 
  <Location "/mirror">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->mirror
+   PerlResponseHandler Apache2::CPAN::Query->mirror
  </Location>
 
 With this, a request for I<http://localhost/mirror> will
@@ -1039,7 +1039,7 @@ cookies to be enabled.
 
  <Location "/perldoc">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->perldoc
+   PerlResponseHandler Apache2::CPAN::Query->perldoc
  </Location>
 
 With this, a request for, eg, I<http://localhost/perldoc/perlfaq> will
@@ -1051,6 +1051,6 @@ to the documentation for I<Net::FTP>.
 
 =head1 SEE ALSO
 
-L<Apache::CPAN::Search>, L<CPAN::Search::Lite::Query>, and L<mod_perl>.
+L<Apache2::CPAN::Search>, L<CPAN::Search::Lite::Query>, and L<mod_perl>.
 
 =cut

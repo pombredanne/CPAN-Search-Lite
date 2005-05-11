@@ -1,6 +1,7 @@
 package CPAN::Search::Lite::Query;
 use strict;
 use warnings;
+use utf8;
 no warnings qw(redefine);
 use CPAN::Search::Lite::Util qw($repositories %chaps
                                 $full_id $mode_info);
@@ -18,7 +19,7 @@ use constant KB => 1024;
 
 our ($lang);
 our $max_results = 200;
-our $VERSION = 0.64;
+our $VERSION = 0.66;
 my $cdbi_query;
 
 my %mode2obj;

@@ -15,7 +15,7 @@ use Locale::Country;
 use CPAN::Search::Lite::DBI qw($tables);
 
 our ($oldout, $VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 sub new {
     my ($class, %args) = @_;

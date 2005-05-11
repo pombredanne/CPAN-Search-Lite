@@ -20,7 +20,7 @@ our $dbh = $CPAN::Search::Lite::DBI::dbh;
 my ($setup, $no_ppm);
 my $DEBUG = 1;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -576,7 +576,7 @@ sub delete {
     return;
   }
   
-  my $sth = $cdbi->sth_delete();
+  my $sth = $cdbi->sth_delete('dist_id');
   foreach my $distname(keys %$data) {
     print "Deleting $distname\n";
     $sth->execute($data->{$distname}) or do {
@@ -724,20 +724,31 @@ sub delete {
   return unless my $dist_obj = $self->{obj}->{dists};
   my $cdbi = $self->{cdbi};
   my $data = $dist_obj->{delete};
-  unless ($self->has_data($data)) {
-    $self->{info_msg} = q{No module data to delete};
-    return;
+  if ($self->has_data($data)) {
+    my $sth = $cdbi->sth_delete('dist_id');
+    foreach my $distname(keys %$data) {
+      $sth->execute($data->{$distname}) or do {
+        $cdbi->db_error($sth);
+        $self->{error_msg} = $cdbi->{error_msg};
+        return;
+      };
+    }
+    $sth->finish();
   }
-  
-  my $sth = $cdbi->sth_delete();
-  foreach my $distname(keys %$data) {
-    $sth->execute($data->{$distname}) or do {
-      $cdbi->db_error($sth);
-      $self->{error_msg} = $cdbi->{error_msg};
-      return;
-    };
+
+  $data = $self->{delete};
+  if ($self->has_data($data)) {
+    my $sth = $cdbi->sth_delete('mod_id');
+    foreach my $modname(keys %$data) {
+      $sth->execute($data->{$modname}) or do {
+        $cdbi->db_error($sth);
+        $self->{error_msg} = $cdbi->{error_msg};
+        return;
+      };
+      print "Deleting $modname\n";
+    }
   }
-  $sth->finish();
+
   $dbh->commit or do {
     $cdbi->db_error();
     $self->{error_msg} = $cdbi->{error_msg};
@@ -833,7 +844,7 @@ sub update {
     return;
   }
   
-  my $sth = $cdbi->sth_delete();
+  my $sth = $cdbi->sth_delete('dist_id');
   foreach my $distname(keys %$data) {
       next unless $data->{$distname};
       $sth->execute($data->{$distname}) or do {
@@ -884,7 +895,7 @@ sub delete {
     return;
   }
   
-  my $sth = $cdbi->sth_delete();
+  my $sth = $cdbi->sth_delete('dist_id');
   foreach my $distname(keys %$data) {
     $sth->execute($data->{$distname}) or do {
       $cdbi->db_error($sth);
@@ -1004,7 +1015,7 @@ sub update {
         return;
     }
     
-    my $sth = $cdbi->sth_delete();
+    my $sth = $cdbi->sth_delete('dist_id');
     foreach my $distname(keys %$data) {
         next unless $data->{$distname};
         $sth->execute($data->{$distname}) or do {
@@ -1060,22 +1071,33 @@ sub delete {
     return;
   }
   return unless my $dist_obj = $self->{obj}->{dists};
+  return unless my $mod_obj = $self->{obj}->{mods};
   my $cdbi = $self->{cdbi};
   my $data = $dist_obj->{delete};
-  unless ($self->has_data($data)) {
-    $self->{info_msg} = q{No req data to delete};
-    return;
+  if ($self->has_data($data)) {  
+    my $sth = $cdbi->sth_delete('dist_id');
+    foreach my $distname(keys %$data) {
+      $sth->execute($data->{$distname}) or do {
+        $cdbi->db_error($sth);
+        $self->{error_msg} = $cdbi->{error_msg};
+        return;
+      };
+    }
+    $sth->finish();
   }
-  
-  my $sth = $cdbi->sth_delete();
-  foreach my $distname(keys %$data) {
-    $sth->execute($data->{$distname}) or do {
-      $cdbi->db_error($sth);
-      $self->{error_msg} = $cdbi->{error_msg};
-      return;
-    };
+
+  $data = $mod_obj->{delete};
+  if ($self->has_data($data)) {
+    my $sth = $cdbi->sth_delete('mod_id');
+    foreach my $modname(keys %$data) {
+      $sth->execute($data->{$modname}) or do {
+        $cdbi->db_error($sth);
+        $self->{error_msg} = $cdbi->{error_msg};
+        return;
+      };
+    }
   }
-  $sth->finish();
+
   $dbh->commit or do {
     $cdbi->db_error();
     $self->{error_msg} = $cdbi->{error_msg};
@@ -1214,7 +1236,7 @@ sub delete {
   foreach my $id (keys %$data) {
       next unless $id;
       my $values = $data->{$id};
-      my $sth = $cdbi->sth_delete($id);
+      my $sth = $cdbi->sth_delete('dist_id', $id);
       foreach my $package (keys %{$values}) {
           print "Deleting $package from rep_id=$id\n";
           $sth->execute($values->{$package}) or do {

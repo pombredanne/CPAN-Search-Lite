@@ -2,14 +2,17 @@ package CPAN::Search::Lite::State;
 use strict;
 use warnings;
 no warnings qw(redefine);
+use CPAN::Search::Lite::DBI qw($dbh);
 use CPAN::Search::Lite::DBI::Index;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my $no_ppm;
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ for (qw(dists mods auths ppms));
 my %obj2tbl = reverse %tbl2obj;
+
+our $dbh = $CPAN::Search::Lite::DBI::dbh;
 
 sub new {
   my ($class, %args) = @_;
@@ -304,6 +307,7 @@ sub state {
   my $dist_update = $dist_obj->{update};
   my $dist_insert = $dist_obj->{insert};
   my ($update, $insert, $delete);
+  my $cdbi = $self->{cdbi};
   if ($self->has_data($dist_insert)) {
     foreach my $distname (keys %{$dist_insert}) {
       foreach my $module(keys %{$dists->{$distname}->{modules}}) {
@@ -324,8 +328,34 @@ sub state {
       }   
     }
   }
+
+  if ($self->has_data($dist_update)) {
+    my $sql = q{SELECT mod_id,mod_name from mods,dists WHERE dists.dist_id = mods.dist_id and dists.dist_id = ?};
+    my $sth = $dbh->prepare($sql) or do {
+      $cdbi->db_error();
+      $self->{error_msg} = $cdbi->{error_msg};
+      return;
+    };
+    my $dist_ids = $dist_obj->{ids};
+    foreach my $distname (keys %{$dist_update}) {
+      my %mods = ();
+      %mods = map {$_ => 1} keys %{$dists->{$distname}->{modules}};
+      $sth->execute($dist_ids->{$distname}) or do {
+        $cdbi->db_error($sth);
+        $self->{error_msg} = $cdbi->{error_msg};
+        return;
+      };
+      while (my($mod_id, $mod_name) = $sth->fetchrow_array) {
+        next if $mods{$mod_name};
+        $delete->{$mod_name} = $mod_id;
+      }
+    }
+    $sth->finish;
+  }
+
   $self->{update} = $update;
   $self->{insert} = $insert;
+  $self->{delete} = $delete;
   return 1;
 }
 

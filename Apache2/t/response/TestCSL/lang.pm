@@ -1,22 +1,22 @@
 package TestCSL::lang;
 use strict;
 use warnings;
-use Apache2;
-use mod_perl 1.99_11;     # sanity check for a recent version
-use Apache::Const -compile => qw(OK);
+use mod_perl2 1.999022;     # sanity check for a recent version
+use Apache2::Const -compile => qw(OK);
 use CPAN::Search::Lite::Query;
 our $chaps_desc = {};
 our $pages = {};
 use CPAN::Search::Lite::Lang qw(%langs load);
 use TestCSL qw(lang_wanted);
-use Apache::RequestRec;
-use Apache::RequestIO;
-use Apache::Log ();
-use Apache::Request;
+use Apache2::RequestRec;
+use Apache2::RequestIO;
+use Apache2::Log ();
+use Apache2::Request;
 
 sub handler {
     my $r = shift;
-    my $req = Apache::Request->new($r);
+    $r->content_type('text/html; charset=UTF-8');
+    my $req = Apache2::Request->new($r);
     my $data = $req->param('data');
     my $hash_element = $req->param('hash_element');
     my $wanted = $req->param('wanted');
@@ -30,18 +30,21 @@ sub handler {
         return;
       }
     }
+    my $response;
     if ($data eq 'chaps_desc') {
-        $r->print($chaps_desc->{$lang}->{$wanted});
+        $response = $chaps_desc->{$lang}->{$wanted};
     }
     else {
         if ($hash_element) {
-            $r->print($pages->{$lang}->{$hash_element}->{$wanted});
+            $response = $pages->{$lang}->{$hash_element}->{$wanted};
         }
         else {
-            $r->print($pages->{$lang}->{$wanted});
+            $response = $pages->{$lang}->{$wanted};
         }
     }
-    return Apache::OK;
+    utf8::decode($response);
+    $r->print($response);
+    return Apache2::Const::OK;
 }
 
 1;

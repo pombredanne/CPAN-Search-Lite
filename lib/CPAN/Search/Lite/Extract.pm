@@ -17,7 +17,7 @@ use HTML::TextToHTML;
 use File::Find;
 use Safe;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
 my $DEBUG = 1;
@@ -213,11 +213,11 @@ sub extract {
           }
         }
         my $ignore_pat = join '|', @{$ignore->{directory}};
-        @files = grep {not m!$dist/($ignore_pat)/!} @files;
+        @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)/!} @files;
         my $entry = $ignore->{file};
         if ($entry and ref($entry) eq 'ARRAY') {
           $ignore_pat = join '|', @$entry;
-          @files = grep {not m!$dist/($ignore_pat)$!} @files;
+          @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)$!} @files;
         }
         my %ignore_packs = ();
         $entry = $ignore->{package};
@@ -232,6 +232,10 @@ sub extract {
 
         foreach my $file (@files) {
             print "Extracting $file ...\n";
+            my $provides;
+            if ($props->{$dist} and $props->{$dist}->{provides}) {
+              $provides = $props->{$dist}->{provides};
+            }
             my $content = ($is_zip ? 
                            $archive->contents($file) : 
                            $archive->get_content($file) ) or do {
@@ -251,6 +255,10 @@ sub extract {
             }
 
             next if ($module and $ignore_packs{$module});
+            if ($provides and $file =~ /\.pm$/) {
+              next unless ($provides->{$module} 
+                           and $file =~ /$provides->{$module}->{file}/);
+            }
 
             my $rel_root;
             if ($module and $dists->{$dist}->{modules}->{$module}) {

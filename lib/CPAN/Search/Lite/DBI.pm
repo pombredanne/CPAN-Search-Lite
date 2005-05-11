@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use DBI;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 use base qw(Exporter);
 our ($dbh, $tables, @EXPORT_OK);

@@ -4,7 +4,7 @@ use warnings;
 
 our ($VERSION);
 
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 1;
 
@@ -19,7 +19,7 @@ CPAN::Search::Lite - setup and maintain a searchable CPAN database
 L<CPAN::Search::Lite::Index>, for setting up and maintaining
 the database, L<CPAN::Search::Lite::Query> for an
 interface to querying the database, and
-L<Apache::CPAN::Query> for a mod_perl 2 handler to
+L<Apache2::CPAN::Query> for a mod_perl 2 handler to
 C<CPAN::Search::Lite::Query>.
 Development takes place on the CPAN-Search-Lite project
 at L<http://sourceforge.net/projects/cpan-search/>.

@@ -2,13 +2,14 @@ package CPAN::Search::Lite::Lang;
 use strict;
 use warnings;
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
+use utf8;
 use base qw(Exporter);
 our (@EXPORT_OK, %langs, $chaps_desc, $pages, $dslip, $months);
 @EXPORT_OK = qw(%langs load);
 
-%langs = map {$_ => 1} qw(de en es fr it);
+%langs = map {$_ => 1} qw(de en es fr it pt);
 
 sub load {
   my %args = @_;

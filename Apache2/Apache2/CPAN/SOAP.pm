@@ -1,48 +1,49 @@
-package Apache::CPAN::SOAP;
+package Apache2::CPAN::SOAP;
 use strict;
 use warnings;
 use CPAN::Search::Lite::Query;
-use Apache2;
-use mod_perl 1.99_11;     # sanity check for a recent version
-use Apache::Const -compile => qw(TAKE1 RSRC_CONF ACCESS_CONF);
-use Apache::Module ();
-use Apache::RequestRec ();
+use mod_perl2 1.999022;     # sanity check for a recent version
+use Apache2::Const -compile => qw(TAKE1 RSRC_CONF ACCESS_CONF);
+use Apache2::Module ();
+use Apache2::RequestRec ();
+use Apache2::RequestIO ();
+use Apache2::RequestUtil ();
 our ($VERSION);
-$VERSION = 0.64;
+$VERSION = 0.66;
 
 my @directives = (
                   {name      => 'CSL_soap_db',
                    errmsg    => 'database name',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_soap_user',
                    errmsg    => 'user to log in as',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_soap_passwd',
                    errmsg    => 'password for user',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                   {name      => 'CSL_soap_max_results',
                    errmsg    => 'maximum number of results',
-                   args_how  => Apache::TAKE1,
-                   req_override => Apache::RSRC_CONF | Apache::ACCESS_CONF,
+                   args_how  => Apache2::Const::TAKE1,
+                   req_override => Apache2::Const::RSRC_CONF | Apache2::Const::ACCESS_CONF,
                   },
                  );
 
-Apache::Module::add(__PACKAGE__, \@directives);
+Apache2::Module::add(__PACKAGE__, \@directives);
 
 my ($r, $cfg, $max_results, $query);
 
 sub query  {
   my ($self, %args) = @_;
   return unless ($args{mode} and $args{name});
-  $r = Apache->request;
+  $r = Apache2::RequestUtil->request;
 
-  $cfg = Apache::Module::get_config(__PACKAGE__,
+  $cfg = Apache2::Module::get_config(__PACKAGE__,
                                     $r->server,
                                     $r->per_dir_config) || { };
 
@@ -90,7 +91,7 @@ __END__
 
 =head1 NAME
 
-Apache::CPAN::SOAP - soap interface to C<CPAN::Search::Lite::Query>
+Apache2::CPAN::SOAP - soap interface to C<CPAN::Search::Lite::Query>
 
 =head1 DESCRIPTION
 
@@ -98,7 +99,7 @@ This module provides some soap-based services to
 C<CPAN::Search::Lite::Query> in a mod_perl 2 environment. 
 The necessary Apache2 directives are
 
- PerlLoadModule Apache::CPAN::SOAP
+ PerlLoadModule Apache2::CPAN::SOAP
 
  CSL_soap_db database_name
  CSL_soap_user user_name
@@ -107,11 +108,11 @@ The necessary Apache2 directives are
  <Location /soap>
    SetHandler perl-script
    PerlResponseHandler Apache2::SOAP
-   PerlSetVar dispatch_to "D:/Perl/site/lib/Apache2, Apache::CPAN::SOAP"
+   PerlSetVar dispatch_to "D:/Perl/site/lib, Apache2::CPAN::SOAP"
  </Location>
 
 where the C<Apache2::SOAP> module, included in this distribution,
-is a mod_perl 2 aware version of C<Apache::SOAP> of the
+is a mod_perl 2 aware version of C<Apache2::SOAP> of the
 C<SOAP::Lite> distribution. See the C<CSL_soap> script in
 this distribution for an example of it's use. C<CSL_soap_passwd>
 is optional if no password is required for the user
@@ -119,7 +120,7 @@ specified in C<CSL_soap_user>.
 
 =head1 SEE ALSO
 
-L<Apache::CPAN::Search>, L<Apache::CPAN::Query>,
+L<Apache2::CPAN::Search>, L<Apache2::CPAN::Query>,
 and L<CPAN::Search::Lite::Query>.
 
 =cut

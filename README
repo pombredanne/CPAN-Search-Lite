@@ -17,30 +17,32 @@ on installation.
 
 The included modules, with pod documentation, are:
 
-CPAN::Search::Lite::Extract   - extract files from distributions
-CPAN::Search::Lite::Index     - index and update the database
-CPAN::Search::Lite::Info      - extract info from the CPAN indices
-CPAN::Search::Lite::PPM       - get info from PPM repositories
-CPAN::Search::Lite::State     - get the state of the current database
-CPAN::Search::Lite::Populate  - populate the database
-CPAN::Search::Lite::Query     - query the database
-CPAN::Search::Lite::Util      - some common data structures
-CPAN::Search::Lite::Lang      - some common language data structures
+CPAN::Search::Lite::Extract    - extract files from distributions
+CPAN::Search::Lite::Index      - index and update the database
+CPAN::Search::Lite::Info       - extract info from the CPAN indices
+CPAN::Search::Lite::PPM        - get info from PPM repositories
+CPAN::Search::Lite::State      - get the state of the current database
+CPAN::Search::Lite::Populate   - populate the database
+CPAN::Search::Lite::Query      - query the database
+CPAN::Search::Lite::Util       - some common data structures
+CPAN::Search::Lite::Lang       - some common language data structures
+CPAN::Search::Lite::DBI        - database information
+CPAN::Search::Lite::DBI::Index - database indexing methods 
+CPAN::Search::Lite::DBI::Query - database querying methods
 
-As well, some PPM::XML::* modules (from the PPM distribution of 
-MURRAY, on CPAN) are included for extracting info from the PPM
-repositories.
+Language-specific modules, used for translating some terms,
+are found as CPAN::Search::Lite::Lang::*. As well, some 
+PPM::XML::* modules (from the PPM distribution of MURRAY, 
+on CPAN) are included for extracting info from the PPM repositories.
 
 Two different mod_perl interfaces to CPAN::Search::Lite::Query are
-included as Apache::CPAN::Query and Apache::CPAN::Search. A cgi script
-and soap server examples are in the cgi-bin directory.  Two
-different Template-Toolkit sets of pages are found in the tt2/
-and tt2-alt/ subdirectories. Note that some manual editing of some
-of these files may be needed, particularly for urls reflecting the
-local server, the location of the tt2 pages, and the username,
-password, and name of the database to be used when connecting to 
-the database for performing queries. The embedded pod documentation
-contains more details.
+included as Apache2::CPAN::Query and Apache2::CPAN::Search. Note
+that this requires a recent mod_perl-2 release candidate on CPAN,
+as well as Apache2::Request and friends from the libapreq2
+distribution on CPAN. A cgi script and soap server examples 
+are in the cgi-bin directory. A set of Template-Toolkit 
+are found in the tt2/ subdirectory. Note that some manual editing of
+of the config file is needed to reflect local settings.
 
 The bin/ subdirectory contains 3 scripts:
 
@@ -69,19 +71,20 @@ Support for presenting results in different languages in a
 web environment, based on the browser's language preference, is
 available - see the INSTALL file for a brief discussion
 on how to set this up. At present English, French, German,
-Italian, and Spanish are available, although others can readily
-be added (this would involve providing translation of terms
-appearing in CPAN::Search::Lite::Lang, as well as providing
-the corresponding tt2 pages). Note that this does not include,
-in particular, translations of the abstracts of modules or
-distributions, nor of the accompanying documentation. The translations
-were initially done through http://world.altavista.com/babelfish/tr,
-but have been greatly improved with the help of
+Italian, Portugese, and Spanish are available, although others 
+can readily be added (this would involve providing translation of terms
+appearing in the language-specific modules of
+CPAN::Search::Lite::Lang::*, as well as providing
+the corresponding static page under htdocs/). Note that this 
+does not include, in particular, translations of the abstracts 
+of modules or distributions, nor of the accompanying 
+documentation. The translations have been carried out with the help of
   French: Isabelle Hernandez <isa at panix.com>
           Arnaud Assad <arnaud at underlands.org>
   German: Florian Greb <greb at inf.fu-berlin.de>
   Italian: Enrico Sorcinelli <bepi at modperl.it>
   Spanish: Joaquin Ferrero <explorer at joaquinferrero.com>
+  Portugese: Alberto Simoes <albie at alfarrabio.di.uminho.pt>
 As this is still evolving, patches are welcome.
 
 An implementation of this search engine is at
