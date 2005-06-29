@@ -2,8 +2,7 @@ package CPAN::Search::Lite::Lang::pt;
 use utf8;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -157,6 +156,7 @@ END
            custom => 'URL',
            default => 'A ligação por omissão de',
            alt => 'ou',
+           install => 'Instale',
            mirror1 => << 'END',
 Com este formulário pode especificar de onde quer
 descarregar os ficheiros (precisa de ter os cookies activos).
@@ -165,6 +165,12 @@ END
            mirror2 => << 'END',
 irei tentar redireccionar para um mirror CPAN próximo
 baseado no seu país de origem.
+END
+           webstart => << 'END',
+Selecionar esta op&ccedil;&atilde;o fornecer&aacute; 
+as liga&ccedil;&otilde;es permitindo o de instalar 
+os m&oacute;dulos de CPAN e os pacotes de Win32 PPM 
+usar-se da aplica&ccedil;&atilde;o
 END
 };
 

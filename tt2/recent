@@ -15,7 +15,13 @@
 <li><a href="[% home %]/dist/[% item.dist_name %]"> 
 <b>[% item.dist_name %]-[% item.dist_vers %]</b></a>
 &nbsp;<small>&nbsp;[<a
-href="[% host %]/authors/id/[% item.download %]">[% pages.download %]</a>]</small>
+href="[% host %]/authors/id/[% item.download %]">[% pages.download %]</a>]
+</small>
+[% IF webstart %]
+&nbsp;<small>[<a
+href="[% cpaninstall %]?dist=[% item.dist_file %];cpanid=[% item.cpanid %]">[% pages.install %]</a>]
+</small>
+[% END -%]
 &nbsp;<small>[% item.dist_abs %]</small></li>
 [% END -%]
 [% END -%]

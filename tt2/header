@@ -4,6 +4,10 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="/style.css" type="text/css">
+<link href="[% home %]/htdocs/cpan.xml" rel="alternate"
+  type="application/rss+xml" title="Recent CPAN uploads" />
+<meta name="description" content="Browse and search CPAN" />
+<meta name="keywords" content="Perl modules, CPAN" />
   <title>[% title %]</title>
  </head>
 <table width="100%">

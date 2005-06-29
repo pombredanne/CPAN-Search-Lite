@@ -4,8 +4,7 @@ use warnings;
 no warnings qw(redefine);
 use CPAN::Search::Lite::DBI qw($dbh);
 use CPAN::Search::Lite::DBI::Index;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my $no_ppm;
 my %tbl2obj;

@@ -1,8 +1,7 @@
 package CPAN::Search::Lite::Lang::en;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -156,6 +155,7 @@ END
            custom => 'Custom URL',
            default => 'The default link of',
            alt => 'or',
+           install => 'install',
            mirror1 => << 'END',
 With this form you can specify where you want to 
 fetch downloads from (this requires cookies to be enabled).
@@ -164,6 +164,11 @@ END
            mirror2 => << 'END',
 will attempt to redirect you to a nearby CPAN mirror,
 based on your country of origin.
+END
+           webstart => <<'END',
+Selecting this option will provide links enabling you to
+install CPAN modules
+and Win32 ppm packages by an application using
 END
 };
 

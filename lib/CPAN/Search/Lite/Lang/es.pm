@@ -1,8 +1,7 @@
 package CPAN::Search::Lite::Lang::es;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -153,6 +152,7 @@ END
            custom => 'URL personal',
            default => 'El enlace por defecto de',
            alt => 'o',
+          install => 'Instale',
            mirror1 => << 'END',
 Con este formulario usted puede especificar de d&oacute;nde desea 
 realizar las descargas (esto requiere que las 
@@ -162,6 +162,12 @@ END
            mirror2 => << 'END',
 intentar&aacute; redirigirle a un espejo pr&oacute;ximo 
 de CPAN, basado en su pa&iacute;s de origen.
+END
+          webstart => << 'END',
+Seleccionar esta opci&oacute;n proporcionar&aacute; 
+acoplamientos permiti&eacute;ndole 
+instalar los m&oacute;dulos de CPAN y los paquetes de 
+Win32 PPM por usar del uso
 END
 };
 

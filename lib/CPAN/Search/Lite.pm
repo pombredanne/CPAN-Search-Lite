@@ -2,9 +2,7 @@ package CPAN::Search::Lite;
 use strict;
 use warnings;
 
-our ($VERSION);
-
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 1;
 

@@ -27,7 +27,18 @@
 <b>[% pages.alt %]</b><p /><b>2. [% pages.custom %]</b> 
 (eg http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
-<br /><p />
-<input type=submit value=Submit>
+<p />
+<hr />
+<p>
+[% IF webstart %]
+<input name="webstart" value="1" type="checkbox" checked>
+[% ELSE -%]
+<input name="webstart" value="1" type="checkbox">
+[% END -%]
+[% pages.webstart %]
+<a 
+href="http://cpan.uwinnipeg.ca/htdocs/faqs/webstart.html">PAR::WebStart</a>.
+</p><hr />
+<input type="hidden" name="submit" value="1">
+<input type="submit" value="Submit">
 </form>
-

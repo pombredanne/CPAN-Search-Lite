@@ -19,8 +19,7 @@ our $dbh = $CPAN::Search::Lite::DBI::dbh;
 
 my ($setup, $no_ppm);
 my $DEBUG = 1;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -1910,6 +1909,7 @@ The table is created as
   abs TINYTEXT
   browse TINYTEXT
   perl VARCHAR(10)
+  alias VARCHAR(20)
   KEY (rep_id)
 
 =over 3
@@ -1930,6 +1930,10 @@ This is a URL where one can browse the repository.
 =item * perl
 
 This specifies the perl version the repository corresponds to.
+
+=item * alias
+
+This specifies a short alias for the repository.
 
 =back
 

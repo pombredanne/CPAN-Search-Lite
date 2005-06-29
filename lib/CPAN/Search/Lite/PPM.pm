@@ -6,8 +6,7 @@ use XML::Parser;
 use PPM::XML::PPD;
 use PPM::XML::PPMConfig;
 use CPAN::Search::Lite::Util qw($repositories);
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my %current_package;
 

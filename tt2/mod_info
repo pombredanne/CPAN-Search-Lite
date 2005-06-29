@@ -19,12 +19,12 @@
 [% IF results.html %]
 <a href="[% doc %]/[% results.html %]">[% results.mod_name %]</a>
 [% IF results.htmlsrc %]
-&nbsp;[<a href="[% doc %]/[% results.htmlsrc %]">view source</a>]
+&nbsp;[<a href="[% doc %]/[% results.htmlsrc %]">source</a>]
 [% END -%]
 [% ELSE %]
 [% results.mod_name %]
 [% IF results.htmlsrc %]
-&nbsp;[<a href="[% doc %]/[% results.htmlsrc %]">view source</a>]
+&nbsp;[<a href="[% doc %]/[% results.htmlsrc %]">source</a>]
 [% END -%]
 [% END -%]
 </td></tr><tr>
@@ -34,6 +34,10 @@
 &nbsp;[<a 
 [% host = mirror ? mirror : download %]
 href="[% host %]/authors/id/[% results.download %]">[% pages.download %]</a>]
+[% IF webstart %]
+&nbsp;[<a
+href="[% cpaninstall %]?module=[% results.mod_name %]">[% pages.install %]</a>]
+[% END -%]
 </td></tr><tr>
 <td class=label>[% pages.author %]</td>
 <td class=cell>
@@ -83,12 +87,16 @@ href="[% host %]/authors/id/[% results.download %]">[% pages.download %]</a>]
 [% IF results.ppms %]
 <div class=box>
 <h2 class=t2>Win32 
-<a href="[% ppm %]">PPM</a> [% pages.packages %]&quot;[% results.dist_name %]&quot;</h2>
+<a href="[% ppm %]">PPM</a> [% pages.packages %] &quot;[% results.dist_name %]&quot;</h2>
 <table width=100% class=ppm>
 [% FOREACH item = results.ppms %]
 <tr><td>
 <a href="[% item.browse %]">[% item.abs %]</a>
 &nbsp; [ &nbsp; v [% item.ppm_vers %] &nbsp; ]
+[% IF webstart %]
+&nbsp;[<a
+href="[% ppminstall %]?dist=[% results.dist_name %];rep=[% item.alias %]">[% pages.install %]</a>]
+[% END -%]
 </td></tr>
 [% END -%]
 </table></div>

@@ -8,8 +8,7 @@ use Apache2::Module ();
 use Apache2::RequestRec ();
 use Apache2::RequestIO ();
 use Apache2::RequestUtil ();
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my @directives = (
                   {name      => 'CSL_soap_db',

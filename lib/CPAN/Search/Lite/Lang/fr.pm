@@ -1,8 +1,7 @@
 package CPAN::Search::Lite::Lang::fr;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -122,7 +121,7 @@ $pages = { title => 'Recherche et navigation sur le CPAN',
            links => 'Liens',
            info => 'Informations',
            prereqs => 'Fichiers n&eacute;cessaires',
-           packages => 'Paquetage Win32',
+           packages => 'Paquetage',
            related => 'related',
            browse => 'Index des',
            uploads => 'T&eacute;l&eacute;chargements de ces',
@@ -154,6 +153,7 @@ END
            custom => 'Adresse URL personnalis&eacute;e',
            default => 'Le lien par d&eacute;faut',
            alt => 'or',
+             install => 'Installez',
            mirror1 => << 'END',
 Choisissez votre serveur de t&eacute;l&eacute;chargement 
 pr&eacute;f&eacute;r&eacute; &agrave; l'aide de ce formulaire
@@ -163,6 +163,11 @@ END
            mirror2 => << 'END',
 va vous rediriger sur le miroir CPAN le plus proche, selon votre 
 pays d'origine.
+END
+           webstart => <<'END',
+Le choix de cette option fournira des liens vous permettant 
+d'installer des modules de CPAN et des paquetage de Win32 PPM
+par employer d'application
 END
 };
 

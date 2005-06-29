@@ -2,8 +2,7 @@ package CPAN::Search::Lite::Util;
 use strict;
 use warnings;
 use Sort::Versions;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, %modes,
@@ -89,7 +88,7 @@ $query_info = { module => {mode => 'module', type => 'name'},
 
 $repositories = {
                  1 => {
-                       alias => 'crazy',
+                       alias => 'crazy56',
                        LOCATION => 
                        'http://crazyinsomniac.perlmonk.org/perl/ppm',
                        SUMMARYFILE  => 'summary.ppm',
@@ -109,7 +108,7 @@ $repositories = {
                        PerlV         => 5.8,
                       },
                  3 => {
-                       alias => 'theory',
+                       alias => 'uwinnipeg56',
                        LOCATION  => 
                        'http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer',
                        SUMMARYFILE  => 'fetch_summary',
@@ -119,7 +118,7 @@ $repositories = {
                        PerlV         => 5.6,
                       },
                  4 => {
-                       alias => 'theoryx5',
+                       alias => 'uwinnipeg58',
                        LOCATION  => 
                        'http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58',
                        SUMMARYFILE  => 'fetch_summary',
@@ -139,7 +138,7 @@ $repositories = {
                        build => '8xx',
                       },
                  6 => {
-                       alias => 'AS',
+                       alias => 'AS56',
                        LOCATION  => 
                        'http://ppm.activestate.com/cgibin/PPM/ppmserver.pl?urn:/PPMServer',
                        SUMMARYFILE  => 'fetch_summary',

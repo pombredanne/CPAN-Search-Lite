@@ -1,8 +1,7 @@
 package CPAN::Search::Lite::Lang::it;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -157,6 +156,7 @@ END
            custom => 'URL personalizzato',
            default => q{L'URL},
            alt => 'or',
+           install => 'Installi',
            mirror1 => << 'END',
 Con questo form puoi specificare da dove desideri scaricare 
 i moduli (&egrave; necessario abilitare i cookie). 
@@ -165,6 +165,11 @@ END
            mirror2 => << 'END',
 basandosi sulla tua nazione d'origine, cercher&agrave; di 
 ridirigerti ad un mirror CPAN vicino.
+END
+           webstart => << 'END',
+La selezione della questa opzione fornir&agrave; i collegamenti 
+permettendovi di installare i moduli di CPAN ed i pacchetti 
+di Win32 PPM usando di applicazione
 END
 };
 

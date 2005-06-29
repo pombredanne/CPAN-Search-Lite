@@ -14,8 +14,8 @@ use LWP::Simple qw(getstore is_success);
 use Locale::Country;
 use CPAN::Search::Lite::DBI qw($tables);
 
-our ($oldout, $VERSION);
-$VERSION = 0.66;
+our ($oldout);
+our $VERSION = 0.68;
 
 sub new {
     my ($class, %args) = @_;

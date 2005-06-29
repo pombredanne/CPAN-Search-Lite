@@ -7,7 +7,14 @@
 </td><td align=right>
 <font size="-2">[% pages.Questions %]</font>
 <a href="[% faq %]"><font size="-1">FAQ</font></a>.
-</td></tr></table>
+</td></tr>
+<tr>
+<td align=left>
+</td><td align=right>
+<font size="-2">Enable installations using </font>
+<a href="http://cpan.uwinnipeg.ca/par/webstart.html"><font size="-2">PAR::WebStart</font></a>.
+</td></tr>
+</table>
 </body>
 </html>
 

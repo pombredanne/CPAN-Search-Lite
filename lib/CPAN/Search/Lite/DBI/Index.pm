@@ -4,8 +4,7 @@ use base qw(CPAN::Search::Lite::DBI);
 
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 package CPAN::Search::Lite::DBI::Index::reps;
 use base qw(CPAN::Search::Lite::DBI::Index);
@@ -14,7 +13,7 @@ use CPAN::Search::Lite::Util qw($repositories);
 
 sub populate {
   my $self = shift;
-  my @fields = qw(rep_id abs browse perl);
+  my @fields = qw(rep_id abs browse perl alias);
   my $sth = $self->sth_insert(\@fields) or do {
     $self->db_error();
     return;
@@ -22,7 +21,8 @@ sub populate {
 
   foreach my $rep_id(keys %$repositories) {
     my $value = $repositories->{$rep_id};
-    $sth->execute($rep_id, $value->{desc}, $value->{browse}, $value->{PerlV})
+    $sth->execute($rep_id, $value->{desc}, $value->{browse},
+                  $value->{PerlV}, $value->{alias})
       or do {
         $self->db_error($sth);
         return;

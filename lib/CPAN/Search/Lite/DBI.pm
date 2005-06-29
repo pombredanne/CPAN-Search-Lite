@@ -2,8 +2,7 @@ package CPAN::Search::Lite::DBI;
 use strict;
 use warnings;
 use DBI;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our ($dbh, $tables, @EXPORT_OK);
@@ -116,6 +115,7 @@ $tables = {
                               abs => q{TINYTEXT},
                               browse => q{TINYTEXT},
                               perl => q{VARCHAR(10)},
+                              alias => q{VARCHAR(20)},
                              },
                     id => 'rep_id',
                    },

@@ -2,6 +2,8 @@
 [%
    search = "$home/search"
    download = "$home/cpan"
+   cpaninstall = "$home/cpan_install"
+   ppminstall = "$home/ppm_install"
    doc = "$home/htdocs"
    cpanimg = "$home/icons/cpan.jpg"
    testers = 'http://testers.cpan.org/show/'

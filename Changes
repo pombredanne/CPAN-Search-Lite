@@ -1,3 +1,11 @@
+June 30, 2005 - 0.68
+    - remove use of Apache2.pm in the Apache2/ tests
+    - add PAR::WebStart functionality to launch applications
+      to install CPAN and ppm packages
+    - fix bug whereby relevant CHECKSUMS file wasn't found
+      if the distribution was under a subdirectory in the
+      CPAN id directory
+
 May 4, 2005 - 0.66
     - honor 'provides' field in META.yml file to provide
       list of packages/files the distribution supplies.

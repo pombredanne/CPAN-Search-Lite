@@ -1,8 +1,7 @@
 package CPAN::Search::Lite::Lang::de;
 use strict;
 use warnings;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages,
@@ -159,6 +158,7 @@ END
            custom => 'Privater Mirror',
            default => 'Der Deafaultlink',
            alt => 'oder',
+          install => 'Bringen Sie an',
            mirror1 => << 'END',
 Mit dieser Formular k&ouml;nnen Sie einstellen, 
 von welchem Mirror Sie Ihre Downloads beziehen wollen. 
@@ -168,6 +168,11 @@ END
            mirror2 => << 'END',
 versucht automatisch, Sie auf einen &ouml;rtlich nahegelegenen 
 CPAN Mirror weiterzuleiten.
+END
+          webstart => << 'END',
+Das Vorw&auml;hlen dieser Wahl liefert Verbindungen, 
+Ihnen erm&ouml;glichend, CPAN Module und Win32 PPM Pakete 
+durch ein Anwendung Verwenden anzubringen
 END
 };
 

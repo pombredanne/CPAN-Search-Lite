@@ -109,6 +109,7 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
+README-WebStart
 t/basic.t
 t/drop.t
 tt2/config
@@ -133,3 +134,8 @@ tt2/recent
 tt2/mirror_list
 tt2/header
 tt2/footer
+par/cpan/script/main.pl
+par/cpan/lib/CPAN/Util.pm
+par/ppm/script/main.pl
+par/ppm/lib/PPM/Reps.pm
+

@@ -18,13 +18,13 @@ use Apache2::Request;
 use Apache2::Cookie;
 use Apache2::RequestRec ();
 use Apache2::RequestIO ();
+use Apache2::RequestUtil ();
 use Apache2::Module ();
 use Apache2::Log ();
 use APR::Date;
 use APR::URI;
 use Apache2::URI;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my @directives = (
                   {name      => 'CSL_db',
@@ -70,7 +70,9 @@ my @directives = (
                  );
 Apache2::Module::add(__PACKAGE__, \@directives);
 
-my $cookie_name = 'cslmirror';
+my $cookie_mirror = 'cslmirror';
+my $cookie_ws = 'cslwebstart';
+
 my ($template, $query, $cfg, $dl, $max_results);
 
 sub new {
@@ -116,27 +118,49 @@ sub new {
             $r->headers_out->{Expires} = APR::Date::parse_http(time+36000);
         }
     }
-
     my $mirror;
-    if (my $host = ($req->param('host') || $req->param('url') )) {
-        my $cookie = Apache2::Cookie->new($r, name => $cookie_name, path => '/',
-                                         value => $host, expires => '+1y');
-        $cookie->bake;
+    my $submit = $req->param('submit') || '';
+    my $webstart;
+    if ($submit) {
+      $webstart = $req->param('webstart');
+      my $value = $webstart || 1;
+      my $expires = $webstart ? '+1y' : 'now';
+      my $cookie = Apache2::Cookie->new($r, 
+                                        name => $cookie_ws, 
+                                        path => '/',
+                                        value => $value,
+                                        expires => $expires);
+      $cookie->bake($r);
+      my $host = $req->param('host') || $req->param('url') || '';
+      if ($host) {
+        my $cookie = Apache2::Cookie->new($r, 
+                                          name => $cookie_mirror, 
+                                          path => '/',
+                                          value => $host,
+                                          expires => '+1y');
+        $cookie->bake($r);
         $mirror = $host;
-
-   }
+      }
+    }
     else {
-        my %cookies = Apache2::Cookie->fetch($r);
-        if (my $c = $cookies{$cookie_name}) {
-            $mirror = $c->value; 
+      my %cookies = Apache2::Cookie->fetch($r);
+      unless ($mirror) {
+        if (my $c = $cookies{$cookie_mirror}) {
+          $mirror = $c->value;
         }
+      }
+      unless ($webstart) {
+        if (my $c = $cookies{$cookie_ws}) {
+          $webstart = $c->value;
+        }
+      }
     }
     $mirror ||= $dl;
     $r->content_type('text/html; charset=UTF-8');
 
     my $self = {mode => $mode, mirror => $mirror, req => $req,
                 html_root => $cfg->{html_root}, lang => $lang,
-                html_uri => $cfg->{html_uri},
+                html_uri => $cfg->{html_uri}, webstart => $webstart,
                 title => $pages->{$lang}->{title}};
     bless $self, $class;
 }
@@ -254,6 +278,7 @@ sub cpanid : method {
                 title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
+                webstart => $self->{webstart},
                 };
     if (my $error = $query->{error}) {
         $r->log->error($error);
@@ -322,6 +347,7 @@ sub author : method {
                 title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
+                webstart => $self->{webstart},
                 };
     if (my $error = $query->{error}) {
         $r->log->error($error);
@@ -398,6 +424,7 @@ sub dist : method {
                 title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
+                webstart => $self->{webstart},
                 };
     $template->process($page, $vars, $r, binmode => ':utf8') or do {
       $r->log_error($template->error());
@@ -469,6 +496,7 @@ sub module : method {
                 title => $self->{title},
                 %extra_info,
                 pages => $pages->{$self->{lang}},
+                webstart => $self->{webstart},
                 };
     $template->process($page, $vars, $r, binmode => ':utf8')or do {
       $r->log_error($template->error());
@@ -568,6 +596,7 @@ sub mirror : method {
     my $title = sprintf("%s : %s", $self->{title}, 'mirror');
     my $vars = {mode => $mode,
                 mirror => $self->{mirror},
+                webstart => $self->{webstart},
                 path => $path,
                 title => $title,
                 %extra_info,
@@ -603,6 +632,7 @@ sub recent : method {
                 age => $age,
                 title => $title,
                 pages => $pages->{$self->{lang}},
+                webstart => $self->{webstart},
                 };
     $template->process($page, $vars, $r, binmode => ':utf8') or do {
       $r->log_error($template->error());

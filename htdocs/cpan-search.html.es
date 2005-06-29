@@ -3,6 +3,10 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
+<link href="http://cpan.uwinnipeg.ca/htdocs/cpan.xml" rel="alternate"
+  type="application/rss+xml" title="Recent CPAN uploads" />
+<meta name="description" content="Browse and search CPAN" />
+<meta name="keywords" content="Perl modules, CPAN" />
   <title>Hojear y buscar en CPAN</title>
  </head>
 <table width="100%">
@@ -122,7 +126,14 @@ Problemas, sugerencias, o comentarios a <A HREF="mailto:randy@theoryx5.uwinnipeg
 </td><td align=right>
 <font size="-2">&iquest;Preguntas? Compruebe el</font>
 <a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html"><font size="-1">FAQ</font></a>.
-</td></tr></table>
+</td></tr>
+<tr>
+<td align=left>
+</td><td align=right>
+<font size="-2">Enable installations using </font>
+<a href="http://cpan.uwinnipeg.ca/par/webstart.html"><font size="-2">PAR::WebStart</font></a>.
+</td></tr>
+</table>
 </body>
 </html>
 

@@ -11,8 +11,7 @@ use Safe;
 use CPAN::Search::Lite::Util qw(vcmp);
 our ($ext);
 $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 sub new {
     my ($class, %args) = @_;

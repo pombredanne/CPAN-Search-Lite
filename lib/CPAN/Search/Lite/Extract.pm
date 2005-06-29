@@ -16,8 +16,7 @@ use Perl::Tidy;
 use HTML::TextToHTML;
 use File::Find;
 use Safe;
-our ($VERSION);
-$VERSION = 0.66;
+our $VERSION = 0.68;
 
 my $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
 my $DEBUG = 1;
@@ -62,294 +61,295 @@ sub new {
 }
 
 sub extract {
-    my $self = shift;
-    my $props = $self->{props};
-    my $dists = $self->{dists};
-    my $mods = $self->{mods};
-    my $CPAN = $self->{CPAN};
-    my $pod_root = $self->{pod_root};
-    my $pod_only = $self->{pod_only};
-    my $split_pod = $self->{split_pod};
-    my $pat = qr!^[^/]+/change|^[^/]+/install|\.pod$|\.pm$!i;
-    my @dist_names = ();
-    if ($setup) {
-         @dist_names = keys %$dists;
+  my $self = shift;
+  my $props = $self->{props};
+  my $dists = $self->{dists};
+  my $mods = $self->{mods};
+  my $CPAN = $self->{CPAN};
+  my $pod_root = $self->{pod_root};
+  my $pod_only = $self->{pod_only};
+  my $split_pod = $self->{split_pod};
+  my $pat = qr!^[^/]+/change|^[^/]+/install|\.pod$|\.pm$!i;
+  my @dist_names = ();
+  if ($setup) {
+    @dist_names = keys %$dists;
+  }
+  else {
+    my $dist_obj = $self->{state}->{obj}->{dists};
+    for my $type (qw(insert update)) {
+      my $data = $dist_obj->{$type};
+      next unless $self->has_data($data);
+      push @dist_names, keys %{$data};
+    }
+  }
+  foreach my $dist (@dist_names) {
+    my $docs;
+    my $values = $dists->{$dist};
+    my $version = $values->{version};
+    my $cpanid = $values->{cpanid};
+    my $filename = $values->{filename};
+    unless ($filename and $version and $cpanid) {
+      warn "No distribution/version/cpanid info for $dist";
+      next;
+    }
+    my ($archive, @files);
+    my $download = $self->download($cpanid, $filename);
+    
+    my $fulldist = catfile $CPAN, $download;
+    unless (-f $fulldist) {
+      print qq{"$fulldist" not present - skipping ...\n};
+      next;
+    }
+    print "Extracting files within $download ...\n";
+    
+    my $cs = catfile dirname($fulldist), 'CHECKSUMS';
+    if (-f $cs) {
+      my $cksum = $self->load_cs($cs);
+      my $md5;
+      my $basename = basename($filename, qr{\..*});
+      if ($cksum and ($md5 = $cksum->{$basename}->{md5})) {
+        $dists->{$dist}->{md5} = $md5;
+      }
+    }
+    
+    (my $yaml = $fulldist) =~ s/$ext/.meta/;
+    if (-f $yaml) {
+      eval {$props->{$dist} = LoadFile($yaml);};
+      warn $@ if $@;
+    }
+    if ($props->{$dist} and $props->{$dist}->{requires}) {
+      $dists->{$dist}->{requires} = $props->{$dist}->{requires};
+    }
+    if ($props->{$dist} and $props->{$dist}->{abstract}) {
+      $dists->{$dist}->{description} = $props->{$dist}->{abstract};
+    }
+    
+    my $dist_root = catdir $pod_root, $dist;
+    $docs->{dist_root} = $dist_root;
+    if (-d $dist_root) {
+      rmtree($dist_root, $DEBUG, 1) or do {
+        warn "Cannot rmtree $dist_root: $!";
+        next;
+      };
+    }
+    mkpath($dist_root, $DEBUG, 0755) or do {
+      warn "Cannot mkdir $dist_root: $!";
+      next;
+    };
+    
+    (my $cpan_readme = $fulldist) =~ s/$ext/.readme/;
+    if (-f $cpan_readme) {
+      my $readme = catfile $dist_root, 'README';
+      copy($cpan_readme, $readme) or do {
+        warn "Cannot copy $cpan_readme to $readme: $!";
+        next;
+      };
+      my $contains_pod;
+      open(my $fh, $readme) or do {
+        warn "Cannot open $cpan_readme: $!";
+        next;
+      };
+      while (<$fh>) {
+        if (/^=head1/) {
+          $contains_pod = 1;
+          last;
+        }
+      }
+      close $fh;
+      if ($contains_pod) {
+        rename ($readme, $readme . '.pod') or do {
+          warn "Cannot rename $readme: $!";
+          next;
+        };
+        $docs->{files}->{'README.pod'} = {name => "$dist README"};
+      }
+      else {
+        $docs->{files}->{'README'} = {name => "$dist README"};
+        }
+      $dists->{$dist}->{readme} = 1;
+    }
+    
+    if (-f $yaml) {
+      my $meta = catfile $dist_root, 'META.yml';
+      copy($yaml, $meta) or do {
+        warn "Cannot copy $yaml to $meta: $!";
+        next;
+      };
+      $dists->{$dist}->{meta} = 1;
+      $docs->{files}->{'META.yml'} = {name => "$dist META"};
+    }
+    
+    my $is_zip = ($filename =~ /\.zip$/);
+    if ($is_zip) {
+      $archive = Archive::Zip->new($fulldist) or do {
+        warn "Cannot open $fulldist: $!";
+        next;
+      };
+      @files = grep {m!$pat!} $archive->memberNames() or do { 
+        warn "Cannot list files for $fulldist: $!";
+        next;
+      };
     }
     else {
-        my $dist_obj = $self->{state}->{obj}->{dists};
-        for my $type (qw(insert update)) {
-            my $data = $dist_obj->{$type};
-            next unless $self->has_data($data);
-            push @dist_names, keys %{$data};
-        }
+      $archive = Archive::Tar->new($fulldist, 1) or do {
+        warn "Cannot open $fulldist: $!";
+        next;
+      };
+      @files = grep {m!$pat!} $archive->list_files() or do { 
+        warn "Cannot list files for $fulldist: $!";
+        next;
+      };
     }
-    foreach my $dist (@dist_names) {
-        my $docs;
-        my $values = $dists->{$dist};
-        my $version = $values->{version};
-        my $cpanid = $values->{cpanid};
-        my $filename = $values->{filename};
-        unless ($filename and $version and $cpanid) {
-            warn "No distribution/version/cpanid info for $dist";
-            next;
+    
+    my $ignore;
+    push @{$ignore->{directory}}, qw(t blib);
+    if (defined $props->{$dist}) {
+      foreach my $key (qw(no_index ignore)) {
+        foreach my $type(qw(directory file package)) {
+          my $value = $props->{$dist}->{$key}->{$type};
+          next unless (defined $value and ref($value) eq 'ARRAY');
+          push @{$ignore->{$type}}, @$value;
         }
-        my ($archive, @files);
-        my $download = $self->download($cpanid, $filename);
-
-        my $fulldist = catfile $CPAN, $download;
-        unless (-f $fulldist) {
-            print qq{"$fulldist" not present - skipping ...\n};
-            next;
-        }
-        print "Extracting files within $download ...\n";
-
-        my $cs = catfile $CPAN, $self->download($cpanid, 'CHECKSUMS');
-        if (-f $cs) {
-            my $cksum = $self->load_cs($cs);
-            my $md5;
-            if ($cksum and ($md5 = $cksum->{$filename}->{md5})) {
-                $dists->{$dist}->{md5} = $md5;
-            }
-        }
-
-        (my $yaml = $fulldist) =~ s/$ext/.meta/;
-        if (-f $yaml) {
-            eval {$props->{$dist} = LoadFile($yaml);};
-            warn $@ if $@;
-        }
-        if ($props->{$dist} and $props->{$dist}->{requires}) {
-            $dists->{$dist}->{requires} = $props->{$dist}->{requires};
-        }
-        if ($props->{$dist} and $props->{$dist}->{abstract}) {
-            $dists->{$dist}->{description} = $props->{$dist}->{abstract};
-        }
-
-        my $dist_root = catdir $pod_root, $dist;
-        $docs->{dist_root} = $dist_root;
-        if (-d $dist_root) {
-            rmtree($dist_root, $DEBUG, 1) or do {
-                warn "Cannot rmtree $dist_root: $!";
-                next;
-            };
-        }
-        mkpath($dist_root, $DEBUG, 0755) or do {
-            warn "Cannot mkdir $dist_root: $!";
-            next;
+      }
+    }
+    my $ignore_pat = join '|', @{$ignore->{directory}};
+    @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)/!} @files;
+    my $entry = $ignore->{file};
+    if ($entry and ref($entry) eq 'ARRAY') {
+      $ignore_pat = join '|', @$entry;
+      @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)$!} @files;
+    }
+    my %ignore_packs = ();
+    $entry = $ignore->{package};
+    if (defined $entry and ref($entry) eq 'ARRAY') {
+      %ignore_packs = map {$_ => 1} @$entry;
+    }
+    
+    unless ($files[0] =~ /\Q$dist/) {
+      warn "Strange unpacked directory structure for $dist";
+      # next;
+    }
+    
+    foreach my $file (@files) {
+      print "Extracting $file ...\n";
+      my $provides;
+      if ($props->{$dist} and $props->{$dist}->{provides}) {
+        $provides = $props->{$dist}->{provides};
+      }
+      my $content = ($is_zip ? 
+                     $archive->contents($file) : 
+                     $archive->get_content($file) ) or do {
+                       warn "Cannot get content of $file: $!";
+                       next;
+                     };
+      $content =~ s!\r!!g;
+      my $is_pod = ($file =~ /\.(pod|pm)$/);
+      my $has_pod = ($is_pod and $content =~ /^=head/m);
+      next if ($pod_only and $is_pod and not $has_pod);
+      my ($module, $description);
+      if ($has_pod) {
+        ($module, $description) = $self->abstract($content);
+      }
+      else {
+        $module = $self->package_name($content);
+      }
+      
+      next if ($module and $ignore_packs{$module});
+      if ($provides and $file =~ /\.pm$/) {
+        next unless ($provides->{$module} 
+                     and $file =~ /$provides->{$module}->{file}/);
+      }
+      
+      my $rel_root;
+      if ($module and $dists->{$dist}->{modules}->{$module}) {
+        my @dirs = split /::/, $module;
+        pop @dirs if @dirs >= 1;
+        $rel_root = catdir(@dirs);
+      }
+      my $abs_root = $rel_root ?
+          catdir $dist_root, $rel_root : $dist_root;
+      unless (-d $abs_root) {
+        mkpath($abs_root, $DEBUG, 0755) or do {
+          warn "Cannot mkdir $abs_root: $!";
+          next;
         };
-
-        (my $cpan_readme = $fulldist) =~ s/$ext/.readme/;
-        if (-f $cpan_readme) {
-            my $readme = catfile $dist_root, 'README';
-            copy($cpan_readme, $readme) or do {
-                warn "Cannot copy $cpan_readme to $readme: $!";
-                next;
-            };
-            my $contains_pod;
-            open(my $fh, $readme) or do {
-                warn "Cannot open $cpan_readme: $!";
-                next;
-            };
-            while (<$fh>) {
-                if (/^=head1/) {
-                    $contains_pod = 1;
-                    last;
-                }
-            }
-            close $fh;
-            if ($contains_pod) {
-                rename ($readme, $readme . '.pod') or do {
-                    warn "Cannot rename $readme: $!";
-                    next;
-                };
-                $docs->{files}->{'README.pod'} = {name => "$dist README"};
-            }
-            else {
-                $docs->{files}->{'README'} = {name => "$dist README"};
-            }
-            $dists->{$dist}->{readme} = 1;
+      }
+      
+      my $doc = basename($file);
+      if ($doc =~ /change/i and $doc !~ /\.pm$/) {
+        $doc = $is_pod ? 'Changes.pod' : 'Changes';
+        $description = "$dist Changes";
+        $docs->{files}->{$doc} = {name => $description};
+        $dists->{$dist}->{changes} = 1;
+      }
+      if ($doc =~ /install/i and $doc !~ /\.pm$/) {
+        $doc = $is_pod ? 'INSTALL.pod' : 'INSTALL';
+        $description = "$dist INSTALL";
+          $docs->{files}->{$doc} = {name => $description};
+        $dists->{$dist}->{install} = 1;
+      }
+      my $rel_file = $rel_root ?
+        catfile $rel_root, $doc : $doc; 
+      my $abs_file = catfile $abs_root, $doc;
+      if ($pod_only and $is_pod) {
+        my ($tmpfh, $tmpfn) = tempfile(UNLINK => 1) or do {
+          warn "Cannot create tempfile: $!";
+          next;
+        };
+        print $tmpfh $content;
+        seek($tmpfh,0,1);
+        my $parser = Pod::Select->new();
+        $parser->parse_from_file($tmpfn, $abs_file);
+        close $tmpfh;
+      }
+      else {
+        open(my $fh, '>', $abs_file) or do {
+          warn "Cannot write to $abs_file: $!";
+          next;
+        };
+        print $fh $content;
+        close $fh;
         }
-        
-        if (-f $yaml) {
-            my $meta = catfile $dist_root, 'META.yml';
-            copy($yaml, $meta) or do {
-                warn "Cannot copy $yaml to $meta: $!";
-                next;
-            };
-            $dists->{$dist}->{meta} = 1;
-            $docs->{files}->{'META.yml'} = {name => "$dist META"};
-       }
-            
-        my $is_zip = ($filename =~ /\.zip$/);
-        if ($is_zip) {
-            $archive = Archive::Zip->new($fulldist) or do {
-                warn "Cannot open $fulldist: $!";
-                next;
-            };
-            @files = grep {m!$pat!} $archive->memberNames() or do { 
-                warn "Cannot list files for $fulldist: $!";
-                next;
-            };
+      if ($is_pod) {
+        my $name;
+        if ($module) {
+          $name = $module;
         }
         else {
-            $archive = Archive::Tar->new($fulldist, 1) or do {
-                warn "Cannot open $fulldist: $!";
-                next;
-            };
-            @files = grep {m!$pat!} $archive->list_files() or do { 
-                warn "Cannot list files for $fulldist: $!";
-                next;
-            };
+          ($name = $doc) =~ s/\.(pm|pod)$//;
         }
-        
-        my $ignore;
-        push @{$ignore->{directory}}, qw(t blib);
-        if (defined $props->{$dist}) {
-          foreach my $key (qw(no_index ignore)) {
-            foreach my $type(qw(directory file package)) {
-              my $value = $props->{$dist}->{$key}->{$type};
-              next unless (defined $value and ref($value) eq 'ARRAY');
-              push @{$ignore->{$type}}, @$value;
+        my $desc = $description || "$name documentation";
+        $docs->{files}->{$rel_file} = {name => $name, 
+                                       desc => $desc};
+      }
+      if ($is_pod and $module) {
+        if ($dists->{$dist}->{modules}->{$module}) {
+          $mods->{$module}->{description} = $description
+                    if ($description and !$mods->{$module}->{description});
+          $mods->{$module}->{doc} = 1 if $has_pod;
+          $mods->{$module}->{src} = 1 unless $pod_only;
+        }
+        unless ($dists->{$dist}->{description} or ! $description) {
+          (my $trial_dist = $module) =~ s/::/-/g;
+                  if ($trial_dist eq $dist) {
+                    $dists->{$dist}->{description} = $description;
+                  }
+          else {
+            foreach my $key ( qw(abstract_from version_from) ) {
+              next unless (my $key_file = $props->{$key});
+              if ($key_file =~ /\Q$rel_file/) {
+                $dists->{$dist}->{description} = $description;
+                last;
+              }
             }
           }
         }
-        my $ignore_pat = join '|', @{$ignore->{directory}};
-        @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)/!} @files;
-        my $entry = $ignore->{file};
-        if ($entry and ref($entry) eq 'ARRAY') {
-          $ignore_pat = join '|', @$entry;
-          @files = grep {not m!\Q$dist\E[^/]*/($ignore_pat)$!} @files;
-        }
-        my %ignore_packs = ();
-        $entry = $ignore->{package};
-        if (defined $entry and ref($entry) eq 'ARRAY') {
-          %ignore_packs = map {$_ => 1} @$entry;
-        }
-
-        unless ($files[0] =~ /\Q$dist/) {
-          warn "Strange unpacked directory structure for $dist";
-          # next;
-        }
-
-        foreach my $file (@files) {
-            print "Extracting $file ...\n";
-            my $provides;
-            if ($props->{$dist} and $props->{$dist}->{provides}) {
-              $provides = $props->{$dist}->{provides};
-            }
-            my $content = ($is_zip ? 
-                           $archive->contents($file) : 
-                           $archive->get_content($file) ) or do {
-                               warn "Cannot get content of $file: $!";
-                               next;
-                           };
-            $content =~ s!\r!!g;
-            my $is_pod = ($file =~ /\.(pod|pm)$/);
-            my $has_pod = ($is_pod and $content =~ /^=head/m);
-            next if ($pod_only and $is_pod and not $has_pod);
-            my ($module, $description);
-            if ($has_pod) {
-                ($module, $description) = $self->abstract($content);
-            }
-            else {
-                $module = $self->package_name($content);
-            }
-
-            next if ($module and $ignore_packs{$module});
-            if ($provides and $file =~ /\.pm$/) {
-              next unless ($provides->{$module} 
-                           and $file =~ /$provides->{$module}->{file}/);
-            }
-
-            my $rel_root;
-            if ($module and $dists->{$dist}->{modules}->{$module}) {
-                my @dirs = split /::/, $module;
-                pop @dirs if @dirs >= 1;
-                $rel_root = catdir(@dirs);
-            }
-            my $abs_root = $rel_root ?
-                catdir $dist_root, $rel_root : $dist_root;
-            unless (-d $abs_root) {
-                mkpath($abs_root, $DEBUG, 0755) or do {
-                    warn "Cannot mkdir $abs_root: $!";
-                    next;
-                };
-            }
-            
-            my $doc = basename($file);
-            if ($doc =~ /change/i and $doc !~ /\.pm$/) {
-                $doc = $is_pod ? 'Changes.pod' : 'Changes';
-                $description = "$dist Changes";
-                $docs->{files}->{$doc} = {name => $description};
-                $dists->{$dist}->{changes} = 1;
-            }
-            if ($doc =~ /install/i and $doc !~ /\.pm$/) {
-                $doc = $is_pod ? 'INSTALL.pod' : 'INSTALL';
-                $description = "$dist INSTALL";
-                $docs->{files}->{$doc} = {name => $description};
-                $dists->{$dist}->{install} = 1;
-            }
-            my $rel_file = $rel_root ?
-                catfile $rel_root, $doc : $doc; 
-            my $abs_file = catfile $abs_root, $doc;
-            if ($pod_only and $is_pod) {
-              my ($tmpfh, $tmpfn) = tempfile(UNLINK => 1) or do {
-                warn "Cannot create tempfile: $!";
-                next;
-              };
-              print $tmpfh $content;
-              seek($tmpfh,0,1);
-              my $parser = Pod::Select->new();
-              $parser->parse_from_file($tmpfn, $abs_file);
-              close $tmpfh;
-            }
-            else {
-              open(my $fh, '>', $abs_file) or do {
-                warn "Cannot write to $abs_file: $!";
-                next;
-              };
-              print $fh $content;
-              close $fh;
-            }
-            if ($is_pod) {
-              my $name;
-              if ($module) {
-                $name = $module;
-              }
-              else {
-                ($name = $doc) =~ s/\.(pm|pod)$//;
-              }
-              my $desc = $description || "$name documentation";
-              $docs->{files}->{$rel_file} = {name => $name, 
-                                             desc => $desc};
-            }
-            if ($is_pod and $module) {
-                if ($dists->{$dist}->{modules}->{$module}) {
-                    $mods->{$module}->{description} = $description
-                        if ($description and !$mods->{$module}->{description});
-                    $mods->{$module}->{doc} = 1 if $has_pod;
-                    $mods->{$module}->{src} = 1 unless $pod_only;
-                }
-                unless ($dists->{$dist}->{description} or ! $description) {
-                    (my $trial_dist = $module) =~ s/::/-/g;
-                    if ($trial_dist eq $dist) {
-                        $dists->{$dist}->{description} = $description;
-                    }
-                    else {
-                        foreach my $key ( qw(abstract_from version_from) ) {
-                            next unless (my $key_file = $props->{$key});
-                            if ($key_file =~ /\Q$rel_file/) {
-                                $dists->{$dist}->{description} = $description;
-                                last;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        $self->make_html($dist, $docs);
+      }
     }
-    $self->cleanup() unless $setup;
-    return 1;
+    $self->make_html($dist, $docs);
+  }
+  $self->cleanup() unless $setup;
+  return 1;
 }
 
 sub cleanup {

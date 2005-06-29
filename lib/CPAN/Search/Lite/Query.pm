@@ -1,8 +1,8 @@
 package CPAN::Search::Lite::Query;
 use strict;
 use warnings;
-use utf8;
 no warnings qw(redefine);
+use utf8;
 use CPAN::Search::Lite::Util qw($repositories %chaps
                                 $full_id $mode_info);
 our $months = {};
@@ -19,7 +19,7 @@ use constant KB => 1024;
 
 our ($lang);
 our $max_results = 200;
-our $VERSION = 0.66;
+our $VERSION = 0.68;
 my $cdbi_query;
 
 my %mode2obj;
@@ -263,12 +263,23 @@ sub info {
         $self->{results}->{dslip_info} = $self->expand_dslip($what);
     }
     
-    $args{fields} = [ qw(rep_id ppm_vers browse abs)];
+    $args{fields} = [ qw(rep_id ppm_vers browse abs alias)];
     $args{table} = 'ppms';
     $args{join} = {reps => 'rep_id'};
     $args{search} = {field => 'dist_id',
                      value => $self->{results}->{dist_id}};
     $self->{results}->{ppms} = $self->fetch(%args, wantarray => 1);
+
+    my $ppms = $self->{results}->{ppms};
+    (my $dist_letter = $self->{results}->{dist_name}) =~ s{^(\w).*}{$1};
+    if ($dist_letter and ref($ppms) eq 'ARRAY') {
+      foreach my $ppm (@$ppms) {
+        my $rep_id = $ppm->{rep_id};
+        next unless ($rep_id == 5 || $rep_id == 6);
+        $ppm->{browse} =~ s{-A\.html}{-$dist_letter.html};
+      }
+    }
+
     return 1;
 }
 
@@ -373,11 +384,21 @@ sub info {
 
     $args{join} = {reps => 'rep_id'};
     $args{table} = 'ppms';
-    $args{fields} = [ qw(rep_id ppm_vers browse abs) ];
+    $args{fields} = [ qw(rep_id ppm_vers browse abs alias) ];
     $args{search} = {field => 'dist_id', 
                      value => $self->{results}->{dist_id}
                     };
     $self->{results}->{ppms} = $self->fetch(%args, wantarray => 1);
+
+    my $ppms = $self->{results}->{ppms};
+    (my $dist_letter = $self->{results}->{dist_name}) =~ s{^(\w).*}{$1};
+    if ($dist_letter and ref($ppms) eq 'ARRAY') {
+      foreach my $ppm (@$ppms) {
+        my $rep_id = $ppm->{rep_id};
+        next unless ($rep_id == 5 || $rep_id == 6);
+        $ppm->{browse} =~ s{-A\.html}{-$dist_letter.html};
+      }
+    }
 
     $args{join} = undef;
     $args{table} = 'mods';
@@ -1117,10 +1138,11 @@ a description of the entry itself.
 If there are ppm packages available for the distribution
 containing the module, an array reference C<ppms> is supplied,
 each item of which is a hash reference.
-There are three keys in this hash reference (coming from
+There are four keys in this hash reference (coming from
 C<$repositories> of L<CPAN::Search::Lite::Util>) - C<rep_id>,
 giving the repository's rep_id, C<desc>, giving a description
-of the repository, and C<browse>, giving a url to the
+of the repository, C<alias>, an alias for the repository,
+and C<browse>, giving a url to the
 repository.
 
 =back

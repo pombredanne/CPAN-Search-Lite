@@ -18,7 +18,11 @@
 <td class=cell>
 [% results.dist_name %]
 &nbsp;[<a
-href="[% host %]/authors/id/[% results.download %]">[% pages.download %]</a>]
+href="[% host %]/authors/id/[% results.download %]">[% pages.download%]</a>]
+[% IF webstart %]
+&nbsp;[<a
+href="[% cpaninstall %]?dist=[% results.dist_file %];cpanid=[% results.cpanid %]">[% pages.install %]</a>]
+[% END -%]
 </td></tr><tr>
 <td class=label>[% pages.author %]</td>
 <td class=cell>
@@ -75,12 +79,12 @@ href="[% host %]/authors/id/[% results.download %]">[% pages.download %]</a>]
 [% IF item.html %]
 <a href="[% doc %]/[% item.html %]">[% item.mod_name %]</a>
 [% IF item.htmlsrc %]
-&nbsp;[<a href="[% doc %]/[% item.htmlsrc %]">view source</a>]
+&nbsp;[<a href="[% doc %]/[% item.htmlsrc %]">source</a>]
 [% END -%]
 [% ELSE %]
 [% item.mod_name %]
 [% IF item.htmlsrc %]
-&nbsp;[<a href="[% doc %]/[% item.htmlsrc %]">view source</a>]
+&nbsp;[<a href="[% doc %]/[% item.htmlsrc %]">source</a>]
 [% END -%]
 [% END -%]
 [% IF item.mod_vers %]
@@ -128,7 +132,11 @@ href="[% host %]/authors/id/[% results.download %]">[% pages.download %]</a>]
 [% FOREACH item = results.ppms %]
 <tr><td>
 <a href="[% item.browse %]">[% item.abs %]</a>
-&nbsp; [ &nbsp;v [% item.ppm_vers %] &nbsp; ] 
+&nbsp; [ &nbsp;v [% item.ppm_vers %] &nbsp; ]
+[% IF webstart %]
+&nbsp;[<a
+href="[% ppminstall %]?dist=[% results.dist_name %];rep=[% item.alias %]">[% pages.install %]</a>]
+[% END -%]
 </td></tr>
 [% END -%]
 </table>
