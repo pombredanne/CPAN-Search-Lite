@@ -24,7 +24,7 @@ use Apache2::Log ();
 use APR::Date;
 use APR::URI;
 use Apache2::URI;
-our $VERSION = 0.68;
+our $VERSION = 0.71;
 
 my @directives = (
                   {name      => 'CSL_db',
@@ -72,6 +72,7 @@ Apache2::Module::add(__PACKAGE__, \@directives);
 
 my $cookie_mirror = 'cslmirror';
 my $cookie_ws = 'cslwebstart';
+my $cookie_lang = 'csllang';
 
 my ($template, $query, $cfg, $dl, $max_results);
 
@@ -101,14 +102,7 @@ sub new {
                                               user => $cfg->{user},
                                               passwd => $passwd,
                                               max_results => $max_results);
-    $CPAN::Search::Lite::Query::lang = $lang;
-    unless ($pages->{$lang}) {
-      my $rc = load(lang => $lang, pages => $pages, chaps_desc => $chaps_desc);
-      unless ($rc == 1) {
-        $r->log_error($rc);
-        return;
-      }
-    }
+
     my $mode = $req->param('mode') || 'dist';
     unless ($r->location eq '/mirror') {
         if ($r->protocol =~ /(\d\.\d)/ && $1 >= 1.1) {
@@ -121,16 +115,30 @@ sub new {
     my $mirror;
     my $submit = $req->param('submit') || '';
     my $webstart;
+    my $lang_cookie;
+
     if ($submit) {
       $webstart = $req->param('webstart');
       my $value = $webstart || 1;
       my $expires = $webstart ? '+1y' : 'now';
-      my $cookie = Apache2::Cookie->new($r, 
-                                        name => $cookie_ws, 
+      my $c_ws = Apache2::Cookie->new($r, 
+                                           name => $cookie_ws, 
+                                           path => '/',
+                                           value => $value,
+                                           expires => $expires);
+      $c_ws->bake($r);
+      
+      $lang_cookie = $req->param('lang');
+      $value = $lang_cookie || 1;
+      $expires = $lang_cookie ? '+1y' : 'now';
+      my $c_lang = Apache2::Cookie->new($r, 
+                                        name => $cookie_lang, 
                                         path => '/',
                                         value => $value,
                                         expires => $expires);
-      $cookie->bake($r);
+      $c_lang->bake($r);
+      $lang = $lang_cookie if $lang_cookie;
+
       my $host = $req->param('host') || $req->param('url') || '';
       if ($host) {
         my $cookie = Apache2::Cookie->new($r, 
@@ -154,7 +162,22 @@ sub new {
           $webstart = $c->value;
         }
       }
+      unless ($lang_cookie) {
+        if (my $c = $cookies{$cookie_lang}) {
+          $lang = $lang_cookie = $c->value;
+        }
+      }
     }
+
+    $CPAN::Search::Lite::Query::lang = $lang;
+    unless ($pages->{$lang}) {
+      my $rc = load(lang => $lang, pages => $pages, chaps_desc => $chaps_desc);
+      unless ($rc == 1) {
+        $r->log_error($rc);
+        return;
+      }
+    }
+
     $mirror ||= $dl;
     $r->content_type('text/html; charset=UTF-8');
 
@@ -175,16 +198,30 @@ sub search : method {
     return $self->chapter($r) unless $query_term;
     my $mode = $self->{mode};
     $mode = 'module' if $query_term =~ /::/;
+    $mode = 'dist' if $query_term =~ /-/;
     $query_term =~ s{\.pm$}{} if ($mode eq 'module');
-    my ($results, $page, %extra_info);
-    $query->query(mode => $mode, query => $query_term);
-    if ($results = $query->{results}) {
-        $page = ref($results) eq 'ARRAY' ?
-            $tt2_pages->{$mode}->{search} :
-                $tt2_pages->{$mode}->{info};
+    my ($results, $page, %extra_info, $search_page);
+    if ($query_term and $mode eq 'chapter') {
+      if ($query_term =~ / /) {
+        $mode = 'dist';
+        $search_page = 'search';
+      }
+      else {
+#        $query_term =~ s/[^\w]//g;
+        $search_page = 'query';
+      }
     }
     else {
-        $page = 'missing';
+      $search_page = 'search';
+    } 
+    $query->query(mode => $mode, query => $query_term);
+    if ($results = $query->{results}) {
+      $page = ref($results) eq 'ARRAY' ?
+        $tt2_pages->{$mode}->{$search_page} :
+          $tt2_pages->{$mode}->{info};
+    }
+    else {
+      $page = 'missing';
     }
     
     unless (ref($results) eq 'ARRAY') {
@@ -597,6 +634,7 @@ sub mirror : method {
     my $vars = {mode => $mode,
                 mirror => $self->{mirror},
                 webstart => $self->{webstart},
+                lang => $self->{lang},
                 path => $path,
                 title => $title,
                 %extra_info,

@@ -11,6 +11,7 @@
    rt = 'http://rt.cpan.org/NoAuth/Bugs.html?Dist='
    cpan = 'http://www.cpan.org'
    forum = 'http://www.cpanforum.com/dist/'
+   anno = 'http://annocpan.org/dist/'
    rate = 'http://cpanratings.perl.org/d/'
    backpan = 'http://backpan.cpan.org'
    maintainer = 'Randy Kobes'

@@ -16,7 +16,7 @@ my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
 my @langs = keys %langs;
 
-plan tests => 8 * scalar @langs;
+plan tests => 9 * scalar @langs;
 
 my $result;
 

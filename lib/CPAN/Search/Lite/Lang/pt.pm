@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Lang::pt;
 use utf8;
 use strict;
 use warnings;
-our $VERSION = 0.68;
+our $VERSION = 0.71;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -85,11 +85,13 @@ $pages = { title => 'Navegar e procurar no CPAN',
            list => { module => 'Módulos',
                     dist => 'Distribuições',
                     author => 'Autores',
+                    chapter => 'Categorias',
                   },
           buttons => {Home => 'Início',
                       Documentation => 'Documentação',
                       Recent => 'Recentes',
                       Mirror => 'Mirror',
+                      Preferences => 'Prefer&ecirc;ncias',
                       Modules => 'Módules',
                       Distributions => 'Distribuições',
                       Authors => 'Autores',
@@ -99,6 +101,7 @@ $pages = { title => 'Navegar e procurar no CPAN',
                     Search => 'Procurar',
                    },
            Problems => 'Problemas, sugestões, ou comentários para',
+          Language => 'Escolha da l&iacute;ngua',
            Questions => 'Questões? Veja',
            na => 'não especificado',
            bytes => 'bytes',

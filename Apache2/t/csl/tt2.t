@@ -14,7 +14,7 @@ my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
 my @langs = keys %langs;
 
-plan tests => 36 + 7 * scalar @langs;
+plan tests => 38 + 7 * scalar @langs;
 
 my $result;
 
@@ -57,7 +57,7 @@ for my $lang (@langs) {
 }
 
 my $no_such = 'XXX';
-for (qw(dist module author)) {
+for (qw(dist module author chapter)) {
   $result = GET_OK "/$_/$no_such";
   ok t_cmp($result, 1, "fetching /$_/$no_such");
   $result = GET_OK "/search?mode=$_&query=$no_such";

@@ -292,6 +292,12 @@ TH A:link, TH A:visited {
   background: #aaaaaa;
 }
 
+.chaps {
+  text-align: center;
+  width: 17em;
+  background: #CAE1FF;
+}
+
 .cell {
   padding: 0.2ex 1ex;
   text-align: left;

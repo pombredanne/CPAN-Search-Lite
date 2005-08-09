@@ -18,19 +18,19 @@
 <table width="60%" border="0" cellpadding="0" cellspacing="0">
 <tr valign="top">
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Principal</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Principal</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentaci&oacute;n</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentaci&oacute;n</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recientes</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recientes</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Espejo</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Preferencias</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/module">M&oacute;dulos</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/module">M&oacute;dulos</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distribuciones</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distribuciones</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="/author">Autores</a></td>
+<a class="button" href="/author">Autores</a>&nbsp; &nbsp;</td>
 </tr>
 </table>
 </td></tr><tr><tr><td colspan=2 align=center>
@@ -40,7 +40,11 @@
 <input type="text" name="query" value="" size=20 ></td>
 <td align=left>&nbsp;<font size="-1">en</font>&nbsp; 
 <select name="mode">&nbsp; &nbsp;
- <option value="dist">Distribuciones</option> chapter <option value="module">M&oacute;dulos</option> chapter <option value="author">Autores</option> chapter</select>&nbsp;&nbsp; &nbsp;
+ <option value="dist">Distribuciones</option>
+ <option value="module">M&oacute;dulos</option>
+ <option value="author">Autores</option>
+<option value="chapter">Categor&iacute;as</option>
+</select>&nbsp;&nbsp; &nbsp;
 <input type="submit" value="Buscar">
 </td></tr></table>
 </form>

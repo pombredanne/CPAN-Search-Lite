@@ -7,7 +7,7 @@
   type="application/rss+xml" title="Recent CPAN uploads" />
 <meta name="description" content="Browse and search CPAN" />
 <meta name="keywords" content="Perl modules, CPAN" />
-  <title>Navegar e procurar o CPAN</title>
+  <title>Navegar e procurar no CPAN</title>
  </head>
 <table width="100%">
 <tr>
@@ -18,19 +18,19 @@
 <table width="60%" border="0" cellpadding="0" cellspacing="0">
 <tr valign="top">
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Início</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Início</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentação</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentação</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recentes</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recentes</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Mirror</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Prefer&ecirc;ncias</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/module">Módulos</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/module">Módules</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distribuições</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distribuições</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="/author">Autores</a></td>
+<a class="button" href="/author">Autores</a>&nbsp; &nbsp;</td>
 </tr>
 </table>
 </td></tr><tr><tr><td colspan=2 align=center>
@@ -38,9 +38,13 @@
 <table><tr><td>
 <font size="-1">Encontrar</font> &nbsp; 
 <input type="text" name="query" value="" size=20 ></td>
-<td align=left>&nbsp;<font size="-1">nos</font>&nbsp; 
+<td align=left>&nbsp;<font size="-1">em</font>&nbsp; 
 <select name="mode">&nbsp; &nbsp;
- <option value="dist">Distrubuições</option> chapter <option value="module">Módulos</option> chapter <option value="author">Autores</option> chapter</select>&nbsp;&nbsp; &nbsp;
+ <option value="dist">Distribuições</option>
+ <option value="module">Módulos</option>
+ <option value="author">Autores</option>
+<option value="chapter">Categorias</option>
+</select>&nbsp;&nbsp; &nbsp;
 <input type="submit" value="Procurar">
 </td></tr></table>
 </form>
@@ -79,7 +83,7 @@
 <td><a href="http://cpan.uwinnipeg.ca/chapter/String_Lang_Text_Proc"> 
 <b>Processamento de Strings, Língua e Texto</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Opt_Arg_Param_Proc"> 
-<b>Processamento de Argumentos e Parâmetros</b></a> 
+<b>Processamento de Argumentos e Parametros</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Internationalization_Locale"> 
 <b>Internacionalização Localização</b></a> 
 </tr>
@@ -97,7 +101,7 @@
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Images_Pixmaps_Bitmaps"> 
 <b>Imagens (Pixmaps Bitmaps)</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Mail_and_Usenet_News"> 
-<b>Mail e Novidades Usenet</b></a> 
+<b>Mails e Novidades Usenet</b></a> 
 </tr>
 <tr valign="top" class="r">
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Control_Flow_Utilities"> 
@@ -122,9 +126,9 @@
 <tr>
 <td align=left>
 <font size="-2">
-Problemsas, suggestões, ou comentários para <A HREF="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</A>.</font>
+Problemas, sugestões, ou comentários para <A HREF="mailto:randy@theoryx5.uwinnipeg.ca">Randy Kobes</A>.</font>
 </td><td align=right>
-<font size="-2">Questões? Consulte o </font>
+<font size="-2">Questões? Veja</font>
 <a href="http://cpan.uwinnipeg.ca/htdocs/faqs/faq.html"><font size="-1">FAQ</font></a>.
 </td></tr>
 <tr>

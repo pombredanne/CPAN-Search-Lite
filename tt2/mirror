@@ -1,4 +1,13 @@
 [% PROCESS mirror_list %]
+[%
+  langs = { de => 'Deutsch',
+            en => 'English',
+            es => 'Espa&ntilde;ol',
+            fr => 'Fran&ccedil;ais',
+            it => 'Italiano',
+            pt => 'Portugu&ecirc;s',
+          }
+%]
 <div class=path><b>[% pages.mirror %]</b></div>
 [% pages.mirror1 %]
 [% host = mirror || download %]
@@ -27,9 +36,7 @@
 <b>[% pages.alt %]</b><p /><b>2. [% pages.custom %]</b> 
 (eg http://my.site/CPAN/)<br />
 <input type=text name="url" value="" size=80>
-<p />
-<hr />
-<p>
+<p /><hr /><p>
 [% IF webstart %]
 <input name="webstart" value="1" type="checkbox" checked>
 [% ELSE -%]
@@ -38,6 +45,17 @@
 [% pages.webstart %]
 <a 
 href="http://cpan.uwinnipeg.ca/htdocs/faqs/webstart.html">PAR::WebStart</a>.
+</p><hr /><p>
+[% pages.Language %]: <select name="lang">
+<option value="">Web browser setting</option>
+[% FOREACH choice = ['de', 'en', 'es', 'fr', 'it', 'pt'] %]
+[% IF choice == lang %]
+ <option value="[% choice %]" selected="selected">[% langs.$choice %]</option>
+[% ELSE %]
+ <option value="[% choice %]">[% langs.$choice %]</option>
+[% END -%]
+[% END -%]
+</select>
 </p><hr />
 <input type="hidden" name="submit" value="1">
 <input type="submit" value="Submit">

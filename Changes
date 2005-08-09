@@ -1,3 +1,17 @@
+August 9, 2005 - 0.71
+    - add user option, via a cookie, to override language
+      choice coming from browser setting.
+    - add method to search by subchapter name.
+    - in doing searches, add a score to use when sorting
+      results so that, roughly, $name =~ m/^$query_term/ will
+      score higher, and subsequently appear earlier on in list.
+    - a method in the search for distributions wasn't
+      preserving the order of the search results returned
+      by the database; this has now been fixed.
+    - the score based on the relevance of the search term
+      in the abstract or full CPAN name was used incorrectly
+      in sorting the results; this is now fixed.
+
 June 30, 2005 - 0.68
     - remove use of Apache2.pm in the Apache2/ tests
     - add PAR::WebStart functionality to launch applications

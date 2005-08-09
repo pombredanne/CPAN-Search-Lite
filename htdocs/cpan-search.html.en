@@ -18,19 +18,19 @@
 <table width="60%" border="0" cellpadding="0" cellspacing="0">
 <tr valign="top">
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Home</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Home</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentation</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentation</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recent</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recent</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Mirror</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Preferences</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/module">Modules</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/module">Modules</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distributions</a></td>
+<a class="button" href="http://cpan.uwinnipeg.ca/dist">Distributions</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="/author">Authors</a></td>
+<a class="button" href="/author">Authors</a>&nbsp; &nbsp;</td>
 </tr>
 </table>
 </td></tr><tr><tr><td colspan=2 align=center>
@@ -40,7 +40,11 @@
 <input type="text" name="query" value="" size=20 ></td>
 <td align=left>&nbsp;<font size="-1">in</font>&nbsp; 
 <select name="mode">&nbsp; &nbsp;
- <option value="dist">Distributions</option> chapter <option value="module">Modules</option> chapter <option value="author">Authors</option> chapter</select>&nbsp;&nbsp; &nbsp;
+ <option value="dist">Distributions</option>
+ <option value="module">Modules</option>
+ <option value="author">Authors</option>
+<option value="chapter">Categories</option>
+</select>&nbsp;&nbsp; &nbsp;
 <input type="submit" value="Search">
 </td></tr></table>
 </form>

@@ -19,7 +19,7 @@ use constant KB => 1024;
 
 our ($lang);
 our $max_results = 200;
-our $VERSION = 0.68;
+our $VERSION = 0.71;
 my $cdbi_query;
 
 my %mode2obj;
@@ -87,6 +87,15 @@ sub query {
             
         };
         ($mode eq 'chapter') and do {
+            ($value = $args{query}) and do {
+              $args{search} = {field => {name => $info->{name}, 
+                                         text => $info->{text} },
+                               value => $value};
+#              $args{search} = {field => $info->{name},
+#                               value => $value };
+              $method = 'query';
+              last METHOD;
+            };
             $value = $args{id} or do {
                 $self->{error} = q{Must supply a chapterid};
                 return;
@@ -476,16 +485,20 @@ sub search {
       $result->{chapter} = $chap . '/' . $subchapter;
     }
   }
-  my ($tmp, $chapters);
+  my ($tmp, $chapters, @order, %seen);
   foreach my $result (@$results) {
     my $dist_name = $result->{dist_name};
+    unless ($seen{$dist_name}) {
+      $seen{$dist_name}++;
+      push @order, $dist_name;
+    }
     $tmp->{$dist_name} = {dist_id => $result->{dist_id},
-                        dist_abs => $result->{dist_abs}};
+                          dist_abs => $result->{dist_abs}};
     next unless $result->{chapter};
     push @{$chapters->{$dist_name}}, $result->{chapter};
   }
   my $pruned;
-  foreach my $dist_name(sort keys %$tmp) {
+  foreach my $dist_name(@order) {
     push @$pruned, {dist_name => $dist_name,
                    %{$tmp->{$dist_name}},
                    chapters => $chapters->{$dist_name},
@@ -613,6 +626,27 @@ sub search {
     return 1;
 }
 
+sub query {
+    my ($self, %args) = @_;
+    return unless $args{search};
+    
+    $args{fields} = [ qw(dist_id dist_name dist_abs 
+                         chaps.chapterid chap_link) ];
+    $args{table} = 'chaps';
+    $args{join} = {dists => 'dist_id', chapters => 'chapterid'};
+    $args{order_by} = 'chap_link,dist_name';
+    $args{limit} = 2 * $max_results;
+
+    return unless $self->{results} = $self->fetch(%args, wantarray => 1,
+                                                  distinct => 1);
+    foreach my $result (@{$self->{results}}) {
+      my $chapterid = $result->{'chaps.chapterid'} + 0;
+      next unless $chapterid;
+      $result->{chap_desc} = $self->chap_desc($chapterid);
+    }
+    return 1;
+}
+
 package CPAN::Search::Lite::Query;
 
 sub fetch {
@@ -702,10 +736,41 @@ sub sql_statement {
 #        $_ = qq{DATE_FORMAT($_, '%e %b %Y')} if $_ eq 'birth';
 #        $_ = qq{FORMAT($_, 0)} if $_ eq 'size';
     }
-    push @fields, "$match as score" if defined $match;
+    push @fields, "$match as abs_score" if defined $match;
+
+    my $str_match;
+    if ($regex or $text_search) {
+      my $value = $search->{value};
+      unless ($value =~ / /) {
+        $value =~ s/[\^\$\*\+\?\|]//g;
+        my $name = $search->{field}->{name};
+      MATCH: {
+          ($name eq 'dist_name') and do {
+            $value = 'CGI.pm' if (uc $value eq 'CGI');
+            $str_match = ($value =~ /-/) ? 
+              qq{$name REGEXP '^$value'} : 
+                qq{$name REGEXP '^$value(-[-a-zA-Z0-9_]*)?\$'};
+            last MATCH;
+          };
+          ($name eq 'mod_name') and do {
+            $str_match = ($value =~ /::/) ? 
+              qq{$name REGEXP '^$value'} : 
+                qq{$name REGEXP '^$value(::[:a-zA-Z0-9_]*)?\$'};
+            last MATCH;
+          };
+          ($name eq 'cpanid') and do {
+            $str_match = qq{$name REGEXP '^$value([-a-zA-Z0-9_]*)?\$'};
+            last MATCH;
+          };
+          $str_match = qq{STRCMP($name, '$value') = 0};
+        }
+      }
+    }
+    push @fields, "$str_match as str_score" if $str_match;
+
     my $sql = qq{SELECT $distinct } . join(',', @fields);
 
-
+ 
     my $where;
   QUERY: {
         $chap and do {
@@ -776,8 +841,11 @@ sub sql_statement {
     $sql .= ' AND (' . $join . ')' if $join;
 
     my $order_by = '';
+    if ($str_match) {
+      $order_by = 'str_score desc';
+    }
     if ($text_search and not $not) {
-      $order_by = 'score';
+      $order_by = $str_match ? qq{$order_by,abs_score desc} : 'abs_score desc';
     }
     if (my $user_order_by = $args{order_by}) {
       $order_by = $order_by ? "$order_by,$user_order_by" : $user_order_by;
@@ -1022,22 +1090,27 @@ specified, it will default to 7.
 
 =head2 C<chapter> mode
 
-For a mode of C<chapter>, one can specify two additional
+For a mode of C<chapter>, one can specify three additional
 arguments:
 
 =over 3
 
 =item * id =E<gt> $chapterid
 
-This argument (which is required) will look up all subchapters
+This argument will look up all subchapters
 with the specified numerical C<$chapterid> (see C<%chaps>
 of L<CPAN::Search::Lite::Util> for a description).
 
 =item * subchapter =E<gt> $subchapter
 
-This argument (which is optional) will look up all distributions
+This argument will look up all distributions
 with the specified C<$subchapter> within the given chapter
 specified by C<$chapterid>.
+
+=item * query =E<gt> $query_term
+
+This argument will look up all distributions who
+have a subchapter matching C<$query_term>.
 
 =back
 
@@ -1289,6 +1362,15 @@ Each item of the array reference is a hash reference specifying
 the C<dist_name>, C<dist_id>, and C<dist_abs> of the
 distribution.
 
+=item * query =E<gt> $query_term
+
+This will return an array reference,
+each member of which is a hash reference containing
+the C<dist_id>, C<dist_name>, C<dist_abs> fields,
+C<chapterid>, and C<chap_link> fields. As well,
+a C<chap_desc> field is returned, giving a description
+of the main chapter.
+
 =back
 
 For a C<name> or C<id> query of C<dist>, C<author>, or
@@ -1304,7 +1386,7 @@ C<dist>, the C<dists> and C<auths> tables are searched.
 
 =head1 SEE ALSO
 
-L<Apache::CPAN::Search> and L<Apache::CPAN::Query>.
+L<Apache2::CPAN::Search> and L<Apache2::CPAN::Query>.
 
 =head1 COPYRIGHT
 

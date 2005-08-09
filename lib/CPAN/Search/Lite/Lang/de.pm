@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::de;
 use strict;
 use warnings;
-our $VERSION = 0.68;
+our $VERSION = 0.71;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages,
@@ -87,11 +87,13 @@ $pages = {
           list => { module => 'Modulen',
                      dist => 'Distributionen',
                     author => 'Autoren',
+                    chapter => 'Kategorien',
                   },
           buttons => {Home => 'Home',
                       Documentation => 'Dokumentation',
                       Recent => 'Neue Module',
                       Mirror => 'CPAN Mirrors',
+                      Preferences => 'Pr&auml;ferenzen',
                       Modules => 'Module',
                       Distributions => 'Distributionen',
                       Authors => 'Autoren',
@@ -103,6 +105,7 @@ $pages = {
           Problems => 'Probleme, Vorschl&auml;ge oder Anmerkungen bitte an',
           Questions => 'Fragen? Versuchen Sie mit der',
           na => 'nicht spezifiziert',
+          Language => 'Wahl der Sprache',
           bytes => 'Bytes',
           download => 'Download',
           cpanid => 'CPAN id',

@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Util;
 use strict;
 use warnings;
 use Sort::Versions;
-our $VERSION = 0.68;
+our $VERSION = 0.71;
 
 use base qw(Exporter);
 our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, %modes,
@@ -31,6 +31,7 @@ $mode_info = {
               chapter => {id => 'chapterid',
                           table => 'chaps',
                           name => 'subchapter',
+                          text => 'subchapter',
                          },
              };
 
@@ -40,7 +41,8 @@ $tt2_pages = {module => {search => 'mod_search',
                        info => 'dist_info', letter => 'dist_letter'},
               author => {search => 'auth_search', 
                          info => 'auth_info', letter => 'auth_letter'},
-              chapter => {search => 'chap_search', info => 'chap_info'},
+              chapter => {search => 'chap_search', info => 'chap_info',
+                          query => 'chap_query'},
              };
 
 %modes = map {$_ => 1} keys %$mode_info;

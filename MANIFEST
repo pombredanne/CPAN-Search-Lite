@@ -118,6 +118,7 @@ tt2/auth_letter
 tt2/auth_search
 tt2/chap_info
 tt2/chap_search
+tt2/chap_query
 tt2/chapterid
 tt2/dist_info
 tt2/dist_letter

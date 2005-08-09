@@ -57,6 +57,7 @@ href="[% cpaninstall %]?dist=[% results.dist_file %];cpanid=[% results.cpanid %]
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">search.cpan.org</a> &nbsp; | &nbsp;
 <a href="[% forum %][% results.dist_name %]">Discussion forum</a>&nbsp; | &nbsp;
+<a href="[% anno %][% results.dist_name %]">AnnoCPAN</a>&nbsp; | 
 <a href="[% rt %][% results.dist_name %]">rt.cpan.org bugs</a>&nbsp; | &nbsp;
 <a href="[% rate %][% results.dist_name %]">Rating</a>&nbsp; | 
 <a href="[% testers %][% results.dist_name %].html">CPAN testers</a>
