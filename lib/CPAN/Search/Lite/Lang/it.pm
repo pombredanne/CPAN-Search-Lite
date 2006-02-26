@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::it;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -31,6 +31,9 @@ $chaps_desc = {
         22 => q{Moduli per Microsoft Windows},
         23 => q{Moduli Vari},
         24 => q{Interfacce per Software Commerciali},
+        26 => q{Documentazione},
+        27 => q{Pragma},
+        28 => q{Perl6},
         99 => q{Non Ancora in Modulelist},
 };
 
@@ -131,6 +134,7 @@ $pages = {
           uploads => 'Upload negli ultimi',
           days => 'giorni',
           more => 'more',
+          nada => 'Nessun risultati trovati',
           error1 => 'Siamo spiacenti - si &egrave; verificato un errore per la tua ricerca',
           error2 => 'in',
           error3 => '',

@@ -6,7 +6,7 @@ use XML::Parser;
 use PPM::XML::PPD;
 use PPM::XML::PPMConfig;
 use CPAN::Search::Lite::Util qw($repositories);
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 my %current_package;
 
@@ -25,7 +25,7 @@ sub fetch_info {
         my $location = $repositories->{$id}->{LOCATION};
         print "Getting ppm information from $location\n";
         my $packages = summary($location);
-        next unless $packages;
+        next unless ($packages and has_data($packages));
         foreach my $package (keys %$packages) {
             next unless $dists->{$package};
             my $version = ppd2cpan_version($packages->{$package}->{VERSION});
@@ -53,6 +53,12 @@ sub summary {
         $packages->{$package} = \%{$summary{$loc}{$package}};
     }
     return $packages;
+}
+
+sub has_data {
+  my $data = shift;
+  return unless (defined $data and ref($data) eq 'HASH');
+  return (scalar keys %$data > 0) ? 1 : 0;
 }
 
 sub ppd2cpan_version {

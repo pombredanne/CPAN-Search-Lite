@@ -16,7 +16,7 @@ use Perl::Tidy;
 use HTML::TextToHTML;
 use File::Find;
 use Safe;
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 my $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
 my $DEBUG = 1;

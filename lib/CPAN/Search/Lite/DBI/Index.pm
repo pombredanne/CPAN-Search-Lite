@@ -4,7 +4,7 @@ use base qw(CPAN::Search::Lite::DBI);
 
 use strict;
 use warnings;
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 package CPAN::Search::Lite::DBI::Index::reps;
 use base qw(CPAN::Search::Lite::DBI::Index);

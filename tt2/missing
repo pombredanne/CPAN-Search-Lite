@@ -1,6 +1,6 @@
 [% IF query %]
 [% pages.missing1 %] <b>&quot;[% query %]&quot;</b>
-[% pages.missing2 %]<b>[% mode %]</b>.
+[% pages.missing2 %] <b>[% mode %]</b>.
 [% pages.missing3 %]
 [% ELSE %]
 [% pages.missing4 %]

@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::fr;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -31,6 +31,9 @@ $chaps_desc = {
         22 => q{Modules pour Microsoft Windows},
         23 => q{Modules divers},
         24 => q{Interfaces pour logiciels commerciaux},
+        26 => q{Documentation},
+        27 => q{Pragma},
+        28 => q{Perl6},
         99 => q{Pas encore dans la liste des modules},
 };
 
@@ -130,6 +133,7 @@ $pages = { title => 'Recherche et navigation sur le CPAN',
            uploads => 'T&eacute;l&eacute;chargements de ces',
            days => 'derniers jours',
            more => 'more',
+           nada => 'Aucuns r&eacute;sultats trouv&eacute;s',
            error1 => 'D&eacute;sol&eacute; - Un probl&egrave;me est survenu lors de votre requ&ecirc;te concernant',
            error2 => 'du type',
            error3 => '',

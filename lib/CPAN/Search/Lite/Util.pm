@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Util;
 use strict;
 use warnings;
 use Sort::Versions;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, %chaps, %chaps_rev, $repositories, %modes,
@@ -81,8 +81,10 @@ $query_info = { module => {mode => 'module', type => 'name'},
           22 => 'Microsoft_Windows_Modules',
           23 => 'Miscellaneous_Modules',
           24 => 'Commercial_Software_Interfaces',
+          26 => 'Documentation',
+          27 => 'Pragma',
+          28 => 'Perl6',
           99 => 'Not_In_Modulelist',
-          99 => 'Not_Yet_In_Modulelist',
          );
 
 %chaps_rev = reverse %chaps;

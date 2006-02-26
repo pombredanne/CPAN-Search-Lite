@@ -2,6 +2,11 @@
 [% host = mirror ? mirror : download %]
 [% birth = results.0.birth %]
 <table width="100%"><tr>
+<td colspan=2>&nbsp;</td>
+<td align="right">
+<a href="http://cpan.uwinnipeg.ca/htdocs/cpan.xml">
+<img src="[% rssimg %]" alt="RSS" /></a>
+</td></tr><tr>
 <td class=datecell colspan=3><b>[% birth %]</b></td>
 </tr></table><ul>
 [% FOREACH item = results %]

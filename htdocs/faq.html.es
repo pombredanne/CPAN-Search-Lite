@@ -169,6 +169,8 @@ paquetes, usted puede tener que agregar la localizaci&oacute;n indicada a su
 lista de dep&oacute;sitos:
 </p>
 <ul>
+<li><b></b><b>http://www.bribes.org/perl/ppm</b>, para <i>el dep&oacute;sito del Perl 5.6/5.8 del
+bribes</i></li>
 <li><b></b><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, para <i>el dep&oacute;sito del Perl 5.6 del 
 crazyinsomniac</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, para <i>el dep&oacute;sito del Perl 5.8 del 
@@ -262,11 +264,11 @@ particulares se pueden hacer como
 http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a>
 para encontrar la documentaci&oacute;n para <code>Net::FTP</code> en
 <code>libnet</code> la distribuci&oacute;n. 
-Alternativomente, uno puede utilizar <a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
-http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>. (esto tambi&eacute;n trabaja para la documentaci&oacute;n del 
+Alternativomente, uno puede utilizar <a href="http://cpan.uwinnipeg.ca/perldoc?Net::FTP">
+http://cpan.uwinnipeg.ca/perldoc?Net::FTP</a>. (esto tambi&eacute;n trabaja para la documentaci&oacute;n del 
 Perl de la base - por ejemplo,
-<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
-http://cpan.uwinnipeg.ca/perldoc/perlfaq</a>
+<a href="http://cpan.uwinnipeg.ca/perldoc?perlfaq">
+http://cpan.uwinnipeg.ca/perldoc?perlfaq</a>
 traer&aacute; para arriba <i></i>la documentaci&oacute;n</i> <i>del perlfaq</i>). Observe que estos 
 acoplamientos de la documentaci&oacute;n pueden no trabajar para todos los 
 m&oacute;dulos, para una variedad de razones, de hacer sobre todo con las 

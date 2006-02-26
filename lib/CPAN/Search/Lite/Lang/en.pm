@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::en;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -31,7 +31,10 @@ $chaps_desc = {
         22 => q{Microsoft Windows Modules},
         23 => q{Miscellaneous Modules},
         24 => q{Commercial Software Interfaces},
-        99 => q{Not Yet In Modulelist},
+        26 => q{Documentation},
+        27 => q{Pragma},
+        28 => q{Perl6},
+        99 => q{Not In Modulelist},
 };
 
 $dslip = {
@@ -130,6 +133,7 @@ $pages = { title => 'Browse and search CPAN',
            uploads => 'Uploads in the last',
            days => 'days',
            more => 'more',
+           nada => 'No results found',
            error1 => 'Sorry - there was an error in your query for',
            error2 => 'of type',
            error3 => '',

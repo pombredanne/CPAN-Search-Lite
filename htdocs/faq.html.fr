@@ -110,6 +110,8 @@
       paquetages, il vous faudra peut-&ecirc;tre ajouter l'un des emplacements suivants &agrave; la liste des
       r&eacute;f&eacute;rentiels ("<i>repositories</i>")&nbsp;:</p>
       <ul>
+        <li><b>http://www.bribes.org/perl/ppm</b>, pour le <i>r&eacute;f&eacute;rentiel
+        bribes Perl 5.6/5.8</i></li>
         <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, pour le <i>r&eacute;f&eacute;rentiel
         crazyinsomniac Perl 5.6</i></li>
         <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, pour le <i>r&eacute;f&eacute;rentiel
@@ -177,9 +179,9 @@
         "http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html">http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a>,
         pour afficher la documentation du module <code>Net::FTP</code> dans la distribution
         <code>libnet</code>. Vous pouvez &eacute;galement utiliser <a href=
-        "http://cpan.uwinnipeg.ca/perldoc/Net::FTP">http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>.
+        "http://cpan.uwinnipeg.ca/perldoc?Net::FTP">http://cpan.uwinnipeg.ca/perldoc?Net::FTP</a>.
         Cela fonctionne aussi pour la documentation de base de Perl - ainsi, <a href=
-        "http://cpan.uwinnipeg.ca/perldoc/perlfaq">http://cpan.uwinnipeg.ca/perldoc/perlfaq</a>
+        "http://cpan.uwinnipeg.ca/perldoc?perlfaq">http://cpan.uwinnipeg.ca/perldoc?perlfaq</a>
         affichera la documentation de <i>perlfaq</i>. Notez que ces liens vers la documentation
         peuvent ne pas marcher pour tous les modules, en raison de probl&egrave;mes de forme dans la
         documentation POD ou dans les conventions utilis&eacute;es pour les listes CPAN.</li>

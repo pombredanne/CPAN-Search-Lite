@@ -158,6 +158,8 @@ the ppm shell; for the other packages, you may have to
 add the indicated location to your list of repositories:
 </p>
 <ul>
+<li><b>http://www.bribes.org/perl/ppm</b>, for
+the <i>Perl 5.6/5.8 bribes repository</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, for
 the <i>crazyinsomniac Perl 5.6 repository</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, for
@@ -247,11 +249,11 @@ Links to documents for particular modules can be made as
 http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a>
 for finding the documentation for <code>Net::FTP</code> in the
 <code>libnet</code> distribution. Alternatively, one can
-use <a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
-http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>.
+use <a href="http://cpan.uwinnipeg.ca/perldoc?Net::FTP">
+http://cpan.uwinnipeg.ca/perldoc?Net::FTP</a>.
 (this also works for the core perl documentation - for example,
-<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
-http://cpan.uwinnipeg.ca/perldoc/perlfaq</a>
+<a href="http://cpan.uwinnipeg.ca/perldoc?perlfaq">
+http://cpan.uwinnipeg.ca/perldoc?perlfaq</a>
 will bring up the <I>perlfaq</I> documentation).
 Note that these documentation links may not
 work for all modules, for a variety of reasons, mostly

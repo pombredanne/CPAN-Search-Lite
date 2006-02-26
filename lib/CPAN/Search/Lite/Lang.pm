@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang;
 use strict;
 use warnings;
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 use utf8;
 use base qw(Exporter);

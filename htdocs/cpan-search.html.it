@@ -9,6 +9,7 @@
 <meta name="keywords" content="Perl modules, CPAN" />
   <title>Naviga e cerca in CPAN</title>
  </head>
+<body onload="if (document.f) document.f.query.focus()">
 <table width="100%">
 <tr>
 <td width="5%" rowspan=3>
@@ -18,15 +19,15 @@
 <table width="60%" border="0" cellpadding="0" cellspacing="0">
 <tr valign="top">
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Home</a>&nbsp; &nbsp;</td>
+<a class="button" href="http://cpan.uwinnipeg.ca/htdocs/faqs/cpan-search.html">Home</a>&nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentazione</a>&nbsp; &nbsp;</td>
+<a class="button" href="http://cpan.uwinnipeg.ca/cgi-bin/docperl">Documentazione</a>&nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recenti</a>&nbsp; &nbsp;</td>
+<a class="button" href="http://cpan.uwinnipeg.ca/recent">Recenti</a>&nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Preferenze</a>&nbsp; &nbsp;</td>
+<a class="button" href="http://cpan.uwinnipeg.ca/mirror">Preferenze</a>&nbsp;</td>
 <td valign="top" align="center">
-<a class="button" href="http://cpan.uwinnipeg.ca/module">Moduli</a>&nbsp; &nbsp;</td>
+<a class="button" href="http://cpan.uwinnipeg.ca/module">Moduli</a>&nbsp;</td>
 <td valign="top" align="center">
 <a class="button" href="http://cpan.uwinnipeg.ca/dist">Distribuzioni</a>&nbsp; &nbsp;</td>
 <td valign="top" align="center">
@@ -43,7 +44,7 @@
  <option value="dist">Distribuzioni</option>
  <option value="module">Moduli</option>
  <option value="author">Autori</option>
-<option value="chapter">Categorie</option>
+ <option value="chapter" selected="selected">Categorie</option>
 </select>&nbsp;&nbsp; &nbsp;
 <input type="submit" value="Trova">
 </td></tr></table>
@@ -116,7 +117,15 @@
 <b>Moduli Vari</b></a> 
 <td><a href="http://cpan.uwinnipeg.ca/chapter/Commercial_Software_Interfaces"> 
 <b>Interfacce per Software Commerciali</b></a> 
-<td><a href="http://cpan.uwinnipeg.ca/chapter/Not_Yet_In_Modulelist"> 
+<td><a href="http://cpan.uwinnipeg.ca/chapter/Documentation"> 
+<b>Documentazione</b></a> 
+</tr>
+<tr valign="top" class="r">
+<td><a href="http://cpan.uwinnipeg.ca/chapter/Pragma"> 
+<b>Pragma</b></a> 
+<td><a href="http://cpan.uwinnipeg.ca/chapter/Perl6"> 
+<b>Perl6</b></a> 
+<td><a href="http://cpan.uwinnipeg.ca/chapter/Not_In_Modulelist"> 
 <b>Non Ancora in Modulelist</b></a> 
 </tr>
 </table>

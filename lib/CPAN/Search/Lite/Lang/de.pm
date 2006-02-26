@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::de;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages,
@@ -33,6 +33,9 @@ $chaps_desc = {
         22 => q{Microsoft Windows Module},
         23 => q{Verschiedene Module},
         24 => q{Kommerzielle Programmschnittstellen},
+        26 => q{Dokumentation},
+        27 => q{Pragma},
+        28 => q{Perl6},
         99 => q{Noch nicht katalogisiert},
 };
 
@@ -133,6 +136,7 @@ $pages = {
           uploads => 'Neue Module der letzten',
           days => 'Tage',
           more => 'more',
+          nada => 'Keine Resultate gefunden',
           error1 => 'Leider ist bei der Verarbeitung Ihrer Frage nach',
           error2 => 'in der Rubrik',
           error3 => 'ein Fehler aufgetreten.',

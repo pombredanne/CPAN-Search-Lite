@@ -31,7 +31,9 @@ search.cpan.org</a>&nbsp; | &nbsp;
 <a href="[% mirror %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
 CPAN</a>&nbsp; | &nbsp; 
 <a href="[% backpan %]/authors/id/[% cpan_letter %]/[% results.cpanid %]/">
-Archive</a>&nbsp;
+Archive</a>&nbsp; | & nbsp;
+<a href="[% testers_author %][% results.cpanid %].html">
+CPAN testers</a>&nbsp;
 </td>
 </tr>
 </table>

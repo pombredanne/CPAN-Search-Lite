@@ -24,7 +24,9 @@ use Apache2::Log ();
 use APR::Date;
 use APR::URI;
 use Apache2::URI;
-our $VERSION = 0.71;
+use APR::Const -compile => qw(URI_UNP_OMITQUERY);
+
+our $VERSION = 0.74;
 
 my @directives = (
                   {name      => 'CSL_db',
@@ -686,17 +688,22 @@ sub perldoc : method {
   my $path_info = $r->path_info;
   my $mode = 'module';
   my ($page, $request, $results);
-  if (not $path_info) {
-    $results = $self->chap_results();
-    $page = $results ? 'chapterid' : 'missing';
+  if (my $args = $r->args()) {
+    $request = $args;
   }
   else {
-    if ($path_info =~ m!^/([^/]+)!) {
-      $request = $1;
+    if (not $path_info) {
+      $results = $self->chap_results();
+      $page = $results ? 'chapterid' : 'missing';
     }
     else {
-      $results = $self->chap_results();
-      $page = $results ? 'chapterid' : 'missing';        
+      if ($path_info =~ m!^/([^/]+)!) {
+        $request = $1;
+      }
+      else {
+        $results = $self->chap_results();
+        $page = $results ? 'chapterid' : 'missing';
+      }
     }
   }
   my $vars;
@@ -712,7 +719,7 @@ sub perldoc : method {
     };
     return Apache2::Const::OK;
   }
-  
+
   my $parsed = $r->parsed_uri();
   my $html_root = $self->{html_root};
   
@@ -727,7 +734,7 @@ sub perldoc : method {
   if (-f $perl_file) {
     $path = File::Spec::Unix->catfile($path, 'perl', $request);
     $parsed->path($path . '.html');
-    $r->headers_out->set(Location => $parsed->unparse());
+    $r->headers_out->set(Location => $parsed->unparse(APR::Const::URI_UNP_OMITQUERY));
     return Apache2::Const::REDIRECT;
   }
   
@@ -752,7 +759,7 @@ sub perldoc : method {
 
   $path = File::Spec::Unix->catfile($path, $dist_name, split(/::/, $request));
   $parsed->path($path . '.html');
-  $r->headers_out->set(Location => $parsed->unparse());
+  $r->headers_out->set(Location => $parsed->unparse(APR::Const::URI_UNP_OMITQUERY));
   return Apache2::Const::REDIRECT;
 }
 

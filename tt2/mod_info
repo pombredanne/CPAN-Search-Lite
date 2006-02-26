@@ -85,11 +85,11 @@ href="[% cpaninstall %]?module=[% results.mod_name %]">[% pages.install %]</a>]
 [% END -%]
 </table></div>
 [% END -%]
-[% IF results.ppms %]
 <div class=box>
 <h2 class=t2>Win32 
-<a href="[% ppm %]">PPM</a> [% pages.packages %] &quot;[% results.dist_name %]&quot;</h2>
+<a href="[% ppm %]">PPM</a> [% pages.packages %] &quot;[% results.dist_name %]&quot; [<a href="[% ppmrequest %]dist=[% results.dist_name %]"><font size=-1>ppm-request</font></a>]</h2>
 <table width=100% class=ppm>
+[% IF results.ppms %]
 [% FOREACH item = results.ppms %]
 <tr><td>
 <a href="[% item.browse %]">[% item.abs %]</a>
@@ -100,5 +100,9 @@ href="[% ppminstall %]?dist=[% results.dist_name %];rep=[% item.alias %]">[% pag
 [% END -%]
 </td></tr>
 [% END -%]
-</table></div>
+[% ELSE -%]
+<tr><td>
+[% pages.nada %]
+</td></tr>
 [% END -%]
+</table></div>

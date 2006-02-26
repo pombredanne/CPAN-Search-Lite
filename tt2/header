@@ -10,6 +10,7 @@
 <meta name="keywords" content="Perl modules, CPAN" />
   <title>[% title %]</title>
  </head>
+<body onload="if (document.f) document.f.query.focus()">
 <table width="100%">
 <tr>
 <td width="5%" rowspan=3>

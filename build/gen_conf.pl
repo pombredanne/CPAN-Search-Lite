@@ -350,7 +350,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    </Files>
 </Directory>
 
-PerlLoadModule Apache::CPAN::Query
+PerlLoadModule Apache2::CPAN::Query
 CSL_db db_sub
 CSL_user nobody_sub
 CSL_passwd no_pass_sub
@@ -360,38 +360,38 @@ CSL_html_uri "docs_sub"
 
 <Location "/search">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->search
+   PerlResponseHandler Apache2::CPAN::Query->search
 </Location>
 <LocationMatch "/~[A-Za-z0-9-]+">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->cpanid
+   PerlResponseHandler Apache2::CPAN::Query->cpanid
 </LocationMatch>
 <Location "/author">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->author
+   PerlResponseHandler Apache2::CPAN::Query->author
 </Location>
 <Location "/dist">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->dist
+   PerlResponseHandler Apache2::CPAN::Query->dist
 </Location>
 <Location "/module">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->module
+   PerlResponseHandler Apache2::CPAN::Query->module
 </Location>
- Location "/chapter">
+<Location "/chapter">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->chapter
+   PerlResponseHandler Apache2::CPAN::Query->chapter
 </Location>
 <Location "/recent">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->recent
+   PerlResponseHandler Apache2::CPAN::Query->recent
 </Location>
 <Location "/mirror">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->mirror
+   PerlResponseHandler Apache2::CPAN::Query->mirror
 </Location>
 <Location "/perldoc">
    SetHandler perl-script
-   PerlResponseHandler Apache::CPAN::Query->perldoc
+   PerlResponseHandler Apache2::CPAN::Query->perldoc
 </Location>
  

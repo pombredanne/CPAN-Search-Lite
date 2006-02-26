@@ -1,3 +1,12 @@
+February 26, 2006 - 0.74
+    - add documentation, pragma, and Perl6 chapters
+    - if there are no results in the data structure for a
+      ppm repository, skip updating that repository
+    - adjust method of generating tests via Apache::Test
+      to accomodate recent Apache::Test changes
+    - add requirement of Apache2::SOAP and PPM
+    - update build/gen_conf script to use Apache2:: namespace
+ 
 August 9, 2005 - 0.71
     - add user option, via a cookie, to override language
       choice coming from browser setting.

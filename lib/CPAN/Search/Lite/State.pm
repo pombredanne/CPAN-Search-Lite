@@ -4,7 +4,7 @@ use warnings;
 no warnings qw(redefine);
 use CPAN::Search::Lite::DBI qw($dbh);
 use CPAN::Search::Lite::DBI::Index;
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 my $no_ppm;
 my %tbl2obj;
@@ -418,11 +418,12 @@ sub state {
  }
   $self->{insert} = $insert;
   $self->{update} = $update;
-   foreach my $id (keys %$ppms) {
-      my $values = $ppms->{$id};
+   foreach my $id (keys %$ppm_versions) {
+      next unless $self->has_data($ppms->{$id});
+      my $values = $ppm_versions->{$id};
       next unless $self->has_data($values);
       foreach my $package (keys %{$values}) {
-          next unless not $ppms->{$id}->{$package};
+          next if $ppms->{$id}->{$package};
           $delete->{$id}->{$package} = 
               $ppm_ids->{$id}->{$package};
       }

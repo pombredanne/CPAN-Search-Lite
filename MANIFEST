@@ -28,6 +28,7 @@ cgi-bin/soap.cgi
 Changes
 htdocs/Active.css
 htdocs/cpan.css
+htdocs/siteinfo.xml
 htdocs/cpan-search.html
 htdocs/cpan-search.html.de
 htdocs/cpan-search.html.en
@@ -59,7 +60,6 @@ htdocs/ppm.html.it
 htdocs/ppm.html.pt
 htdocs/style.css
 INSTALL
-lib/Apache2/SOAP.pm
 lib/CPAN/Search/Lite.pm
 lib/CPAN/Search/Lite/Extract.pm
 lib/CPAN/Search/Lite/Index.pm
@@ -80,12 +80,6 @@ lib/CPAN/Search/Lite/DBI.pm
 lib/CPAN/Search/Lite/DBI/Query.pm
 lib/CPAN/Search/Lite/DBI/Index.pm
 lib/Makefile.PL
-lib/PPM/XML/Element.pm
-lib/PPM/XML/PPD.pm
-lib/PPM/XML/PPMConfig.pm
-lib/PPM/XML/RepositorySummary.pm
-lib/PPM/XML/ValidatingElement.pm
-lib/SOAP/Transport/HTTP2.pm
 lib/t/info.t
 lib/t/query.t
 lib/t/cpan/authors/01mailrc.txt.gz

@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::DBI::Query;
 use base qw(CPAN::Search::Lite::DBI);
 use CPAN::Search::Lite::DBI qw($tables $dbh);
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 use strict;
 use warnings;

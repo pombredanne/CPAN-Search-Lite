@@ -1,7 +1,7 @@
 package CPAN::Search::Lite::Lang::es;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -31,6 +31,9 @@ $chaps_desc = {
         22 => q{M&oacute;dulos de Microsoft Windows},
         23 => q{M&oacute;dulos varios},
         24 => q{Interfaces de Software Comercial},
+        26 => q{Documentaci&oacute;n},
+        27 => q{Pragma},
+        28 => q{Perl6},
         99 => q{No todav&iacute;a en lista de m&oacute;dulos},
 };
 
@@ -131,6 +134,7 @@ $pages = {
           uploads => 'Novedades de los &uacute;ltimos',
           days => 'd&iacute;as',
           more => 'more',
+          nada => 'Ningunos resultados encontraron',
           error1 => 'Lo siento - hab&iacute;a un error en su b&uacute;squeda por',
           error2 => 'del tipo',
           error3 => '',

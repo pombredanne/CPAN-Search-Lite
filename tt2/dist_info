@@ -42,7 +42,9 @@ href="[% cpaninstall %]?dist=[% results.dist_file %];cpanid=[% results.cpanid %]
 <td class=cell>[% results.size %] </td>
 </tr><tr>
 <td class=label>[% pages.cs %]</td>
+[% IF results.md5 %]
 <td class=cell>[% results.md5 %] </td>
+[% END -%]
 </tr><tr>
 <td class=label>[% pages.additional %]</td>
 <td class=cell>
@@ -57,7 +59,7 @@ href="[% cpaninstall %]?dist=[% results.dist_file %];cpanid=[% results.cpanid %]
 <td class=cell>
 <a href="[% searchcpan %]~[% results.cpanid %]/[% results.dist_name %]/">search.cpan.org</a> &nbsp; | &nbsp;
 <a href="[% forum %][% results.dist_name %]">Discussion forum</a>&nbsp; | &nbsp;
-<a href="[% anno %][% results.dist_name %]">AnnoCPAN</a>&nbsp; | 
+<a href="[% anno %][% results.dist_name %]">AnnoCPAN</a>&nbsp; | &nbsp;
 <a href="[% rt %][% results.dist_name %]">rt.cpan.org bugs</a>&nbsp; | &nbsp;
 <a href="[% rate %][% results.dist_name %]">Rating</a>&nbsp; | 
 <a href="[% testers %][% results.dist_name %].html">CPAN testers</a>
@@ -125,11 +127,11 @@ href="[% cpaninstall %]?dist=[% results.dist_file %];cpanid=[% results.cpanid %]
 </table>
 </div>
 [% END -%]
-[% IF results.ppms %]
 <div class=box>
 <h2 class=t2>Win32 
-<a href="[% ppm %]">PPM</a> [% pages.packages %] &quot;[% results.dist_name %]&quot;</h2>
+<a href="[% ppm %]">PPM</a> [% pages.packages %] &quot;[% results.dist_name %]&quot; [<a href="[% ppmrequest %]dist=[% results.dist_name %]"><font size=-1>ppm-request</font></a>]</h2>
 <table width=100% class=ppm>
+[% IF results.ppms %]
 [% FOREACH item = results.ppms %]
 <tr><td>
 <a href="[% item.browse %]">[% item.abs %]</a>
@@ -140,6 +142,10 @@ href="[% ppminstall %]?dist=[% results.dist_name %];rep=[% item.alias %]">[% pag
 [% END -%]
 </td></tr>
 [% END -%]
-</table>
-</div>
+[% ELSE -%]
+<tr><td>
+[% pages.nada %]
+</td></tr>
 [% END -%]
+</table></div>
+

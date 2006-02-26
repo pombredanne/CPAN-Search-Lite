@@ -42,6 +42,8 @@ my %prereqs = ('Config::IniFiles' => 0,
                'AI::Categorizer' => 0,
                'Lingua::StopWords' => 0,
                'Perl::Tidy' => 0,
+               'PPM' => 0,
+               'Apache2::SOAP' => 0,
 	       );
 
 eval {require Apache2;};

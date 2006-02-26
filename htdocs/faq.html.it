@@ -2,7 +2,7 @@
 <html>
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="style.css" type="text/css">
+  <link rel="stylesheet" href="/htdocs/style.css" type="text/css">
   <title>FAQ sulla Ricerca in CPAN</title>
   </head>
   <body>
@@ -118,7 +118,8 @@ dalla shell <code>ppm</code>; per gli altri package, dovete aggiungere, alla
 vostra lista dei repository, l'indirizzo indicato: </p>
 
 <ul>
-<li><b></b><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, per il repository <i>crazyinsomniac Perl 5.6</i></li>
+<li><b>http://www.bribes.org/perl/ppm</b>, per il repository <i>bribes Perl 5.6/5.8</i></li>
+<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, per il repository <i>crazyinsomniac Perl 5.6</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, per il repository <i>crazyinsomniac Perl 5.8</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, per il repository <i>uwinnipeg Perl 5.6</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, per il repository <i>uwinnipeg Perl 5.8</i></li>
@@ -195,11 +196,11 @@ href="http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html">
 http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a> per consultare la
 documentazione di <code>Net::FTP</code> nella distribuzione
 <code>libnet</code>. Alternativamente, si pu&ograve; usare <a
-href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
-http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>. (questo funziona anche per la
+href="http://cpan.uwinnipeg.ca/perldoc?Net::FTP">
+http://cpan.uwinnipeg.ca/perldoc?Net::FTP</a>. (questo funziona anche per la
 documentazione del core Perl - per esempio, <a
-href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
-http://cpan.uwinnipeg.ca/perldoc/perlfaq</a> visualizza la documentazione
+href="http://cpan.uwinnipeg.ca/perldoc?perlfaq">
+http://cpan.uwinnipeg.ca/perldoc?perlfaq</a> visualizza la documentazione
 <i>perlfaq</i>). Si noti che questi link possono non funzionare con tutti i 
 moduli, per una variet&agrave; di motivi, principalmente per le convenzioni
 assunte negli indici CPAN e per il formato della documentazione pod trovata

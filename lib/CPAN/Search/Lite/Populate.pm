@@ -19,7 +19,7 @@ our $dbh = $CPAN::Search::Lite::DBI::dbh;
 
 my ($setup, $no_ppm);
 my $DEBUG = 1;
-our $VERSION = 0.68;
+our $VERSION = 0.74;
 
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -1158,6 +1158,7 @@ sub insert {
       my $values = $data->{$rep_id};
       next unless $self->has_data($values);
       foreach my $package (keys %{$values}) {
+          print "Inserting $package for rep_id=$rep_id\n";
           $sth->execute($dist_ids->{$package}, 
                         $rep_id, 
                         $values->{$package}->{version})
@@ -1335,8 +1336,17 @@ my $chaps = {
   24 => {subject => q{Commercial Software Interfaces},
          body => q{Commercial Software Interfaces},
         },
-  99 => {subject => q{Not Yet In Modulelist},
-         body => q{Not Yet In Modulelist},
+  26 => {subject => q{Documentation},
+         body => q{Documentation},
+        },
+  27 => {subject => q{Pragma},
+         body => q{Pragma},
+        },
+  28 => {subject => q{Perl6},
+         body => q{Perl6},
+        },
+  99 => {subject => q{Not In Modulelist},
+         body => q{Not In Modulelist},
         },
 };
 

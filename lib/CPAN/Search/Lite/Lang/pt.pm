@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Lang::pt;
 use utf8;
 use strict;
 use warnings;
-our $VERSION = 0.71;
+our $VERSION = 0.74;
 
 use base qw(Exporter);
 our (@EXPORT_OK, $chaps_desc, $pages, $dslip, $months);
@@ -32,6 +32,9 @@ $chaps_desc = {
         22 => q{Módulos para Microsoft Windows},
         23 => q{Outros Módulos},
         24 => q{Interfaces a Programas Comerciais},
+        26 => q{Documentação},
+        27 => q{Pragma},
+        28 => q{Perl6},
         99 => q{Ainda não na Lista de Módulos},
 };
 
@@ -131,6 +134,7 @@ $pages = { title => 'Navegar e procurar no CPAN',
            uploads => 'Disponibilizados nos últimos',
            days => 'dias',
            more => 'mais',
+           nada => 'Nenhum resultado encontrou',
            error1 => 'Desculpe - houve um erro na sua pesquisa por',
            error2 => 'de tipo',
            error3 => '',

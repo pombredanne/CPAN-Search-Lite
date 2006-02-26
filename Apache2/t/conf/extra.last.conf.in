@@ -52,6 +52,6 @@ CSL_tt2 "@ServerRoot@/../../tt2"
 <Location /TestCSL__search>
    SetHandler perl-script
    PerlResponseHandler Apache2::SOAP
-   PerlSetVar dispatch_to "@ServerRoot@/response, TestCSL::search"
+   PerlSetVar dispatch_to "@ServerRoot@/lib, TestCSL::search"
 </Location>
 

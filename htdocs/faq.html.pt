@@ -160,6 +160,8 @@ para os outros pacotes, é provável que tenha de adicionar a localização
 indicada na sua lista de repositórios:
 </p>
 <ul>
+<li><b>http://www.bribes.org/perl/ppm</b>, para o
+ <i>repositório bribes Perl 5.6/5.8</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, para o
  <i>repositório crazyinsomniac Perl 5.6</i></li>
 <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, para o
@@ -253,11 +255,11 @@ Ligações a documentos de módulos particulares pode ser feita com
 http://cpan.uwinnipeg.ca/htdocs/libnet/Net/FTP.html</a>
 para encontrar a documentação do <code>Net::FTP</code> na distribuição
 <code>libnet</code>. Alternativamente, pode usar
-<a href="http://cpan.uwinnipeg.ca/perldoc/Net::FTP">
-http://cpan.uwinnipeg.ca/perldoc/Net::FTP</a>.
+<a href="http://cpan.uwinnipeg.ca/perldoc?Net::FTP">
+http://cpan.uwinnipeg.ca/perldoc?Net::FTP</a>.
 (isto também funciona para a documentação do perl - por exemplo,
-<a href="http://cpan.uwinnipeg.ca/perldoc/perlfaq">
-http://cpan.uwinnipeg.ca/perldoc/perlfaq</a>
+<a href="http://cpan.uwinnipeg.ca/perldoc?perlfaq">
+http://cpan.uwinnipeg.ca/perldoc?perlfaq</a>
 irá mostrar a página <I>perlfaq</I> da documentação).
 Note que estes links da documentação podem não funcionar para todos os módulos,
 por uma grande variedade de razões, especialmente por causa de convenções
