@@ -160,13 +160,10 @@ add the indicated location to your list of repositories:
 <ul>
 <li><b>http://www.bribes.org/perl/ppm</b>, for
 the <i>Perl 5.6/5.8 bribes repository</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, for
-the <i>crazyinsomniac Perl 5.6 repository</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, for
-the <i>crazyinsomniac Perl 5.8 repository</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>,
 for the <i>uwinnipeg Perl 5.6 repository</i></li>
-<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>,
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
 for the <i>uwinnipeg Perl 5.8 repository</i></li>
 </ul>
 <p>

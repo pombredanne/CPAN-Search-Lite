@@ -157,9 +157,8 @@ C<Pod::Perldocs>. The necessary Apache2 directives are
    PerlSetVar dispatch_to "D:/Perl/site/lib/Apache2, Apache2::DocServer"
  </Location>
 
-where the C<Apache2::SOAP> module, included in this distribution,
-is a mod_perl 2 aware version of C<Apache2::SOAP> of the
-C<SOAP::Lite> distribution. See the C<perldocs> script in
+where C<Apache::SOAP> is included in version 0.69 and above of
+the C<SOAP::Lite> distribution. See the C<perldocs> script in
 this distribution for an example of it's use.
 
 =head1 SEE ALSO

@@ -18,15 +18,12 @@ the ppm shell; for the other packages, you may have to
 add the indicated location to your list of repositories:
 </p>
 <ul>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, for
-the <i>crazyinsomniac Perl 5.6 repository</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, for
-the <i>crazyinsomniac Perl 5.8 repository</i></li>
 <li><b>http://www.bribes.org/perl/ppm</b>, for
 the <i>www.bribes.org Perl 5.6 and 5.8 repository</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>,
 for the <i>uwinnipeg Perl 5.6 repository</i></li>
-<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>,
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
 for the <i>uwinnipeg Perl 5.8 repository</i></li>
 </ul>
 Make sure that you use a repository appropriate for your

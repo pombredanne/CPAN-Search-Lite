@@ -117,10 +117,10 @@ Die Informationen &uuml;ber Voraussetzungen werden aus der Datei META.yml innerh
 Lesen Sie die Dokumentation von <a href="http://www.activestate.com" target="_blank">ActivePerl</a> f&uuml;r generelle Informationen zur Benutzung von ppm. Die ppm-Pakete, die hier auftauchen, k&ouml;nnen mit dem ppm-Programm installiert werden. F&uuml;r die ActivePerl-Pakete sollten Sie in der Lage sein, die Pakete mit <code>install Paket-Name</code> innerhalb von ppm zu installieren; f&uuml;r die anderen Pakete m&uuml;ssen Sie m&ouml;glicherweise den angezeigten Ort zur Liste Ihrer Quellen hinzuf&uuml;gen: 
 <ul>
 <li><b>http://www.bribes.org/perl/ppm</b>, f&uuml;r das <i>Perl 5.6/5.8 Depot von bribes</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, f&uuml;r das <i>Perl 5.6 Depot von crazyinsomniac</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, f&uuml;r das <i>Perl 5.8 Depot von crazyinsomniac</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, f&uuml;r das <i>Perl 5.6 Depot von uwinnipeg</i></li>
-<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, f&uuml;r das <i>Perl 5.8 Depot von uwinnipeg</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
+f&uuml;r das <i>Perl 5.8 Depot von uwinnipeg</i></li>
 </ul>
 </p><p>
 Stellen Sie sicher, dass Sie die Quellen nutzen, die f&uuml;r Ihre Perl-Version richtig sind (5.6-Quellen f&uuml;r ActivePerl 6xx Builds, 5.8-Quellen f&uuml;r ActivePerl 8xx Builds). Beachten Sie auch, dass der Name, der hier genannt wird, der auf dem Namen der Distribution beim CPAN basiert, derjenige ist, den Sie bei der Installation angeben m&uuml;ssen; dieser stimmt oft, aber nicht immer, mit dem Namen des Hauptmoduls in der Distritbution &uuml;berein.

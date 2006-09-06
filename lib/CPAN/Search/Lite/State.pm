@@ -4,7 +4,8 @@ use warnings;
 no warnings qw(redefine);
 use CPAN::Search::Lite::DBI qw($dbh);
 use CPAN::Search::Lite::DBI::Index;
-our $VERSION = 0.74;
+use CPAN::Search::Lite::Util qw(has_data);
+our $VERSION = 0.76;
 
 my $no_ppm;
 my %tbl2obj;
@@ -68,7 +69,7 @@ sub create_objs {
         my $index = $self->{index}->{$table};
         if ($index and ref($index) eq "CPAN::Search::Lite::Index::$table") {
             my $info = $index->{info};
-            return unless $self->has_data($info);
+	    return unless has_data($info);
             $obj = $pack->new(info => $info, 
                               cdbi => $self->{cdbi}->{objs}->{$table});
         }
@@ -117,11 +118,12 @@ sub state_info {
 
 package CPAN::Search::Lite::State::auths;
 use base qw(CPAN::Search::Lite::State);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No author info available" unless $class->has_data($info);
+  die "No author info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::auths');
@@ -157,7 +159,7 @@ sub state {
   my $dist_insert = $dist_obj->{insert};
   my $dists = $dist_obj->{info};
   my ($update, $insert);
-  if ($self->has_data($dist_insert)) {
+  if (has_data($dist_insert)) {
     foreach my $distname (keys %{$dist_insert}) {
       my $cpanid = $dists->{$distname}->{cpanid};
       if (my $auth_id = $auth_ids->{$cpanid}) {
@@ -168,7 +170,7 @@ sub state {
       }
     }
   }
-  if ($self->has_data($dist_update)) {
+  if (has_data($dist_update)) {
     foreach my $distname (keys %{$dist_update}) {
       my $cpanid = $dists->{$distname}->{cpanid};
       if (my $auth_id = $auth_ids->{$cpanid}) {
@@ -186,12 +188,12 @@ sub state {
 
 package CPAN::Search::Lite::State::dists;
 use base qw(CPAN::Search::Lite::State);
-use CPAN::Search::Lite::Util qw(vcmp);
+use CPAN::Search::Lite::Util qw(vcmp has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No dist info available" unless $class->has_data($info);
+  die "No dist info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::dists');
@@ -265,11 +267,12 @@ sub state {
 
 package CPAN::Search::Lite::State::mods;
 use base qw(CPAN::Search::Lite::State);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No module info available" unless $class->has_data($info);
+  die "No module info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::mods');
@@ -307,14 +310,14 @@ sub state {
   my $dist_insert = $dist_obj->{insert};
   my ($update, $insert, $delete);
   my $cdbi = $self->{cdbi};
-  if ($self->has_data($dist_insert)) {
+  if (has_data($dist_insert)) {
     foreach my $distname (keys %{$dist_insert}) {
       foreach my $module(keys %{$dists->{$distname}->{modules}}) {
         $insert->{$module}++;
       }   
     }
   }
-  if ($self->has_data($dist_update)) {
+  if (has_data($dist_update)) {
     foreach my $distname (keys %{$dist_update}) {
       foreach my $module(keys %{$dists->{$distname}->{modules}}) {
         my $mod_id = $mod_ids->{$module};
@@ -328,7 +331,7 @@ sub state {
     }
   }
 
-  if ($self->has_data($dist_update)) {
+  if (has_data($dist_update)) {
     my $sql = q{SELECT mod_id,mod_name from mods,dists WHERE dists.dist_id = mods.dist_id and dists.dist_id = ?};
     my $sth = $dbh->prepare($sql) or do {
       $cdbi->db_error();
@@ -360,12 +363,12 @@ sub state {
 
 package CPAN::Search::Lite::State::ppms;
 use base qw(CPAN::Search::Lite::State);
-use CPAN::Search::Lite::Util qw(vcmp);
+use CPAN::Search::Lite::Util qw(vcmp has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No ppm info available" unless $class->has_data($info);
+  die "No ppm info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::ppms');
@@ -402,7 +405,7 @@ sub state {
   my ($update, $insert, $delete);
   foreach my $id (keys %$ppms) {
       my $values = $ppms->{$id};
-      next unless $self->has_data($values);
+      next unless has_data($values);
       foreach my $package (keys %{$values}) {
           if (not defined $ppm_versions->{$id}->{$package}) {
               $insert->{$id}->{$package}->{version} =
@@ -419,9 +422,9 @@ sub state {
   $self->{insert} = $insert;
   $self->{update} = $update;
    foreach my $id (keys %$ppm_versions) {
-      next unless $self->has_data($ppms->{$id});
+      next unless has_data($ppms->{$id});
       my $values = $ppm_versions->{$id};
-      next unless $self->has_data($values);
+      next unless has_data($values);
       foreach my $package (keys %{$values}) {
           next if $ppms->{$id}->{$package};
           $delete->{$id}->{$package} = 
@@ -433,12 +436,6 @@ sub state {
 }
 
 package CPAN::Search::Lite::State;
-
-sub has_data {
-  my ($self, $data) = @_;
-  return unless (defined $data and ref($data) eq 'HASH');
-  return (scalar keys %$data > 0) ? 1 : 0;
-}
 
 1;
 

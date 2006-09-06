@@ -9,7 +9,7 @@ use CPAN::DistnameInfo;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use TestCSL qw($expected make_soap download);
+use TestCSL qw($expected make_soap download $ppm_packs has_data);
 
 my $cgi = catfile(Apache::Test::vars('serverroot'),
                  qw(cgi-bin soap.cgi));
@@ -17,7 +17,7 @@ t_write_perl_script($cgi, <DATA>);
 my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
 
-plan tests => 79, have_lwp && have_cgi;
+plan tests => 87, have_lwp && have_cgi;
 
 my $soap_uri = "http://$hostport/CPAN_Search_CGI";
 my $soap_proxy = "http://$hostport/cgi-bin/soap.cgi";
@@ -40,9 +40,8 @@ for my $id (keys %$expected) {
     ok t_cmp(defined $results->{email}, 1);
 
     $dist = $expected->{$id}->{dist};
-    $fields = [qw(dist_name dist_abs dist_vers cpanid dist_file size birth)];
-    $query = $soap->query(mode => 'dist', name => $dist, 
-                          fields => $fields);
+#    $fields = [qw(dist_name dist_abs dist_vers cpanid dist_file size birth)];
+    $query = $soap->query(mode => 'dist', name => $dist);
     eval{$query->fault};
     ok t_cmp($@, "");
     ok t_cmp($query->fault, undef);
@@ -57,6 +56,16 @@ for my $id (keys %$expected) {
     ok t_cmp($results->{dist_vers}, $d->version);
     ok t_cmp(defined $results->{size}, 1);
     ok t_cmp(defined $results->{birth}, 1);
+
+    my $ppm = $results->{ppms};
+    my $ppm_info = $ppm_packs->{$dist};
+    if (has_data($ppm_info) ) {
+      ok t_cmp(ref($ppm), 'ARRAY');
+      ok t_cmp(scalar @$ppm, 1);
+      foreach my $key(keys %$ppm_info) {
+	ok t_cmp($ppm->[0]->{$key}, $ppm_info->{$key});
+      }
+    }
 
     $module = $expected->{$id}->{mod};
     $fields = [qw(mod_name mod_abs mod_vers dist_name cpanid dist_file)];

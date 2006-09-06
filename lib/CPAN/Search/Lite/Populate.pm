@@ -2,7 +2,7 @@ package CPAN::Search::Lite::Populate;
 use strict;
 use warnings;
 no warnings qw(redefine);
-use CPAN::Search::Lite::Util qw($table_id);
+use CPAN::Search::Lite::Util qw($table_id has_data);
 use CPAN::Search::Lite::DBI::Index;
 use CPAN::Search::Lite::DBI qw($dbh);
 use File::Find;
@@ -19,7 +19,7 @@ our $dbh = $CPAN::Search::Lite::DBI::dbh;
 
 my ($setup, $no_ppm);
 my $DEBUG = 1;
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 
 my %tbl2obj;
 $tbl2obj{$_} = __PACKAGE__ . '::' . $_ 
@@ -92,12 +92,6 @@ sub populate {
         warn "Populating tables failed";
         return;
     }
-    unless ($self->{no_mirror}) {
-        $self->fix_links() or do {
-            warn "Fixing html links failed";
-            return;
-        };
-    }
     return 1;
 }
 
@@ -112,7 +106,7 @@ sub create_objs {
         my $index = $self->{index}->{$table};
         if ($index and ref($index) eq "CPAN::Search::Lite::Index::$table") {
             my $info = $index->{info};
-            return unless $self->has_data($info);
+	    return unless has_data($info);
             $obj = $pack->new(info => $info, 
                               cdbi => $self->{cdbi}->{objs}->{$table});
           }
@@ -189,150 +183,14 @@ sub populate_tables {
     return 1;
 }
 
-sub fix_links {
-    my $self = shift;
-    unless ($dbh) {
-        $self->{error_msg} = q{No db handle available};
-        return;
-    }
-    my %textfiles = map {$_ . '.html' => 1} 
-    qw(README META Changes META index INSTALL);
-    my $html_root = $self->{html_root};
-    my $pod_root = $self->{pod_root};
-
-    my $docs;
-    my $sql = q{ SELECT mod_name,dist_name,doc } .
-        q { FROM mods,dists WHERE mods.dist_id = dists.dist_id };
-    my $sth = $dbh->prepare($sql);
-    $sth->execute() or do {
-        $self->db_error($sth);
-        return;
-    };
-    while (my ($mod_name, $dist_name, $doc) = $sth->fetchrow_array) {
-        next unless $doc;
-        $docs->{$mod_name} = $dist_name;
-    }
-    $sth->finish;
-
-    my $dist_obj;
-    unless ($dist_obj = $self->{obj}->{dists}) {
-        warn "No dist object available";
-        return;
-    }
-    my (@dist_roots, @goners, $data);
-    if ($setup) {
-        $data = $dist_obj->{info};
-        if ($self->has_data($data)) {
-            @dist_roots = keys %$data;
-        }
-    }
-    else {
-        $data = $dist_obj->{insert};
-        if ($self->has_data($data)) {
-            @dist_roots = keys %$data;
-        }
-        $data = $dist_obj->{update};
-        if ($self->has_data($data)) {
-            push @dist_roots, keys %$data;
-        }
-        $data = $dist_obj->{delete};
-        if ($self->has_data($data)) {
-            push @goners, keys %$data;
-        }
-    }
-
-    if (@goners) {
-        foreach my $dist_root (@goners) {
-            my $html_path = catdir $html_root, $dist_root;
-            if (-d $html_path) {
-                print "Removing $html_path\n";
-                rmtree($html_path, $DEBUG, 1)
-                    or warn "Cannot rmtree $html_path: $!";
-            }
-            my $pod_path = catdir $pod_root, $dist_root;
-            if (-d $pod_path) {
-                print "Removing $pod_path\n";
-                rmtree($pod_path, $DEBUG, 1)
-                    or warn "Cannot rmtree $pod_path: $!";
-            }
-        }
-    }
-
-    unless (@dist_roots) {
-        print "No distributions need editing";
-        return 1;
-    }
-    foreach my $dist_root (@dist_roots) {
-        my $dist_path = catdir $html_root, $dist_root;
-        my @files = ();
-        finddepth( sub{
-            not $textfiles{basename($File::Find::name)} 
-            and push @files, $File::Find::name 
-                if $File::Find::name =~ /\.html$/},
-                   $dist_path);
-        print "Editing links within $dist_root\n";
-        edit_links(\@files, $dist_root, $docs) or do {
-            warn "Editing links within $dist_root failed";
-            return;
-        };
-    }
-    return 1;
-}
-
-sub edit_links {
-    my ($files, $dist_root, $docs) = @_;
-    foreach my $file (@$files) {
-        my $orig = $file . '.orig';
-        rename $file, $orig or do {
-            warn "Cannot rename $file to $orig: $!";
-            return;
-        };
-        open(my $rfh, $orig) or do {
-            warn "Cannot open $orig: $!";
-            return;
-        };
-        open(my $wfh, '>', $file) or do {
-            warn "Cannot open $file: $!";
-            return;
-        };
-        while(my $line = <$rfh>) {
-            if ($line =~ /manpage/) {
-                my $copy = $line;
-                while ($line =~ m!(<a href=[^>]+>the (\S+) manpage</a>)!g) {
-                    my $link = $1;
-                    my $mod = $2;
-                    my ($section) = $mod =~ m!(\(\d+\))!;
-                    $mod =~ s!\Q$section\E!! if $section;
-                    my ($fixed, $dist);
-                    if ($dist = $docs->{$mod}) {
-                        ($fixed = $link) =~ s!$dist_root!$dist!;
-                        $fixed =~ s/\Q$section\E//g if $section;
-                    }
-                    else {
-                        $fixed = "<em>$mod</em>";
-                    }
-                    $copy =~ s/\Q$link\E/$fixed/;
-                }
-                print $wfh $copy;
-            }
-            else {
-                print $wfh $line;
-            }
-        }
-        close $wfh;
-        close $rfh;
-        unlink $orig or warn "Could not unlink $orig: $!";
-    }
-    return 1;
-}
-    
 package CPAN::Search::Lite::Populate::auths;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No author info available" unless $class->has_data($info);
+  die "No author info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::auths');
@@ -359,7 +217,7 @@ sub insert {
   my $info = $self->{info};
   my $cdbi = $self->{cdbi};
   my $data = $setup ? $info : $self->{insert};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No author data to insert};
     return;
   }
@@ -398,7 +256,7 @@ sub update {
   }
   my $data = $self->{update};
   my $cdbi = $self->{cdbi};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No author data to update};
     return;
   }
@@ -436,11 +294,12 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::dists;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No dist info available" unless $class->has_data($info);
+  die "No dist info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::dists');
@@ -469,7 +328,7 @@ sub insert {
   my $auth_ids = $auth_obj->{ids};
   my $dists = $self->{info};
   my $data = $setup ? $dists : $self->{insert};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No dist data to insert};
     return;
   }
@@ -520,7 +379,7 @@ sub update {
   }
   my $cdbi = $self->{cdbi};
   my $data = $self->{update};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No dist data to update};
     return;
   }
@@ -570,7 +429,7 @@ sub delete {
   }
   my $cdbi = $self->{cdbi};
   my $data = $self->{delete};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No dist data to delete};
     return;
   }
@@ -595,11 +454,12 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::mods;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No module info available" unless $class->has_data($info);
+  die "No module info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::mods');
@@ -628,7 +488,7 @@ sub insert {
   my $dist_ids = $dist_obj->{ids};
   my $mods = $self->{info};
   my $data = $setup ? $mods : $self->{insert};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No module data to insert};
     return;
   }
@@ -675,7 +535,7 @@ sub update {
   }
   my $cdbi = $self->{cdbi};
   my $data = $self->{update};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No module data to update};
     return;
   }
@@ -723,7 +583,7 @@ sub delete {
   return unless my $dist_obj = $self->{obj}->{dists};
   my $cdbi = $self->{cdbi};
   my $data = $dist_obj->{delete};
-  if ($self->has_data($data)) {
+  if (has_data($data)) {
     my $sth = $cdbi->sth_delete('dist_id');
     foreach my $distname(keys %$data) {
       $sth->execute($data->{$distname}) or do {
@@ -736,7 +596,7 @@ sub delete {
   }
 
   $data = $self->{delete};
-  if ($self->has_data($data)) {
+  if (has_data($data)) {
     my $sth = $cdbi->sth_delete('mod_id');
     foreach my $modname(keys %$data) {
       $sth->execute($data->{$modname}) or do {
@@ -758,6 +618,7 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::chaps;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
@@ -785,7 +646,7 @@ sub insert {
   my $dists = $dist_obj->{info};
   my $dist_ids = $dist_obj->{ids};
   my $data = $setup ? $dists : $dist_insert;
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No chap data to insert};
     return;
   }
@@ -834,7 +695,7 @@ sub update {
   my $dists = $dist_obj->{info};
   my $dist_ids = $dist_obj->{ids};
   my $data = $dist_obj->{update};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No chap data to update};
     return;
   }
@@ -889,7 +750,7 @@ sub delete {
   return unless my $dist_obj = $self->{obj}->{dists};
   my $cdbi = $self->{cdbi};
   my $data = $dist_obj->{delete};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No chap data to delete};
     return;
   }
@@ -913,6 +774,7 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::reqs;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
@@ -942,7 +804,7 @@ sub insert {
     my $dist_ids = $dist_obj->{ids};
     my $mod_ids = $mod_obj->{ids};
     my $data = $setup ? $dists : $dist_insert;
-    unless ($self->has_data($data)) {
+    unless (has_data($data)) {
         $self->{info_msg} = q{No req data to insert};
         return;
     }
@@ -1005,7 +867,7 @@ sub update {
     my $dist_ids = $dist_obj->{ids};
     my $mod_ids = $mod_obj->{ids};
     my $data = $dist_obj->{update};
-    unless ($self->has_data($data)) {
+    unless (has_data($data)) {
         $self->{info_msg} = q{No req data to update};
         return;
     }
@@ -1073,7 +935,7 @@ sub delete {
   return unless my $mod_obj = $self->{obj}->{mods};
   my $cdbi = $self->{cdbi};
   my $data = $dist_obj->{delete};
-  if ($self->has_data($data)) {  
+  if (has_data($data)) {  
     my $sth = $cdbi->sth_delete('dist_id');
     foreach my $distname(keys %$data) {
       $sth->execute($data->{$distname}) or do {
@@ -1086,7 +948,7 @@ sub delete {
   }
 
   $data = $mod_obj->{delete};
-  if ($self->has_data($data)) {
+  if (has_data($data)) {
     my $sth = $cdbi->sth_delete('mod_id');
     foreach my $modname(keys %$data) {
       $sth->execute($data->{$modname}) or do {
@@ -1107,11 +969,12 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::ppms;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub new {
   my ($class, %args) = @_;
   my $info = $args{info};
-  die "No ppm info available" unless $class->has_data($info);
+  die "No ppm info available" unless has_data($info);
   my $cdbi = $args{cdbi};
   die "No dbi object available"
     unless ($cdbi and ref($cdbi) eq 'CPAN::Search::Lite::DBI::Index::ppms');
@@ -1140,7 +1003,7 @@ sub insert {
   my $dist_ids = $dist_obj->{ids};
   my $ppms = $self->{info};
   my $data = $setup ? $ppms : $self->{insert};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No ppm data to insert};
     return;
   }
@@ -1156,7 +1019,10 @@ sub insert {
   };
   foreach my $rep_id (keys %$data) {
       my $values = $data->{$rep_id};
-      next unless $self->has_data($values);
+      unless (has_data($values)) {
+	print "No data to insert for rep_id=$rep_id\n";
+	next;
+      }
       foreach my $package (keys %{$values}) {
           print "Inserting $package for rep_id=$rep_id\n";
           $sth->execute($dist_ids->{$package}, 
@@ -1186,14 +1052,16 @@ sub update {
   }
   my $cdbi = $self->{cdbi};
   my $data = $self->{update};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No ppm data to update};
     return;
   }
-  
   foreach my $rep_id (keys %$data) {
     my $values = $data->{$rep_id};
-    next unless $self->has_data($values);
+    unless (has_data($values)) {
+      print "No data to update for rep_id=$rep_id\n";
+      next;
+    }
     foreach my $package (keys %{$values}) {
       print "Updating $package for rep_id=$rep_id\n";
       my $dist_id = $values->{$package}->{dist_id};
@@ -1229,16 +1097,20 @@ sub delete {
   }
   my $cdbi = $self->{cdbi};
   my $data = $self->{delete};
-  unless ($self->has_data($data)) {
+  unless (has_data($data)) {
     $self->{info_msg} = q{No ppm data to delete};
     return;
   }
-  foreach my $id (keys %$data) {
-      next unless $id;
-      my $values = $data->{$id};
-      my $sth = $cdbi->sth_delete('dist_id', $id);
+  foreach my $rep_id (keys %$data) {
+      next unless $rep_id;
+      my $values = $data->{$rep_id};
+      unless (has_data($values)) {
+	print "No data to delete for rep_id=$rep_id\n";
+	next;
+      }
+      my $sth = $cdbi->sth_delete('dist_id', $rep_id);
       foreach my $package (keys %{$values}) {
-          print "Deleting $package from rep_id=$id\n";
+          print "Deleting $package from rep_id=$rep_id\n";
           $sth->execute($values->{$package}) or do {
               $cdbi->db_error($sth);
               $self->{error_msg} = $cdbi->{error_msg};
@@ -1257,6 +1129,7 @@ sub delete {
 
 package CPAN::Search::Lite::Populate::cat;
 use base qw(CPAN::Search::Lite::Populate);
+use CPAN::Search::Lite::Util qw(has_data);
 
 my %features = (content_weights => {
                                     subject => 2,
@@ -1565,12 +1438,7 @@ sub insert_and_update {
 }
 
 package CPAN::Search::Lite::Populate;
-
-sub has_data {
-  my ($self, $data) = @_;
-  return unless (defined $data and ref($data) eq 'HASH');
-  return (scalar keys %$data > 0) ? 1 : 0;
-}
+use CPAN::Search::Lite::Util qw(has_data);
 
 sub db_error {
   my ($obj, $sth) = @_;

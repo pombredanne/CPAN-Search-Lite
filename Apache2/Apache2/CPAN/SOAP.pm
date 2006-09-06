@@ -8,7 +8,7 @@ use Apache2::Module ();
 use Apache2::RequestRec ();
 use Apache2::RequestIO ();
 use Apache2::RequestUtil ();
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 
 my @directives = (
                   {name      => 'CSL_soap_db',
@@ -110,9 +110,8 @@ The necessary Apache2 directives are
    PerlSetVar dispatch_to "D:/Perl/site/lib, Apache2::CPAN::SOAP"
  </Location>
 
-where the C<Apache2::SOAP> module, included in this distribution,
-is a mod_perl 2 aware version of C<Apache2::SOAP> of the
-C<SOAP::Lite> distribution. See the C<CSL_soap> script in
+where C<Apache::SOAP> is included in version 0.69 and above of
+the C<SOAP::Lite> distribution. See the C<CSL_soap> script in
 this distribution for an example of it's use. C<CSL_soap_passwd>
 is optional if no password is required for the user
 specified in C<CSL_soap_user>.

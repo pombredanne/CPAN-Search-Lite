@@ -8,20 +8,37 @@ use File::Path;
 use CPAN::DistnameInfo;
 use FindBin;
 use lib "$FindBin::Bin/../../Apache2/t/lib";
-use TestCSL qw($expected download %has_doc);
+use TestCSL qw($expected download %has_doc $ppm_packs has_data);
 use CPAN::Search::Lite::Info;
+use CPAN::Search::Lite::PPM;
 
-plan tests => 100;
+plan tests => 105;
 
 my $cwd = getcwd;
 my $CPAN = catdir $cwd, 't', 'cpan';
+my $t_dir = catdir $cwd, 't';
+$CPAN::Search::Lite::Util::repositories = {
+                                           1 => {
+                                                 alias => 'csl_test',
+                                                 LOCATION => 
+                                                 "file:/$t_dir",
+                                                 SUMMARYFILE  => 'summary.ppm',
+                                                 browse => "file:/$t_dir",
+                                                 build => '8xx',
+                                                 PerlV => 5.8,
+                                                },
+                                          };
+
+my ($db, $user, $passwd) = ('test', 'test', '');
+
 ok (-d $CPAN);
 my $info = CPAN::Search::Lite::Info->new(CPAN => $CPAN);
-ok(defined $info);
+ok(ref($info), 'CPAN::Search::Lite::Info');
+
 $info->fetch_info();
-ok(defined $info->{dists});
-ok(defined $info->{mods});
-ok(defined $info->{auths});
+ok(has_data($info->{dists}));
+ok(has_data($info->{mods}));
+ok(has_data($info->{auths}));
 foreach my $id (keys %$expected) {
   my $mod = $expected->{$id}->{mod};
   my $dist = $expected->{$id}->{dist};
@@ -64,6 +81,33 @@ foreach my $table(@tables) {
   $index->{$table} = bless $this, $class;
 }
 
+use CPAN::Search::Lite::DBI qw($tables);
+my $cdbi = CPAN::Search::Lite::DBI::Index->new(db => $db,
+					       user => $user,
+					       passwd => $passwd);
+ok(ref($cdbi), 'CPAN::Search::Lite::DBI::Index');
+foreach my $table(qw(chapters reps)) {
+  my $obj = $cdbi->{objs}->{$table};
+  my $schema = $obj->schema($tables->{$table});
+  ok($schema);
+  $obj->drop_table;
+  $obj->create_table($schema);
+  $obj->populate;
+}
+
+my $ppm = CPAN::Search::Lite::PPM->new(dists => $info->{dists},
+				       db => $db, user => $user,
+                                       passwd => $passwd, setup => 1);
+
+ok(ref($ppm), 'CPAN::Search::Lite::PPM');
+$ppm->fetch_info();
+my $ppm_info = $ppm->{ppms};
+ok(has_data($ppm_info));
+$index->{ppms} = bless {info => $ppm_info},
+  'CPAN::Search::Lite::Index::ppms';
+
+ok(scalar keys %{$ppm_info->{1}}, scalar keys %{$ppm_packs});
+
 my $pod_root = catdir $cwd, 't', 'POD';
 my $html_root = catdir $cwd, 't', 'HTML';
 for my $dir ( ($pod_root, $html_root) ) {
@@ -77,12 +121,33 @@ my $extract = CPAN::Search::Lite::Extract->new(CPAN => $CPAN,
                                                setup => 1,
                                                index => $index,
                                                pod_root => $pod_root,
-                                               html_root => $html_root,
                                                split_pod => 1,
                                               );
-ok(defined $extract);
-ok(ref($extract) eq 'CPAN::Search::Lite::Extract');
+ok(ref($extract), 'CPAN::Search::Lite::Extract');
 $extract->extract();
+
+use CPAN::Search::Lite::Populate;
+my $pop = CPAN::Search::Lite::Populate->new(db => $db, user => $user,
+                                            passwd => $passwd, setup => 1,
+                                            no_mirror => 1,
+                                            index => $index);
+ok(ref($pop), 'CPAN::Search::Lite::Populate');
+$pop->populate();
+ok(1);
+
+use CPAN::Search::Lite::HTML;
+my $html = CPAN::Search::Lite::HTML->new(pod_root => $pod_root,
+					 html_root => $html_root,
+					 split_pod => 1, setup => 1,
+					 dist_docs => $extract->{dist_docs},
+					 db => $db, user => $user,
+                                         passwd => $passwd, css => 'cpan.css',
+					 dist_obj => $pop->{obj}->{dists},
+					 up_img => 'up.png',
+					 dist_info => 'http://localhost/dist',
+					);
+ok(ref($html), 'CPAN::Search::Lite::HTML');
+$html->make_html();
 foreach my $id (keys %$expected) {
     my $dist = $expected->{$id}->{dist};
     my $d = catdir $pod_root, $dist;
@@ -118,15 +183,3 @@ foreach my $mod (keys %has_doc) {
     $f = (catfile($d, split /::/, $mod)) . '.pm.html';
     ok(-f $f && -s _ > 0, 1);
 }
-
-use CPAN::Search::Lite::Populate;
-my ($db, $user, $passwd) = ('test', 'test', '');
-my $pop = CPAN::Search::Lite::Populate->new(db => $db, user => $user,
-                                            passwd => $passwd, setup => 1,
-                                            no_ppm => 1, no_mirror => 1,
-                                            index => $index);
-ok(defined $pop);
-ok(ref($pop) eq 'CPAN::Search::Lite::Populate');
-$pop->populate();
-ok(1);
-

@@ -4,16 +4,35 @@ use base qw(CPAN::Search::Lite::DBI);
 
 use strict;
 use warnings;
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 
 package CPAN::Search::Lite::DBI::Index::reps;
 use base qw(CPAN::Search::Lite::DBI::Index);
 use CPAN::Search::Lite::DBI qw($dbh);
 use CPAN::Search::Lite::Util qw($repositories);
+use HTTP::Date;
 
 sub populate {
   my $self = shift;
-  my @fields = qw(rep_id abs browse perl alias);
+
+  my %months = ('Jan' => '01',
+                'Feb' => '02',
+                'Mar' => '03',
+                'Apr' => '04',
+                'May' => '05',
+                'Jun' => '06',
+                'Jul' => '07',
+                'Aug' => '08',
+                'Sep' => '09',
+                'Oct' => '10',
+                'Nov' => '11',
+                'Dec' => '12',
+               );
+  my $string = time2str(time);
+  my ($wday, $day, $month, $year, $time, $tz) = split ' ', $string;
+  my $stamp = qq{$year-$months{$month}-$day $time};
+
+  my @fields = qw(rep_id abs browse perl alias mtime);
   my $sth = $self->sth_insert(\@fields) or do {
     $self->db_error();
     return;
@@ -22,7 +41,7 @@ sub populate {
   foreach my $rep_id(keys %$repositories) {
     my $value = $repositories->{$rep_id};
     $sth->execute($rep_id, $value->{desc}, $value->{browse},
-                  $value->{PerlV}, $value->{alias})
+                  $value->{PerlV}, $value->{alias}, $stamp)
       or do {
         $self->db_error($sth);
         return;

@@ -5,8 +5,9 @@ use Safe;
 use CPAN::Search::Lite::Lang qw(%langs);
 
 use base qw(Exporter);
-our ($expected, @EXPORT_OK, %has_doc);
-@EXPORT_OK = qw($expected make_soap download load_cs lang_wanted %has_doc);
+our ($expected, @EXPORT_OK, %has_doc, $ppm_packs, $has_prereqs);
+@EXPORT_OK = qw($expected make_soap download load_cs has_data
+		lang_wanted %has_doc $has_prereqs $ppm_packs);
 
 $expected = {
              GBARR => {mod => 'Net::FTP',
@@ -35,6 +36,23 @@ $expected = {
             'Net::SMTP' => 1,
            );
 
+$ppm_packs = {
+              'libnet' => {rep_id => 1, ppm_vers => '1.19'},
+              'libwww-perl' => {rep_id => 1, ppm_vers => '5.805'},
+             };
+
+$has_prereqs = {'libnet' => {'Socket' => 1.3,
+			   'IO::Socket' => 1.05,
+			   },
+	       'Alias' => {},
+	       'libwww-perl' => { 'URI'              => "1.1",
+				  'MIME::Base64'     => "2.1",
+				  'Net::FTP'         => "2.58",
+				  'HTML::Parser'     => "3.33",
+				  'Digest::MD5'      => 0,
+				},
+	      };
+
 sub make_soap {
   my ($soap_uri, $soap_proxy) = @_;
   unless (eval { require SOAP::Lite }) {
@@ -53,6 +71,12 @@ sub make_soap {
                            "\n";
                          return undef;
                        });
+}
+
+sub has_data {
+  my $data = shift;
+  return unless (defined $data and ref($data) eq 'HASH');
+  return (scalar keys %$data > 0) ? 1 : 0;
 }
 
 sub download {

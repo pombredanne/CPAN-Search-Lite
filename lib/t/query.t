@@ -7,14 +7,14 @@ use CPAN::Search::Lite::Query;
 use FindBin;
 use File::Spec::Functions;
 use lib "$FindBin::Bin/../../Apache2/t/lib";
-use TestCSL qw($expected download load_cs %has_doc);
+use TestCSL qw($expected download load_cs %has_doc $has_prereqs);
 use CPAN::Search::Lite::DBI::Query;
 use CPAN::Search::Lite::DBI qw($dbh);
 
 my $cwd = getcwd;
 my $CPAN = catfile $cwd, 't', 'cpan';
 
-plan tests => 71;
+plan tests => 83;
 
 my ($db, $user, $passwd, $max_results) = ('test', 'test', '', 200);
 my $cdbi = CPAN::Search::Lite::DBI::Query->new(db => $db,
@@ -33,6 +33,20 @@ foreach my $mod(keys %has_doc) {
 }
 $sth->finish;
 
+$sql = qq{SELECT mod_name,req_vers from dists,mods,reqs } .
+  qq{WHERE dists.dist_name=? } .
+  qq{AND (dists.dist_id=reqs.dist_id) } .
+  qq{AND (reqs.mod_id=mods.mod_id)};
+$sth = $dbh->prepare($sql);
+
+foreach my $dist(keys %$has_prereqs) {
+  $sth->execute($dist);
+  while( my ($mod_name,$req_vers) = $sth->fetchrow_array) {
+    ok(defined $mod_name, exists $has_prereqs->{$dist}->{$mod_name});
+    ok($req_vers+0, $has_prereqs->{$dist}->{$mod_name}+0);
+  }
+}
+$sth->finish;
 
 my $query = CPAN::Search::Lite::Query->new(db => $db,
                                            user => $user,

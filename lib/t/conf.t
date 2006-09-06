@@ -10,7 +10,7 @@ use CPAN::Search::Lite::Index;
 *CPAN::Search::Lite::Index::DESTROY = sub {};
 use Config::IniFiles;
 
-plan tests => 29;
+plan tests => 28;
 
 my $cwd = getcwd;
 my $tdir = catdir $cwd, 't';

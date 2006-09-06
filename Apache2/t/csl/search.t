@@ -6,12 +6,12 @@ use Apache::TestUtil qw(t_cmp);
 use Apache::TestRequest qw(GET);
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-use TestCSL qw($expected make_soap);
+use TestCSL qw($expected make_soap $ppm_packs has_data);
 
 my $config   = Apache::Test::config();
 my $hostport = Apache::TestRequest::hostport($config) || '';
 
-plan tests => 79;
+plan tests => 87;
 
 my $soap_uri = "http://$hostport/TestCSL/search";
 my $soap_proxy = "http://$hostport/TestCSL__search";
@@ -40,6 +40,16 @@ for my $id (keys %$expected) {
     ok t_cmp(defined $results, 1);
     ok t_cmp(ref($results), 'HASH', $dist);
     ok t_cmp($results->{dist_name}, $dist, "Searching for $dist");
+
+    my $ppm = $results->{ppms};
+    my $ppm_info = $ppm_packs->{$dist};
+    if (has_data($ppm_info) ) {
+      ok t_cmp(ref($ppm), 'ARRAY');
+      ok t_cmp(scalar @$ppm, 1);
+      foreach my $key(keys %$ppm_info) {
+	ok t_cmp($ppm->[0]->{$key}, $ppm_info->{$key});
+      }
+    }
 
     $module = $expected->{$id}->{mod};
     $search = $soap->search(mode => 'module', query => "^$module\$");

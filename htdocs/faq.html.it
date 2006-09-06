@@ -119,10 +119,10 @@ vostra lista dei repository, l'indirizzo indicato: </p>
 
 <ul>
 <li><b>http://www.bribes.org/perl/ppm</b>, per il repository <i>bribes Perl 5.6/5.8</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, per il repository <i>crazyinsomniac Perl 5.6</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, per il repository <i>crazyinsomniac Perl 5.8</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, per il repository <i>uwinnipeg Perl 5.6</i></li>
-<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, per il repository <i>uwinnipeg Perl 5.8</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
+per il repository <i>uwinnipeg Perl 5.8</i></li>
 </ul>
 
 <p> Assicuratevi di utilizzare il corretto repository per la vostra versione

@@ -11,7 +11,7 @@ use Safe;
 use CPAN::Search::Lite::Util qw(vcmp);
 our ($ext);
 $ext = qr/\.(tar\.gz|tar\.Z|tgz|zip)$/;
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 
 sub new {
     my ($class, %args) = @_;
@@ -40,6 +40,7 @@ sub dists_and_mods {
       $pat = join '|', @$ignore;
     }
     foreach my $cpan_file (keys %$cpan_files) {
+        next if $cpan_file =~ /Spreadsheet-WriteExcel-WebPivot2/;
         my $d = CPAN::DistnameInfo->new($cpan_file);
         next unless ($d->maturity eq 'released');
         my $dist = $d->dist;

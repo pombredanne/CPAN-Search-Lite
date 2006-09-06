@@ -2,252 +2,280 @@ package CPAN::Search::Lite::PPM;
 use strict;
 use LWP::UserAgent;
 use SOAP::Lite;
-use XML::Parser;
-use PPM::XML::PPD;
-use PPM::XML::PPMConfig;
-use CPAN::Search::Lite::Util qw($repositories);
-our $VERSION = 0.74;
+use LWP::Simple;
+use HTTP::Date;
+use XML::SAX;
+use CPAN::Search::Lite::Util qw($repositories has_data);
+use CPAN::Search::Lite::DBI::Index;
+use CPAN::Search::Lite::DBI qw($dbh);
+our $VERSION = 0.76;
 
-my %current_package;
+our $dbh = $CPAN::Search::Lite::DBI::dbh;
+our %wanted = map {$_ => 1} qw(SOFTPKG ABSTRACT ARCHITECTURE);
+our $arch = '';
+my %arch = ('5.6' => 'MSWin32-x86-multi-thread',
+	    '5.8' => 'MSWin32-x86-multi-thread-5.8',
+	   );
+
+my %months = ('Jan' => '01',
+	      'Feb' => '02',
+	      'Mar' => '03',
+	      'Apr' => '04',
+	      'May' => '05',
+	      'Jun' => '06',
+	      'Jul' => '07',
+	      'Aug' => '08',
+	      'Sep' => '09',
+	      'Oct' => '10',
+	      'Nov' => '11',
+	      'Dec' => '12',
+	     );
+my @tries = qw(searchsummary.ppm package.lst);
 
 sub new {
     my ($class, %args) = @_;
-    die "Please supply distribution data" unless $args{dists};
-    my $self = {dists => $args{dists}, ppms => {}};
+    foreach (qw(db user passwd dists) ) {
+      die "Must supply a '$_' argument" unless defined $args{$_};
+    }
+    my $cdbi = CPAN::Search::Lite::DBI::Index->new(%args);
+    my $self = {dists => $args{dists}, ppms => {}, setup => $args{setup},
+		curr_mtimes => {}, update_mtimes => {}};
     bless $self, $class;
 }
 
 sub fetch_info {
-    my $self = shift;
-    my $dists = $self->{dists};
-    my $ppm = {};
-    for my $id (keys %$repositories) {
-        my $location = $repositories->{$id}->{LOCATION};
-        print "Getting ppm information from $location\n";
-        my $packages = summary($location);
-        next unless ($packages and has_data($packages));
-        foreach my $package (keys %$packages) {
-            next unless $dists->{$package};
-            my $version = ppd2cpan_version($packages->{$package}->{VERSION});
-            my $abstract = $packages->{$package}->{ABSTRACT};
-            $dists->{$package}->{description} = $abstract
-                unless $dists->{$package}->{description};
-            $ppm->{$id}->{$package} = {
-                                       version => $version,
-                                       abstract => $abstract,
-                                      };
-        }
+  my $self = shift;
+  unless ($self->{setup}) {
+    $self->fetch_mtime() or return;
+  }
+  my $dists = $self->{dists};
+  my $ppm = {};
+  for my $id (keys %$repositories) {
+    my $location = $repositories->{$id}->{LOCATION};
+    print "Getting ppm information from $location\n";
+    my $packages = $self->summary($id, $location);
+    next unless $packages;
+    if (ref($packages) eq 'HASH') {
+      foreach my $package (keys %$packages) {
+	next unless $dists->{$package};
+	my $version = ppd2cpan_version($packages->{$package}->{version});
+	my $abstract = $packages->{$package}->{abstract};
+	$dists->{$package}->{description} = $abstract
+	  unless $dists->{$package}->{description};
+	$ppm->{$id}->{$package} = {
+				   version => $version,
+				   abstract => $abstract,
+				  };
+      }
     }
-    $self->{ppms} = $ppm;
-    return 1;
+    else {
+      $ppm->{$id} = 1;
+    }
+  }
+  $self->{ppms} = $ppm;
+  $self->update_mtime() if (has_data($self->{update_mtimes}));
+  return 1;
+}
+
+sub fetch_mtime {
+  my $self = shift;
+  my $mtimes = {};
+  unless ($dbh) {
+    $self->{error_msg} = q{No db handle available};
+    return;
+  }
+  my $sql = q{ SELECT rep_id,mtime FROM reps };
+  my $sth = $dbh->prepare($sql);
+  $sth->execute() or do {
+    $self->db_error($sth);
+    return;
+  };
+  while (my ($rep_id, $mtime) = $sth->fetchrow_array) {
+    next unless $rep_id;
+    $mtimes->{$rep_id} = $mtime;
+  }
+  $sth->finish;
+  $self->{curr_mtimes} = $mtimes;
+  return 1;
+}
+
+sub update_mtime {
+  my $self = shift;
+  my $mtimes = $self->{update_mtimes};
+  unless ($dbh) {
+    $self->{error_msg} = q{No db handle available};
+    return;
+  }
+  my $sth;
+  foreach my $id(keys %$mtimes) {
+    my $mtime = $mtimes->{$id};
+    next unless (defined $id and defined $mtime);
+    my $sql = q{ UPDATE LOW_PRIORITY reps } .
+      qq{ SET mtime="$mtime" WHERE rep_id=$id};
+    $sth = $dbh->prepare($sql);
+    $sth->execute() or do {
+      $self->db_error($sth);
+      return;
+    };
+    $sth->finish;
+  }
+  $dbh->commit or do {
+    $self->db_error($sth);
+    return;
+  };
+  return 1;
 }
 
 sub summary {
-    my $loc = shift;
-    my $packages;
-    # see if the repository has server-side searching
-    # see if a summary file is available
-    my %summary = RepositorySummary(location => $loc);
-    return unless %summary;
-    foreach my $package (keys %{$summary{$loc}}) {
-        $packages->{$package} = \%{$summary{$loc}{$package}};
+  my ($self, $id, $url) = @_;
+  $url .= '/' unless $url =~ m@/$@;
+  my $file;
+  my ($type, $length, $mtime, $expires, $server);
+  foreach my $try (@tries) {
+    ($type, $length, $mtime, $expires, $server) = head("$url$try");
+    if (defined $mtime) {
+      $file = $try;
+      last;
     }
-    return $packages;
+  }
+  unless (defined $mtime) {
+    print "Could not get ppm info from $url\n";
+    return;
+  }
+
+  my $mtimes = $self->{curr_mtimes};
+  my $string = time2str($mtime);
+  my ($wday, $day, $month, $year, $time, $tz) = split ' ', $string;
+  my $stamp = "$year-$months{$month}-$day $time";
+  if (defined $mtimes->{$id} and $mtimes->{$id} eq $stamp) {
+    print "$url is up to date\n";
+    return 1;
+  }
+
+  $arch = $arch{$repositories->{$id}->{PerlV}};
+  my $packages = parse($url, $file);
+  unlink $file;
+  unless (has_data($packages)) {
+    print "Info from $url contains no data\n";
+    return;
+  }
+  $self->{update_mtimes}->{$id} = $stamp;
+  return $packages;
 }
 
-sub has_data {
-  my $data = shift;
-  return unless (defined $data and ref($data) eq 'HASH');
-  return (scalar keys %$data > 0) ? 1 : 0;
+sub parse {
+  my ($url, $file) = @_;
+  $url .= '/' unless ($url =~ m@/$@);
+  my $remote = $url . $file;
+  unless (is_success(getstore($remote, $file) )) {
+    print "Cannot obtain $file from $url";
+    return;
+  }
+
+  XML::SAX->add_parser(q(XML::SAX::ExpatXS));
+  my $factory = XML::SAX::ParserFactory->new();
+  my $handler = PPMHandler->new();
+  my $parser = $factory->parser( Handler => $handler);
+
+  eval { $parser->parse_uri($file); };
+  if ($@) {
+    print "Error in parsing $file: $@\n";
+    return;
+  }
+  my $pkgs = $handler->{pkgs};
+  return $pkgs;
 }
 
 sub ppd2cpan_version {
-    local $_ = shift;
-    s/(,0)*$//;
-    tr/,/./;
-    return $_;
-}
-# Returns a summary of available packages for all repositories.
-# Returned hash has the following structure:
-#
-#    $hash{repository}{package_name}{NAME}
-#    $hash{repository}{package_name}{VERSION}
-#    etc.
-#
-sub RepositorySummary {
-    my %argv = @_;
-    my $location = $argv{location}; 
-    my (%summary, $locations);
-
-    # If we weren't given the location of a repository to query the summary
-    # for, check all of the repositories that we know about.
-    foreach (keys %$repositories) {
-        if ($location =~ /^\Q$repositories->{$_}->{LOCATION}\E$/i) {
-            $locations->{$repositories->{$_}->{LOCATION}} =
-                $repositories->{$_}->{SUMMARYFILE};
-            last;
-        }
-    }
-
-    # Check all of the summary file locations that we were able to find.
-    foreach $location (keys %$locations) {
-        my $summaryfile = $locations->{$location};
-        next unless ($summaryfile);
-        my $data;
-        next unless 
-            ($data = read_href(request => 'GET',
-                               href => "$location/$summaryfile"));
-        $summary{$location} = parse_summary($data);
-    }
-
-    return %summary;
+  local $_ = shift;
+  s/(,0)*$//;
+  tr/,/./;
+  return $_;
 }
 
-sub read_href {
-    my %argv = @_;
-    my $href = $argv{href};
-    my $request = $argv{request};
-    my $target = $argv{target};
-    my ($proxy_user, $proxy_pass);
-    # If this is a SOAP URL, handle it differently than FTP/HTTP/file.
-    if ($href =~ m#^(http://.*)\?(.*)#i) {
-        my ($proxy, $uri) = ($1, $2);
-        my $fcn;
-        if ($uri =~ m#(.*:/.*)/(.+?)$#) {
-            ($uri, $fcn) = ($1, $2);
-        }
-        my $client = SOAP::Lite -> uri($uri) -> proxy($proxy);
-        if ($fcn eq 'fetch_summary') {
-            my $summary = eval { $client->fetch_summary()->result; };
-            if ($@) {
-                warn $@;
-                return;
-            }
-            return $summary;
-        }
-        $fcn =~ s/\.ppd$//i;
-        my $ppd = eval { $client->fetch_ppd($fcn)->result };
-        if ($@) {
-                warn $@;
-                return;
-        }
-        return $ppd;
-        # todo: write to disk file if $target
-    }
-    # Otherwise it's a standard URL, go ahead and request it using LWP.
-    my $ua = new LWP::UserAgent;
-    $ua->agent($ENV{HTTP_proxy_agent} || ("$0/0.1 " . $ua->agent));
-    if (defined $ENV{HTTP_proxy}) {
-        $proxy_user = $ENV{HTTP_proxy_user};
-        $proxy_pass = $ENV{HTTP_proxy_pass};
-        $ua->env_proxy;
-    }
-    my $req = new HTTP::Request $request => $href;
-    if (defined $proxy_user && defined $proxy_pass) {
-        $req->proxy_authorization_basic("$proxy_user", "$proxy_pass");
-    }
-
-    # Do we need to do authorization?
-    # This is a hack, but will have to do for now.
-    foreach (keys %$repositories) {
-        if ($href =~ /^$repositories->{$_}->{LOCATION}/i) {
-            my $username = 'anonymous';
-            my $password = 'cpan-search@cpan.org';
-            if (defined $username && defined $password) {
-                $req->authorization_basic($username, $password);
-                last;
-            }
-        }
-    }
-
-    my $response = $ua->request($req);
-    if ($response && $response->is_success) {
-        return $response->content;
-    }
-    if ($response) {
-        warn(qq{Error reading $href: } . $response->code . " " . 
-             $response->message);
-         }
-    else {
-        warn ("read_href: Error reading $href");
-    }
-    return;
+sub db_error {
+  my ($obj, $sth) = @_;
+  return unless $dbh;
+  $sth->finish if $sth;
+  $obj->{error_msg} = q{Database error: } . $dbh->errstr;
 }
 
-sub parse_summary {
-    my $data = shift;
-    my (%summary, @parsed);
+# begin the in-line package
+package PPMHandler;
+use strict;
+use warnings;
 
-    # take care of '&'
-    $data =~ s/&(?!\w+;)/&amp;/go;
-
-    my $parser = new XML::Parser( Style => 'Objects', 
-        Pkg => 'PPM::XML::RepositorySummary' );
-    eval { @parsed = @{ $parser->parse( $data ) } };
-    if ($@) {
-        warn $@;
-        return;
-    }
-
-    my $packages = ${$parsed[0]}{Kids};
-
-    foreach my $package (@{$packages}) {
-        my $elem_type = ref $package;
-        $elem_type =~ s/.*:://;
-        next if ($elem_type eq 'Characters');
-
-        if ($elem_type eq 'SOFTPKG') {
-            my %ret_hash;
-            parsePPD(%{$package});
-            %ret_hash = map { $_ => $current_package{$_} } 
-                qw(NAME TITLE AUTHOR VERSION ABSTRACT);
-            $summary{$current_package{NAME}} = \%ret_hash;
-        }
-    }
-    return \%summary;
+my $curr_el = '';
+sub new {
+    my $type = shift;
+    return bless {text => '', pkgs => {}, ppd => {}}, $type;
 }
 
-sub parsePPD {
-    my %PPD = @_;
-    my $pkg;
-    
-    %current_package = ();
-
-    # Get the package name and version from the attributes and stick it
-    # into the 'current package' global var
-    $current_package{NAME}    = $PPD{NAME};
-    $current_package{VERSION} = $PPD{VERSION};
-    
-    # Get all the information for this package and put it into the 'current
-    # package' global var.
-    my $got_implementation = 0;
-    my $elem;
-    
-    foreach $elem (@{$PPD{Kids}}) {
-        my $elem_type = ref $elem;
-        $elem_type =~ s/.*:://;
-        next if ($elem_type eq 'Characters');
-        
-        if ($elem_type eq 'TITLE') {
-            # Get the package title out of our _only_ char data child
-            $current_package{TITLE} = $elem->{Kids}[0]{Text};
-        }
-        elsif ($elem_type eq 'ABSTRACT') {
-            # Get the package abstract out of our _only_ char data child
-            $current_package{ABSTRACT} = $elem->{Kids}[0]{Text};
-        }
-        elsif ($elem_type eq 'AUTHOR') {
-            # Get the authors name out of our _only_ char data child
-            $current_package{AUTHOR} = $elem->{Kids}[0]{Text};
-        }
-        else {
-            next;
-        }
-    } # End of "for each child element inside the PPD"
-    
+sub start_document {
+  my ($self) = @_;
+  # print "Starting document\n";
+  $self->{text} = '';
 }
 
-1;
+sub start_element {
+  my ($self, $element) = @_;
+  $curr_el = $element->{Name};
+  return unless $wanted{$curr_el};
+  #print "Starting $element->{Name}\n";
+  my $ppd = $self->{ppd};
+  $ppd->{keep} = 0 if $curr_el eq 'SOFTPKG';
+  $self->display_text();
+  foreach my $ak (keys %{ $element->{Attributes} } ) {
+    my $at = $element->{Attributes}->{$ak};
+    my $name = $at->{Name};
+    my $value = $at->{Value};
+    $ppd->{keep} = 1 if ($curr_el eq 'ARCHITECTURE' and $value eq $arch);
+    $ppd->{$curr_el}->{$name} = $value if $curr_el eq 'SOFTPKG';
+    #print qq(Attribute $at->{Name} = "$at->{Value}"\n);
+  }
+}
+
+sub characters {
+  my ($self, $characters) = @_;
+  my $text = $characters->{Data};
+  $text =~ s/^\s*//;
+  $text =~ s/\s*$//;
+  $self->{text} .= $text;
+}
+
+sub end_element {
+  my ($self, $element) = @_;
+  $curr_el = $element->{Name};
+  return unless $wanted{$curr_el};
+  $self->display_text();
+  if ($curr_el eq 'SOFTPKG') {
+    my $ppd = $self->{ppd};
+    if ($ppd->{keep}) {
+      $self->{pkgs}->{$ppd->{SOFTPKG}->{NAME}} = 
+	{version => $ppd->{SOFTPKG}->{VERSION},
+	 abstract => $ppd->{ABSTRACT}->{value}
+	};
+    }
+  }
+  # print "Ending $element->{Name}\n";
+}
+
+sub display_text {
+  my $self = shift;
+  my $ppd = $self->{ppd};
+  if ( defined( $self->{text} ) && $self->{text} ne "" ) {
+    $ppd->{$curr_el}->{value} = $self->{text};
+    #print " text: [$self->{text}]\n";
+    $self->{text} = '';
+  }
+}
+
+sub end_document {
+  my ($self) = @_;
+  # print "Document finished\n";
+}
+
+1; #Ye Olde 'Return True' for the in-line package..
 
 __END__
 

@@ -27,7 +27,6 @@ my %prereqs = ('Config::IniFiles' => 0,
 	       'File::Spec' => 0,
 	       'LWP' => 0,
 	       'YAML' => 0,
-	       'XML::Parser' => 2,
                'Locale::Country' => 0,
                'Archive::Zip' => 1.09,
                'Archive::Tar' => 1.08,
@@ -37,13 +36,14 @@ my %prereqs = ('Config::IniFiles' => 0,
                'Pod::Select' => 0,
                'DBD::mysql' => 0,
                'CPAN::DistnameInfo' => 0,
-               'Sort::Versions' => 0,
                'Lingua::Stem' => 0,
                'AI::Categorizer' => 0,
                'Lingua::StopWords' => 0,
                'Perl::Tidy' => 0,
-               'PPM' => 0,
-               'Apache2::SOAP' => 0,
+               'SOAP::Lite' => 0,
+	       'XML::SAX::ExpatXS' => 0,
+	       'Pod::Xhtml' => 0,
+	       'Apache2::SOAP' => 0,
 	       );
 
 eval {require Apache2;};
@@ -140,6 +140,12 @@ You can now execute
 After this, you can optionally run
    $^X $config
 to set up some basic configuration details for your system.
+
+If you are running an older version of CPAN::Search::Lite,
+you should, after installation, run
+   csl_index --config /path/to/config.cfg --rebuild-info
+to rebuild a couple of the database tables.
+
 Please read the INSTALL file for further installation instructions.
 ***************************************************************
 

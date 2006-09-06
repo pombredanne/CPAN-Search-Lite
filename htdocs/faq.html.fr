@@ -112,13 +112,11 @@
       <ul>
         <li><b>http://www.bribes.org/perl/ppm</b>, pour le <i>r&eacute;f&eacute;rentiel
         bribes Perl 5.6/5.8</i></li>
-        <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, pour le <i>r&eacute;f&eacute;rentiel
-        crazyinsomniac Perl 5.6</i></li>
-        <li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, pour le <i>r&eacute;f&eacute;rentiel
-        crazyinsomniac Perl 5.8</i></li>
         <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer</b>, pour le
         <i>r&eacute;f&eacute;rentiel uwinnipeg Perl 5.6</i></li>
-        <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b>, pour le
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
+pour le
         <i>r&eacute;f&eacute;rentiel uwinnipeg Perl 5.8</i></li>
       </ul>
       <p>Assurez-vous d'utiliser le r&eacute;f&eacute;rentiel correspondant &agrave; votre version de Perl (&agrave; savoir les

@@ -60,8 +60,14 @@ htdocs/ppm.html.it
 htdocs/ppm.html.pt
 htdocs/style.css
 INSTALL
+lib/PPM/XML/Element.pm
+lib/PPM/XML/PPD.pm
+lib/PPM/XML/PPMConfig.pm
+lib/PPM/XML/RepositorySummary.pm
+lib/PPM/XML/ValidatingElement.pm
 lib/CPAN/Search/Lite.pm
 lib/CPAN/Search/Lite/Extract.pm
+lib/CPAN/Search/Lite/HTML.pm
 lib/CPAN/Search/Lite/Index.pm
 lib/CPAN/Search/Lite/Info.pm
 lib/CPAN/Search/Lite/Lang.pm
@@ -99,6 +105,7 @@ lib/t/cpan/modules/03modlist.data.gz
 lib/t/conf.t
 lib/t/cpan.conf
 lib/t/cpan1.conf
+lib/t/package.lst
 Makefile.PL
 MANIFEST			This list of files
 META.yml

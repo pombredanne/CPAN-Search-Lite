@@ -6,6 +6,7 @@ use CPAN::Search::Lite::PPM;
 use CPAN::Search::Lite::Extract;
 use CPAN::Search::Lite::State;
 use CPAN::Search::Lite::Populate;
+use CPAN::Search::Lite::HTML;
 use Config::IniFiles;
 use File::Spec::Functions qw(catfile);
 use File::Basename;
@@ -13,9 +14,10 @@ use File::Path;
 use LWP::Simple qw(getstore is_success);
 use Locale::Country;
 use CPAN::Search::Lite::DBI qw($tables);
+use CPAN::Search::Lite::Util qw(has_data);
 
 our ($oldout);
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 
 sub new {
     my ($class, %args) = @_;
@@ -67,6 +69,8 @@ DEATH
 
     my $self = { index => undef,
                  state => undef,
+		 dist_docs => {},
+		 dist_obj => {},
                  %args,
              };
     bless $self, $class;
@@ -100,7 +104,7 @@ sub read_config {
         $args->{$_} = $cfg->val($section, $_) if $cfg->val($section, $_);
     }
     $section = 'WWW';
-    @wanted = qw(tt2 css geoip up_img);
+    @wanted = qw(tt2 css geoip up_img dist_info);
     %has = map {$_ => 1} @wanted;
     foreach ($cfg->Parameters($section)) {
         die "Invalid parameter: $_, in section $section" unless $has{$_};
@@ -119,6 +123,9 @@ sub index {
     if ($self->{rebuild_info}) {
       return $self->rebuild_info();
     }
+    if ($self->{setup}) {
+      $self->rebuild_info() or return;
+    }
     if ($self->{no_mirror}) {
         my %wanted = map{$_ => $self->{$_}} qw(remote_mirror);
         $self->no_mirror(%wanted);
@@ -134,6 +141,9 @@ sub index {
         $self->extract or return;
     }
     $self->populate or return;
+    unless ($self->{no_mirror}) {
+        $self->make_html or return;
+    }
     return 1;
 }
 
@@ -191,7 +201,10 @@ sub fetch_info {
     }
 
     unless ($self->{no_ppm}) {
-        my $ppm = CPAN::Search::Lite::PPM->new(dists => $info->{dists});
+        my %wanted = map {$_ => $self->{$_}} 
+           qw(db user passwd setup);
+        my $ppm = CPAN::Search::Lite::PPM->new(dists => $info->{dists},
+					       %wanted);
         $ppm->fetch_info() or return;
         my $table = 'ppms';
         my $class = __PACKAGE__ . '::' . $table;
@@ -209,6 +222,7 @@ sub extract {
            split_pod pod_only);
     my $obj = CPAN::Search::Lite::Extract->new(%wanted);
     $obj->extract() or return;
+    $self->{dist_docs} = $obj->{dist_docs};
     return 1;
 }
 
@@ -229,6 +243,25 @@ sub populate {
            cat_threshold html_root no_mirror pod_root);
     my $db = CPAN::Search::Lite::Populate->new(%wanted);
     $db->populate() or return;
+    $self->{dist_obj} = $db->{obj}->{dists};
+    return 1;
+}
+
+sub make_html {
+    my $self = shift;
+    my $dist_docs = $self->{dist_docs};
+    unless (has_data($dist_docs)) {
+      print "No html docs need be translated\n";
+      return 1;
+    }
+    my $dist_obj = $self->{dist_obj};
+    my %wanted = map {$_ => $self->{$_}}
+      qw(pod_root html_root css up_img setup 
+	 split_pod pod_only db user passwd dist_info);
+    my $obj = CPAN::Search::Lite::HTML->new(%wanted, 
+					    dist_docs => $dist_docs,
+					    dist_obj => $dist_obj);
+    $obj->make_html() or return;
     return 1;
 }
 
@@ -566,6 +599,16 @@ generated html files linking each section to the
 top-most index. If not specifed, the text I<__top> will
 be used. It is assumed this image appears directly
 beneath the C<html_root> of the C<CPAN> section.
+
+=item * dist_info = http://cpan.uwinnipeg.ca/dist/
+
+If specified, this will be used to provide a link
+on the generated html pages to information on the
+distribution. The name of the distribution will be
+added at the end of the link (for example, using
+I<http://cpan.uwinnipeg.ca/dist/> will result, for the
+I<libnet> distribution, in a link to
+I<http://cpan.uwinnipeg.ca/dist/libnet>.
 
 =item * tt2 = /usr/local/tt2
 

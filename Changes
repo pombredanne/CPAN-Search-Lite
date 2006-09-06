@@ -1,3 +1,38 @@
+August 4, 2006 - 0.76
+    - don't use Module::MakefilePL::Parse, as CPAN.pm reports
+      there's no maintainer. Instead, use a parse_MakefilePL
+      routine based on Module::CPANTS::Generator::Prereq.
+    - drop requirement of PPM, and instead use XML::SAX::ExpatXS
+      as XML parser.
+    - don't die if META.yml file can't be loaded.
+    - ignore indexing of SpreadSheet-WriteExcel-WebPivot2,
+      as CPAN::DistnameInfo thinks WebPivot2 is the
+      version number of SpreadSheet-WriteExcel.
+    - use Module::MakefilePL::Parse to extract prerequisite
+      information if META.yml isn't present.
+    - add CPAN::Search::Lite::Version (in C::S::L::Util)
+      to compare distribution versions, borrowed from
+      CPAN::Version, and drop Sort::Versions requirement
+    - as ActiveState recently changed the way they serve
+      the ppm summary files from their server, change
+      CPAN::Search::Lite::PPM to fetch and parse package.lst or
+      searchsummary.ppm files.
+    - insert an "mtime" field in the reps table to record
+      the last modified time of a package.lst or searchsummary.ppm
+      file from a ppm server, so as to avoid downloading
+      and parsing files which have been seen in an earlier run.
+    - use Pod::Xhtml to convert the pod to html format. This has
+      a major advantage of allowing one to insert text before
+      and after the opening <body> tag and before the closing
+      </body> tags, so as not to have to edit the files
+      afterwards. Related to this, split off the html generation
+      into C::S::L::HTML, and call it last in the indexing procedure,
+      so as to be able to resolve links to the docs of modules
+      already indexed.
+    - change relative ranking of search terms when such terms
+      have spaces, so that a module search for, eg, 'Net SMTP',
+      will weight Net::SMTP more. 
+
 February 26, 2006 - 0.74
     - add documentation, pragma, and Perl6 chapters
     - if there are no results in the data structure for a

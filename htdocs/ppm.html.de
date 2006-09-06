@@ -20,15 +20,13 @@ f&uuml;r die anderen Pakete k&ouml;nnen Sie die angezeigte Position
 Ihrer Liste der Beh&auml;lter hinzuf&uuml;gen m&uuml;ssen:
 </p>
 <ul>
-<li><b></b><b>http://crazyinsomniac.perlmonk.org/perl/ppm</b>, f&uuml;r den <i>crazyinsomniac Perl 5.6 
-Beh&auml;lter</i></li>
-<li><b>http://crazyinsomniac.perlmonk.org/perl/ppm/5.8</b>, f&uuml;r den <i>crazyinsomniac Perl 5.8 
-Beh&auml;lter</i></li>
 <li><b></b><b>http://www.bribes.org/perl/ppm</b>, f&uuml;r den
 <i>www.bribes.org Perl 5.6 and 5.8
 Beh&auml;lter</i></li>
 <li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer</b>, f&uuml;r den <i>uwinnipeg Perl 5.6 Beh&auml;lter</i></li>
-<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?Urne:/PPMServer58</b>, f&uuml;r den <i>uwinnipeg Perl 5.8 Beh&auml;lter</i></li>
+<li><b>http://theoryx5.uwinnipeg.ca/cgi-bin/ppmserver?urn:/PPMServer58</b> (ActivePerl Builds &lt; 819) /
+<b>http://theoryx5.uwinnipeg.ca/ppms/</b> (ActivePerl Builds &gt;= 819),  
+f&uuml;r den <i>uwinnipeg Perl 5.8 Beh&auml;lter</i></li>
 </ul>
 &Uuml;berpr&uuml;fen Sie, ob Sie einen Beh&auml;lter benutzen,
 der f&uuml;r Ihre Perl Version passend ist (5.6 Beh&auml;lter f&uuml;r ActivePerl 

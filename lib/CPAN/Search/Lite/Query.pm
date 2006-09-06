@@ -19,7 +19,7 @@ use constant KB => 1024;
 
 our ($lang);
 our $max_results = 200;
-our $VERSION = 0.74;
+our $VERSION = 0.76;
 my $cdbi_query;
 
 my %mode2obj;
@@ -275,6 +275,7 @@ sub info {
     $args{fields} = [ qw(rep_id ppm_vers browse abs alias)];
     $args{table} = 'ppms';
     $args{join} = {reps => 'rep_id'};
+    $args{order_by} = 'alias';
     $args{search} = {field => 'dist_id',
                      value => $self->{results}->{dist_id}};
     $self->{results}->{ppms} = $self->fetch(%args, wantarray => 1);
@@ -394,6 +395,7 @@ sub info {
     $args{join} = {reps => 'rep_id'};
     $args{table} = 'ppms';
     $args{fields} = [ qw(rep_id ppm_vers browse abs alias) ];
+    $args{order_by} = 'alias';
     $args{search} = {field => 'dist_id', 
                      value => $self->{results}->{dist_id}
                     };
@@ -741,36 +743,52 @@ sub sql_statement {
     my $str_match;
     if ($regex or $text_search) {
       my $value = $search->{value};
-      unless ($value =~ / /) {
-        $value =~ s/[\^\$\*\+\?\|]//g;
-        my $name = $search->{field}->{name};
-      MATCH: {
-          ($name eq 'dist_name') and do {
-            $value = 'CGI.pm' if (uc $value eq 'CGI');
-            $str_match = ($value =~ /-/) ? 
-              qq{$name REGEXP '^$value'} : 
-                qq{$name REGEXP '^$value(-[-a-zA-Z0-9_]*)?\$'};
-            last MATCH;
-          };
-          ($name eq 'mod_name') and do {
-            $str_match = ($value =~ /::/) ? 
-              qq{$name REGEXP '^$value'} : 
-                qq{$name REGEXP '^$value(::[:a-zA-Z0-9_]*)?\$'};
-            last MATCH;
-          };
-          ($name eq 'cpanid') and do {
-            $str_match = qq{$name REGEXP '^$value([-a-zA-Z0-9_]*)?\$'};
-            last MATCH;
-          };
-          $str_match = qq{STRCMP($name, '$value') = 0};
-        }
+      $value =~ s/[\^\$\*\+\?\|]//g;
+      my $name = $search->{field}->{name};
+      my $tail = q{([a-zA-Z0-9_]*)?};
+    MATCH: {
+	($name eq 'dist_name') and do {
+	  $value = 'CGI.pm' if (uc $value eq 'CGI');
+	  if ($value =~ / /) {
+	    (my $re = $value) =~ s@\s+@${tail}-@g;
+	    $str_match = qq{$name REGEXP '^$re'};
+	  }
+	  else {
+	    $str_match = ($value =~ /-/) ? 
+	      qq{$name REGEXP '^$value'} : 
+		qq{$name REGEXP '^$value(-[-a-zA-Z0-9_]*)?\$'};
+	  }
+	  last MATCH;
+	};
+	($name eq 'mod_name') and do {
+	  if ($value =~ / /) {
+	    (my $re = $value) =~ s@\s+@${tail}::@g;
+	    $str_match = qq{$name REGEXP '^$re'};
+	  }
+	  else {
+	    $str_match = ($value =~ /::/) ? 
+	      qq{$name REGEXP '^$value'} : 
+		qq{$name REGEXP '^$value(::[:a-zA-Z0-9_]*)?\$'};
+	  }
+	  last MATCH;
+	};
+	($name eq 'cpanid') and do {
+	  if ($value =~ / /) {
+	    (my $re = $value) =~ s@\s+@$tail @g;
+	    $str_match = qq{$search->{field}->{text} REGEXP '^$re'};
+	  }
+	  else {
+	    $str_match = qq{$name REGEXP '^$value([-a-zA-Z0-9_]*)?\$'};
+	  }
+	  last MATCH;
+	};
+	$str_match = qq{STRCMP($name, '$value') = 0};
       }
     }
     push @fields, "$str_match as str_score" if $str_match;
 
     my $sql = qq{SELECT $distinct } . join(',', @fields);
 
- 
     my $where;
   QUERY: {
         $chap and do {
